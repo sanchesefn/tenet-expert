@@ -1,0 +1,8 @@
+[build]
+  publish = "TENET_T4L_netlify"
+  functions = "TENET_T4L_netlify/netlify/functions"
+
+[[redirects]]
+  from = "/api/rating"
+  to = "/.netlify/functions/rating"
+  status = 200
