@@ -32,6 +32,15 @@ jobs:
               html = "".join(p.read_text() for p in parts)
           else:
               html = Path("TENET_T4L_netlify/index.html").read_text()
+          patch = Path("study-fn.js")
+          if patch.exists():
+              extra = patch.read_text()
+              a = html.find("    function study(){")
+              b = html.find("    function brief(){")
+              if extra.startswith("    function splitStudy") and a >= 0 and b > a:
+                  html = html[:a] + extra + html[b:]
+              elif a >= 0 and b > a:
+                  html = html[:a] + extra + html[b:]
           css_path = Path("theme.css")
           if css_path.exists():
               css = css_path.read_text()
