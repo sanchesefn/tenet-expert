@@ -53,8 +53,21 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .rank.guest,.rank.head{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px;align-items:center;gap:8px;}
 .rank.head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;padding-bottom:8px;}
 .rank.head span:nth-child(2),.rank.head span:nth-child(3),.rank.guest .pct{text-align:right;}
+.rank .place-n{width:28px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums;}
 .pct{font-variant-numeric:tabular-nums;font-size:22px;font-weight:800;letter-spacing:-.04em;white-space:nowrap;}
 .empty{color:var(--muted);padding:8px 0;}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:8px 0 6px;min-height:210px;}
+.pod{flex:1;max-width:200px;text-align:center;min-width:0;}
+.pod .who{font-weight:800;font-size:14px;letter-spacing:-.02em;margin:0 0 8px;line-height:1.2;word-break:break-word;}
+.pod .who span{display:block;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-top:4px;}
+.pod .step{border-radius:12px 12px 4px 4px;padding:14px 8px 12px;color:#fff;}
+.pod.p1 .step{min-height:128px;background:linear-gradient(180deg,#f0d36a,#c9a227);}
+.pod.p2 .step{min-height:96px;background:linear-gradient(180deg,#d7dce2,#8b929a);}
+.pod.p3 .step{min-height:76px;background:linear-gradient(180deg,#e0b07a,#b87333);}
+.pod .place{font-size:13px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;opacity:.9;}
+.pod .score{font-size:28px;font-weight:800;letter-spacing:-.04em;margin-top:6px;}
+.pod.ghost .who{color:var(--muted);font-weight:600;}
+.pod.ghost .step{background:#efeae0;color:var(--muted);min-height:64px;}
 .banner{min-height:150px;border:1px solid var(--border);border-radius:20px;margin-top:8px;background:radial-gradient(1200px 200px at 100% 0,#f7d7d9 0,transparent 50%),linear-gradient(180deg,#fff,#f3efe6);display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:22px;box-shadow:var(--shadow);}
 .banner b{font-size:28px;letter-spacing:-.03em;}
 .banner-name{font-size:clamp(40px,8vw,64px);line-height:.85;letter-spacing:-.06em;font-weight:800;color:#161618;}
@@ -652,64 +665,61 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       rateModel = rateModel || model || "t4l";
       const md = rateModel;
       const m = MODELS[md] || MODELS.t4l;
-      function rowsFor(examNo, modelId, guests){
+      function bestMap(examNo, modelId){
         const rows=all.filter(r=>Number(r.exam||1)===examNo && (r.model||"t4l")===modelId);
         const map={};
         rows.forEach(r=>{
           const k=norm(r.surname||r.display);
-          if(!map[k] || (r.percent||0)>(map[k].percent||0)) map[k]=r;
+          if(!map[k] || (r.percent||0)>(map[k].percent||0)) map[k]={name:r.display||r.surname, percent:r.percent, key:k};
         });
-        const list=Object.values(map);
-        if(guests){
-          return list.filter(r=>!STAFF.includes(norm(r.surname)) && !STAFF.includes(norm(r.display)))
-            .sort((a,b)=>(b.percent||0)-(a.percent||0));
-        }
-        return STAFF_SHOW.map((name,i)=>{
-          const sn=STAFF[i];
-          const mine=list.find(r=>norm(r.surname)===sn || norm(r.display)===sn);
-          return mine ? {name, percent:mine.percent} : {name, percent:null};
-        });
+        return map;
       }
-      const a1=rowsFor(1,md,false), a2=rowsFor(2,md,false);
-      const staffBlock=(title, rows)=>`<div class="card" style="margin-top:16px"><h2>${title}</h2>
-          ${rows.map(r=>`<div class="rank"><div><b>${r.name}</b><p>${r.percent==null?"ещё не сдавал":m.name}</p></div><div class="pct">${r.percent==null?"—":r.percent+"%"}</div></div>`).join("")}</div>`;
-      const guestModels=Object.values(MODELS).map(x=>{
-        const people={};
-        all.filter(r=> (r.model||"t4l")===x.id && r.surname).forEach(r=>{
-          const k=norm(r.surname||r.display);
-          if(STAFF.includes(k)) return;
-          if(!people[k]) people[k]={name:r.display||r.surname, e1:null, e2:null};
-          const n=Number(r.exam||1);
-          const cur=n===2?people[k].e2:people[k].e1;
-          if(cur==null || (r.percent||0)>cur) {
-            if(n===2) people[k].e2=r.percent; else people[k].e1=r.percent;
-          }
-        });
-        const rows=Object.values(people).sort((a,b)=>Math.max(b.e1||0,b.e2||0)-Math.max(a.e1||0,a.e2||0));
-        const body = rows.length
-          ? `<div class="rank head"><span>Фамилия</span><span>№1</span><span>№2</span></div>`+
-            rows.map(r=>`<div class="rank guest">
-              <b>${escape(r.name)}</b>
-              <span class="pct">${r.e1==null?"—":r.e1+"%"}</span>
-              <span class="pct">${r.e2==null?"—":r.e2+"%"}</span>
-            </div>`).join("")
-          : `<p class="empty">Пока никто не сдавал</p>`;
-        return `<div class="card" style="margin-top:12px">
-          <div class="eyebrow">${x.brand}</div>
-          <h3>${x.name}</h3>
-          ${body}
+      function rankedExam(examNo){
+        const map=bestMap(examNo, md);
+        const done=Object.values(map).sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
+        const staffWait=STAFF_SHOW.filter((name,i)=>!map[STAFF[i]]).map(name=>({name, percent:null}));
+        return {done, staffWait};
+      }
+      function podiumHtml(done){
+        const top=done.slice(0,3);
+        const slots=[top[1]||null, top[0]||null, top[2]||null];
+        const meta=[{cls:"p2",n:"2 место"},{cls:"p1",n:"1 место"},{cls:"p3",n:"3 место"}];
+        return `<div class="podium">${slots.map((p,i)=> p
+          ? `<div class="pod ${meta[i].cls}"><div class="who">${escape(p.name)}<span>${meta[i].n}</span></div><div class="step"><div class="place">${i===1?"I":i===0?"II":"III"}</div><div class="score">${p.percent}%</div></div></div>`
+          : `<div class="pod ${meta[i].cls} ghost"><div class="who">—<span>${meta[i].n}</span></div><div class="step"><div class="place">${i===1?"I":i===0?"II":"III"}</div></div></div>`
+        ).join("")}</div>`;
+      }
+      function listHtml(done, wait){
+        const rest=done.slice(3);
+        if(!rest.length && !wait.length) return `<p class="empty">Остальных результатов пока нет</p>`;
+        return rest.map((r,i)=>`<div class="rank"><span class="place-n">${i+4}</span><div><b>${escape(r.name)}</b></div><div class="pct">${r.percent}%</div></div>`).join("")+
+          wait.map(r=>`<div class="rank"><span class="place-n">—</span><div><b>${escape(r.name)}</b><p>ещё не сдавал</p></div><div class="pct">—</div></div>`).join("");
+      }
+      function examCard(title, examNo, includeStaffWait){
+        const {done, staffWait}=rankedExam(examNo);
+        const wait=includeStaffWait?staffWait:[];
+        return `<div class="card" style="margin-top:16px">
+          <div class="eyebrow">${m.brand} ${m.name}</div>
+          <h2>${title}</h2>
+          ${done.length?podiumHtml(done):`<p class="empty" style="margin-top:12px">Пьедестал пуст — ещё нет результатов</p>`}
+          <div style="margin-top:8px">${listHtml(done, wait)}</div>
         </div>`;
-      }).join("");
+      }
+      const guestDone=(()=>{
+        const map=bestMap(1, md);
+        return Object.values(map).filter(p=>!STAFF.includes(p.key)).sort((a,b)=>(b.percent||0)-(a.percent||0));
+      })();
       return `<p class="eyebrow">Отдел продаж</p><h1 style="font-size:40px">Рейтинг</h1>
-        <p class="lead">Основной состав — вкладка модели. Гостевой сектор сразу разбит по всем моделям.</p>
+        <p class="lead">Пьедестал — топ-3 по модели. Ниже список остальных. Вкладки переключают автомобиль.</p>
         <p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>
         <div class="tabs">${Object.values(MODELS).map(x=>`<button class="${md===x.id?"on":""}" data-rate="${x.id}">${x.name}</button>`).join("")}</div>
-        <p class="eyebrow" style="margin-top:8px">${m.brand} ${m.name} · основной состав</p>
-        ${staffBlock("Аттестация №1", a1)}
-        ${staffBlock("Аттестация №2", a2)}
-        <h2 style="margin:28px 0 8px">Гостевой сектор</h2>
-        <p class="lead">Все фамилии вне основного состава, отдельно по каждой модели.</p>
-        ${guestModels}
+        ${examCard("Аттестация №1", 1, true)}
+        ${examCard("Аттестация №2", 2, true)}
+        <h2 style="margin:28px 0 8px">Гостевой сектор · ${m.name}</h2>
+        <p class="lead">Фамилии вне основного состава по этой модели.</p>
+        <div class="card">
+          ${guestDone.length? podiumHtml(guestDone)+listHtml(guestDone, []) : `<p class="empty">Пока никто не сдавал</p>`}
+        </div>
         <p style="color:var(--muted);font-size:13px;margin-top:12px">Код РОП открывает аттестацию №2 по модели, выбранной на старте.</p>
         <div class="card" style="margin-top:16px">
           <b>Код РОП</b>
