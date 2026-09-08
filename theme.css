@@ -58,19 +58,19 @@ h1{font-size:clamp(36px,7vw,64px);line-height:.92;margin:0;letter-spacing:-.04em
   aspect-ratio:16/10;
   background-color:#efeae0;
   background-repeat:no-repeat;
-  background-position:center 58%;
-  background-size:contain;
+  background-position:center center;
+  background-size:cover;
   border-bottom:1px solid var(--border);
 }
 .models .card::after,
 .model-card::after,
 .models .card img.car,
 .model-card .car{content:none!important;display:none!important;}
-.models .card[data-model="t4l"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d86msi2to5r7ch4mldj0/original");}
-.models .card[data-model="t7"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d40v48qto5r56gs4r870/original");}
-.models .card[data-model="t8"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d3efr4ato5r56gptjfn0/original");}
-.models .card[data-model="t9"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/cd8i3kaeibkmfepk3bug/original");}
-.models .card[data-model="a8"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d9avncqto5r6hlpdspeg/original");}
+.models .card[data-model="t4l"]::before{background-image:url("cars/t4l.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d7p04gqto5r7ch3usvi0/original");}
+.models .card[data-model="t7"]::before{background-image:url("cars/t7.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d40v48qto5r56gs4r870/original");}
+.models .card[data-model="t8"]::before{background-image:url("cars/t8.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d3efr4ato5r56gptjfn0/original");}
+.models .card[data-model="t9"]::before{background-image:url("cars/t9.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d3vknoqto5r56gs4qtm0/original");}
+.models .card[data-model="a8"]::before{background-image:url("cars/a8.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d9avncqto5r6hlpdspeg/original");}
 .models .card .txt,
 .models .card > .eyebrow,
 .models .card > h3,
