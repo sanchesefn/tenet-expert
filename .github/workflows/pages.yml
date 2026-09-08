@@ -25,7 +25,16 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp TENET_T4L_netlify/index.html _site/index.html
+          python3 - <<'PY'
+          from pathlib import Path
+          html = Path("TENET_T4L_netlify/index.html").read_text()
+          css = Path("theme.css").read_text()
+          a = html.find("<style>")
+          b = html.find("</style>") + 8
+          if a >= 0 and b > a:
+              html = html[:a] + "<style>\n" + css + "\n</style>" + html[b:]
+          Path("_site/index.html").write_text(html)
+          PY
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
