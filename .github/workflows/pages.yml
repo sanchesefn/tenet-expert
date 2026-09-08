@@ -37,9 +37,14 @@ jobs:
               extra = patch.read_text()
               a = html.find("    function study(){")
               b = html.find("    function brief(){")
-              if extra.startswith("    function splitStudy") and a >= 0 and b > a:
+              if a >= 0 and b > a:
                   html = html[:a] + extra + html[b:]
-              elif a >= 0 and b > a:
+          unlock = Path("unlock-fn.js")
+          if unlock.exists():
+              extra = unlock.read_text()
+              a = html.find("    function tryUnlock(code){")
+              b = html.find("    function compactPaper(){")
+              if a >= 0 and b > a:
                   html = html[:a] + extra + html[b:]
           css_path = Path("theme.css")
           if css_path.exists():
