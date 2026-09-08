@@ -141,7 +141,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       <nav class="desk" id="navDesk"></nav>
     </header>
     <main id="app"><p style="padding:24px">Загрузка…</p></main>
-  <script>window.onerror=function(m){var a=document.getElementById("app"); if(a) a.innerHTML="<div style=\"padding:24px\"><b>Ошибка:</b> "+m+"<br><button onclick=\"localStorage.clear();location.reload()\">Сбросить и обновить</button></div>"; };</script>
+  <script>window.onerror=function(m){var a=document.getElementById("app"); if(a) a.innerHTML="<div style=\"padding:24px\"><b>Ошибка:</b> "+m+"<br><button onclick=\"location.reload()\">Обновить</button></div>"; };</script>
   </div>
   <nav class="bot" id="navBot"></nav>
   <script>
@@ -359,6 +359,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     const state = load();
     state.seenStudy = state.seenStudy || {};
     state.seenTrain = state.seenTrain || {};
+    state.runs = state.runs || {};
     let view = state.surname ? "home" : "login";
     let rateModel = state.model || "t4l";
     let model = state.model || "t4l";
@@ -367,10 +368,11 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     let elapsed = 0, left = QSEC, mode = "exam", examSession = 1, tick = null, studyTab = "tech", pinErr = "";
     let remoteLocks = [];
     let syncOk = false;
+    let qDeadline = 0;
 
     function load(){
-      try { return Object.assign({surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{}}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
-      catch { return {surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{}}; }
+      try { return Object.assign({surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
+      catch { return {surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}; }
     }
     function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
     function norm(s){ return (s||"").trim().replace(/\s+/g," ").toLowerCase(); }
@@ -399,12 +401,30 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     }
     function examRec(n){ return remoteExam(n) || localExam(n); }
     function lockOf(){ return examRec(2) || examRec(1); }
-    function hasExam1(){ return Boolean(examRec(1)); }
-    function hasExam2(){ return Boolean(examRec(2)); }
+    function recDone(r){ return Boolean(r && r.status !== "running"); }
+    function hasExam1(){ return recDone(examRec(1)); }
+    function hasExam2(){ return recDone(examRec(2)); }
     function readyMaterials(){ return Boolean(state.seenStudy[model] && state.seenTrain[model]); }
     function pin2(){ return Boolean(state.unlock[lockKey(state.surname, model, 2)]); }
-    function canExam1(){ return Boolean(state.surname) && !hasExam1(); }
-    function canExam2(){ return Boolean(state.surname) && hasExam1() && !hasExam2() && readyMaterials() && pin2(); }
+    function userRun(){
+      const sn=norm(state.surname);
+      if(!sn) return null;
+      const local=(state.runs||{})[sn];
+      if(local && local.status==="running" && local.paper && local.paper.length) return local;
+      const rem=(remoteLocks||[]).find(x=>x && x.surname===sn && x.status==="running");
+      if(!rem) return null;
+      if(rem.run && rem.run.paper && rem.run.paper.length){
+        return {
+          surname:sn, display:rem.display||state.display, model:rem.model, exam:rem.exam||1, status:"running",
+          paper:rem.run.paper, idx:rem.run.idx||0, answers:rem.run.answers||[], selected:rem.run.selected||[],
+          qDeadline:rem.run.qDeadline||0, startedAt:rem.run.startedAt||Date.now()
+        };
+      }
+      return {surname:sn, display:rem.display||state.display, model:rem.model||model, exam:rem.exam||1, status:"running", paper:[], idx:0, answers:[], qDeadline:0, startedAt:Date.now(), broken:true};
+    }
+    function canExam1(){ return Boolean(state.surname) && !hasExam1() && !userRun(); }
+    function canExam2(){ return Boolean(state.surname) && hasExam1() && !hasExam2() && readyMaterials() && pin2() && !userRun(); }
+    function inExam(){ return mode==="exam" && !done && paper.length>0; }
     function canPractice(){ return hasExam1(); }
     function canStudy(){ return hasExam1(); }
     function withTimeout(promise, ms){
@@ -437,7 +457,12 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       }
     }
     async function upsertLock(rec){
-      const body = {surname:rec.surname,display:rec.display,model:rec.model,exam:rec.exam||1,percent:rec.percent,at:rec.at,attempts:rec.attempts||1};
+      const body = {
+        surname:rec.surname, display:rec.display, model:rec.model, exam:rec.exam||1,
+        percent:rec.percent, at:rec.at, attempts:rec.attempts||1,
+        status: rec.status || "done"
+      };
+      if(body.status==="running" && rec.run) body.run = rec.run;
       state.locks[lockKey(rec.display, rec.model, rec.exam||1)] = rec;
       state.locks[lockKey(rec.surname, rec.model, rec.exam||1)] = rec;
       save();
@@ -445,8 +470,16 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         try{
           const list = await pullList();
           const idx = list.findIndex(x => x && x.surname===body.surname && x.model===body.model && Number(x.exam||1)===Number(body.exam));
-          if(idx>=0) list[idx] = Object.assign({}, list[idx], body);
-          else list.push(body);
+          if(idx>=0){
+            const prev = list[idx] || {};
+            if(prev.status==="done" && body.status==="running"){
+              remoteLocks = list;
+              syncOk = true;
+              return;
+            }
+            list[idx] = Object.assign({}, prev, body);
+            if(body.status==="done") delete list[idx].run;
+          } else list.push(body);
           const r = await withTimeout(fetch("https://rentry.co/api/edit/"+CLOUD_ID, {
             method:"POST",
             headers:{"Content-Type":"application/x-www-form-urlencoded"},
@@ -491,6 +524,13 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     }
     function render(){
       try{
+        if(state.surname && !done){
+          const run=userRun();
+          if(run && view!=="login"){
+            if(!paper.length || mode!=="exam"){ resumeExam(run); return; }
+            view="play";
+          }
+        }
         if(!MODELS[model]) model="t4l";
         nav(view==="play"?"quiz":view);
         const map={login,home,study,quiz:brief,play,rate,hist:rate};
@@ -501,9 +541,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       }catch(err){
         const root=document.getElementById("app");
         if(root) root.innerHTML=`<div class="card"><h2>Ошибка экрана</h2><p>${escape(err.message||String(err))}</p>
-          <button class="btn ivory" id="hardReset">Сбросить вход</button></div>`;
+          <button class="btn ivory" id="hardReset">Обновить</button></div>`;
         const r=document.getElementById("hardReset");
-        if(r) r.onclick=()=>{ try{ localStorage.removeItem(KEY); }catch(e){}; location.reload(); };
+        if(r) r.onclick=()=>{ location.reload(); };
       }
     }
     function banner(title, sub, brand){
@@ -513,7 +553,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function login(){
       return banner("Аттестация отдела продаж","TENET · CHERY")+`
         <h1>Вход<span>по фамилии</span></h1>
-        <p class="lead">Одна фамилия — одна попытка на каждую модель. Повтор — код РОП. Тренировка после зачёта.</p>
+        <p class="lead">Одна фамилия — одна попытка на каждую модель. Обновление страницы не сбрасывает тест. Повтор — код РОП. Тренировка после зачёта.</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" /></label>
         <div style="margin-top:16px"><button class="btn ivory" id="doLogin">Войти</button></div>
         <p id="loginErr" style="color:var(--primary);font-size:13px"></p>`;
@@ -523,8 +563,10 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(!state.surname) return login();
       const m=MODELS[model]||MODELS.t4l;
       const e1=examRec(1), e2=examRec(2);
+      const run=userRun();
+      const runM=run && MODELS[run.model];
       return banner(m.name, "Прайс-ориентир "+PRICE.date, m.brand)+`
-        <p class="lead">Вы вошли как <b>${escape(state.display)}</b>. Аттестация №1 — одна попытка. Справочник и тренировка откроются после неё. №2 — после материалов и кода РОП.</p>
+        <p class="lead">Вы вошли как <b>${escape(state.display)}</b>. Аттестация №1 — одна попытка, её нельзя сбросить обновлением страницы. Справочник и тренировка откроются после неё. №2 — после материалов и кода РОП.</p>
         <button class="btn ghost" id="logout">Сменить фамилию</button>
         <div class="models">${Object.values(MODELS).map(x=>`
           <button class="card model-card" data-model="${x.id}" style="${x.id===model?"border-color:#161618":""}">
@@ -535,7 +577,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
             </div>
           </button>`).join("")}</div>
         <section class="actions">
-          ${canExam1()
+          ${run
+            ? `<button class="card ok" data-exam="${run.exam||1}" data-run="1"><h3>Продолжить аттестацию №${run.exam||1}</h3><p>${runM?runM.name+" · ":""}попытка уже идёт. Обновление страницы её не сбрасывает.</p></button>`
+            : canExam1()
             ? `<button class="card ok" data-exam="1"><h3>Аттестация №1</h3><p>${bank().length} вопросов, ${QSEC} сек. Можно начать.</p></button>`
             : `<div class="card ok"><h3>Аттестация №1 сдана</h3><p>${e1?e1.percent+"%":""}. Повторно закрыта.</p></div>`}
           ${canStudy()
@@ -616,6 +660,13 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(!state.surname) return login();
       const m=MODELS[model]||MODELS.t4l;
       const want = window._wantExam || examSession || 1;
+      const run=userRun();
+      if(run){
+        const rm=MODELS[run.model]||m;
+        return `<p class="eyebrow">${rm.brand}</p><h1 style="font-size:40px">${rm.name} · аттестация №${run.exam||1}</h1>
+          <p class="lead">Попытка уже начата. Те же вопросы, тот же таймер. Обновление страницы не даёт новую попытку.</p>
+          <button class="btn ivory" id="startExam" data-n="${run.exam||1}">Продолжить</button>`;
+      }
       if(want===1 && !canExam1()){
         return `<h1 style="font-size:40px">${m.name}: аттестация №1 закрыта</h1>
           <p class="lead">Первая попытка уже использована${examRec(1)?": "+examRec(1).percent+"%":""}. Дальше — справочник, тренировка и №2 по коду РОП.</p>
@@ -629,7 +680,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
           <button class="btn ivory" id="unlockBrief">Открыть №2</button>`;
       }
       return `<p class="eyebrow">${m.brand}</p><h1 style="font-size:40px">${m.name} · аттестация №${want}</h1>
-        <p class="lead">${bank().length} вопросов, ${QSEC} сек. Одна попытка. Зачёт ${PASS}%.</p>
+        <p class="lead">${bank().length} вопросов, ${QSEC} сек. Одна попытка. Обновить страницу = продолжить ту же попытку, не новую. Зачёт ${PASS}%.</p>
         <button class="btn ivory" id="startExam" data-n="${want}">Начать №${want}</button>`;
     }
 
@@ -681,7 +732,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const md = rateModel;
       const m = MODELS[md] || MODELS.t4l;
       function bestMap(examNo, modelId){
-        const rows=all.filter(r=>Number(r.exam||1)===examNo && (r.model||"t4l")===modelId);
+        const rows=all.filter(r=>Number(r.exam||1)===examNo && (r.model||"t4l")===modelId && r.status!=="running");
         const map={};
         rows.forEach(r=>{
           const k=norm(r.surname||r.display);
@@ -751,32 +802,137 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(!readyMaterials()){ pinErr="Сначала откройте справочник и пройдите тренировку по этой модели."; render(); return; }
       state.unlock[lockKey(state.surname, model, 2)]=true; save(); pinErr=""; render();
     }
+    function compactPaper(){ return paper.map(q=>({id:q.id, o:(q.o||[]).map(x=>x[0])})); }
+    function hydratePaper(run){
+      const Q = QBY[run.model] || T4L_Q;
+      const byId = {};
+      Q.forEach(q=>byId[q.id]=q);
+      const out=[];
+      (run.paper||[]).forEach(s=>{
+        const q = byId[s.id];
+        if(!q) return;
+        const order = Array.isArray(s.o)?s.o:[];
+        const opts = order.map(id=>q.o.find(x=>x[0]===id)).filter(Boolean);
+        out.push(opts.length===q.o.length ? {...q, o:opts} : {...q, o:q.o.slice()});
+      });
+      return out;
+    }
+    function persistRun(syncCloud){
+      if(mode!=="exam" || done || !state.surname || !paper.length) return Promise.resolve();
+      const sn=norm(state.surname);
+      const prev=(state.runs||{})[sn]||{};
+      const run={
+        surname:sn, display:state.display, model, exam:examSession||1, status:"running",
+        paper:compactPaper(), idx, answers, selected,
+        qDeadline, startedAt: prev.startedAt || Date.now(), updatedAt: Date.now()
+      };
+      state.runs = state.runs || {};
+      state.runs[sn] = run;
+      save();
+      if(!syncCloud) return Promise.resolve();
+      return upsertLock({
+        surname:run.surname, display:run.display, model:run.model, exam:run.exam,
+        percent:0, at:new Date(run.startedAt).toISOString(), attempts:1,
+        status:"running",
+        run:{paper:run.paper, idx:run.idx, answers:run.answers, selected:run.selected, qDeadline:run.qDeadline, startedAt:run.startedAt}
+      });
+    }
+    function catchUp(){
+      if(mode!=="exam" || done || !paper.length) return;
+      if(!qDeadline) qDeadline = Date.now() + QSEC*1000;
+      left = Math.max(0, Math.ceil((qDeadline - Date.now())/1000));
+      if(left>0) return;
+      if(answers[idx]==null){
+        const q=paper[idx];
+        answers[idx]={id:q.id,ok:false,cat:q.cat,p:q.p,x:q.x};
+      }
+      if(idx+1>=paper.length){ finish(); return; }
+      idx++; selected=[]; locked=false;
+      qDeadline = Date.now() + QSEC*1000;
+      left = QSEC;
+      persistRun(true);
+    }
+    function resumeExam(run){
+      if(!run) return false;
+      stopTick();
+      if(run.broken || !run.paper || !run.paper.length){
+        model = run.model || model;
+        state.model = model;
+        examSession = run.exam || 1;
+        mode="exam";
+        paper = [{id:"gone",cat:"tech",type:"single",p:"Сессия прервана",o:[["a","—"]],c:["a"],x:""}];
+        answers = [{id:"gone",ok:false,cat:"tech",p:"Сессия прервана",x:""}];
+        idx=0; done=false; closing=false;
+        finish();
+        return true;
+      }
+      model = run.model || model;
+      state.model = model; save();
+      examSession = run.exam || 1;
+      window._wantExam = examSession;
+      mode="exam";
+      paper = hydratePaper(run);
+      if(!paper.length){
+        run.broken = true;
+        return resumeExam(run);
+      }
+      idx = Math.min(Math.max(0, run.idx||0), paper.length-1);
+      answers = Array.isArray(run.answers)?run.answers.slice():[];
+      selected = Array.isArray(run.selected)?run.selected.slice():[];
+      locked=false; done=false; closing=false;
+      qDeadline = run.qDeadline || (Date.now()+QSEC*1000);
+      view="play";
+      catchUp();
+      if(!done){ render(); startTick(); persistRun(true); }
+      return true;
+    }
     async function start(kind, cat="all", examNo){
       if(kind==="exam"){
+        const existing = userRun();
+        if(existing){ resumeExam(existing); return; }
         const n = examNo || examSession || 1;
         if(n===1 && !canExam1()){ view="quiz"; render(); return; }
         if(n===2 && !canExam2()){ view="quiz"; render(); return; }
         examSession = n;
+        stopTick();
+        mode="exam";
+        paper = pickExam();
+        idx=0; selected=[]; locked=false; done=false; closing=false; answers=[];
+        correct=0; missed=[]; byCat={}; elapsed=0;
+        qDeadline = Date.now() + QSEC*1000;
+        left = QSEC;
+        persistRun(false);
+        view="play"; render();
+        startTick();
+        persistRun(true);
+        return;
       }
       if(kind==="practice"){
         if(!canPractice()){ view="home"; render(); return; }
+        if(userRun()){ resumeExam(userRun()); return; }
         state.seenTrain[model]=true; save();
       }
       stopTick();
       mode=kind;
-      paper = kind==="exam"?pickExam():pickPractice(cat);
+      paper = pickPractice(cat);
       idx=0; selected=[]; locked=false; done=false; closing=false; answers=[];
       correct=0; missed=[]; byCat={}; elapsed=0; left=QSEC;
+      qDeadline=0;
       view="play"; render();
-      if(kind==="exam") startTick();
     }
     function startTick(){
       stopTick();
-      tick=setInterval(()=>{
-        elapsed++; left=Math.max(0,left-1);
+      const beat=()=>{
+        if(done || mode!=="exam"){ stopTick(); return; }
+        left = Math.max(0, Math.ceil((qDeadline - Date.now())/1000));
         if(left===0 && !locked && !done) timeout();
-        else if(!done){ const c=document.querySelector(".clock"); if(c){ c.className="clock"+(left<=5?" warn":""); c.innerHTML=left+' <small style="font-size:14px;color:var(--muted)">сек</small>'; } }
-      },1000);
+        else if(!done){
+          const c=document.querySelector(".clock");
+          if(c){ c.className="clock"+(left<=5?" warn":""); c.innerHTML=left+' <small style="font-size:14px;color:var(--muted)">сек</small>'; }
+        }
+      };
+      beat();
+      tick=setInterval(beat, 250);
     }
     function stopTick(){ if(tick) clearInterval(tick); tick=null; }
     function timeout(){ commitAndNext(false); }
@@ -785,6 +941,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       closing=true;
       const q=paper[idx];
       if(answers[idx]==null) answers[idx]={id:q.id,ok:!!ok,cat:q.cat,p:q.p,x:q.x};
+      persistRun(true);
       next(); closing=false;
     }
     function tally(){
@@ -804,16 +961,25 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         const n=examSession||1;
         const prev=examRec(n)||{attempts:0};
         if(n===2) delete state.unlock[lockKey(state.surname, model, 2)];
-        const rec={surname:norm(state.surname),display:state.display,model,exam:n,percent:pct,at:item.date,attempts:(prev.attempts||0)+1};
+        const rec={surname:norm(state.surname),display:state.display,model,exam:n,percent:pct,at:item.date,attempts:(prev.attempts||0)+1,status:"done"};
+        const sn=norm(state.surname);
+        if(state.runs && state.runs[sn]) state.runs[sn].status="done";
         state.lastCode=packResult(rec); save();
         await upsertLock(rec);
+        if(state.runs) delete state.runs[sn];
       }
       save(); render();
     }
-    function next(){ if(idx+1>=paper.length) finish(); else { idx++; selected=[]; locked=false; left=QSEC; render(); } }
+    function next(){ if(idx+1>=paper.length) finish(); else { idx++; selected=[]; locked=false; qDeadline=Date.now()+QSEC*1000; left=QSEC; persistRun(true); render(); } }
     function bind(){
-      document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{ view=b.dataset.go; render(); });
-      document.querySelectorAll("[data-model]").forEach(b=>b.onclick=()=>{ model=b.dataset.model; state.model=model; save(); render(); });
+      document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{
+        if(inExam() || (userRun() && !done)){ view="play"; if(!paper.length) resumeExam(userRun()); else render(); return; }
+        view=b.dataset.go; render();
+      });
+      document.querySelectorAll("[data-model]").forEach(b=>b.onclick=()=>{
+        if(inExam() || (userRun() && !done)){ view="play"; if(!paper.length) resumeExam(userRun()); else render(); return; }
+        model=b.dataset.model; state.model=model; save(); render();
+      });
       document.querySelectorAll("[data-practice]").forEach(b=>b.onclick=()=>start("practice", b.dataset.practice));
       const doLogin=document.getElementById("doLogin");
       if(doLogin) doLogin.onclick=async()=>{
@@ -821,10 +987,12 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         const err=document.getElementById("loginErr");
         if(v.length<2){ err.textContent="Введите фамилию."; return; }
         state.surname=norm(v); state.display=v.replace(/\s+/g," "); save();
-        await refreshLocks(); view="home"; render();
+        await refreshLocks();
+        if(userRun()){ resumeExam(userRun()); return; }
+        view="home"; render();
       };
       const logout=document.getElementById("logout");
-      if(logout) logout.onclick=()=>{ state.surname=""; state.display=""; save(); view="login"; render(); };
+      if(logout) logout.onclick=()=>{ persistRun(true); stopTick(); state.surname=""; state.display=""; save(); view="login"; paper=[]; mode="exam"; done=false; render(); };
       document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{ examSession=Number(b.dataset.exam)||1; window._wantExam=examSession; view="quiz"; render(); });
       document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{ studyTab=b.dataset.tab; render(); });
       document.querySelectorAll("[data-rate]").forEach(b=>b.onclick=()=>{ rateModel=b.dataset.rate; render(); });
@@ -835,6 +1003,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         const id=b.dataset.opt; const q=paper[idx];
         if(q.type==="single") selected=[id];
         else selected=selected.includes(id)?selected.filter(x=>x!==id):[...selected,id];
+        if(mode==="exam") persistRun(false);
         render();
       });
       const ans=document.getElementById("answer");
@@ -858,6 +1027,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         try{
           const rec=unpackResult((document.getElementById("importCode")||{}).value||"");
           if(!rec || !rec.surname || rec.percent==null) throw new Error("Пустой код");
+          rec.status="done";
           await upsertLock(rec);
           pinErr="";
           await refreshLocks();
@@ -872,7 +1042,16 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const root=document.getElementById("app");
       if(root) root.innerHTML="<p>Сбой запуска. Обновите страницу.</p>";
     }
-    refreshLocks().then(()=>{ if(view==="home"||view==="rate") render(); }).catch(()=>{});
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.hidden){ persistRun(false); return; }
+      if(inExam()){ catchUp(); if(!done) render(); }
+    });
+    window.addEventListener("pagehide", ()=>{ persistRun(true); });
+    refreshLocks().then(()=>{
+      if(state.surname && userRun() && !done){ resumeExam(userRun()); return; }
+      if(view==="home"||view==="rate") render();
+    }).catch(()=>{});
+    if(state.surname && userRun() && !done && !paper.length) resumeExam(userRun());
   </script>
 </body>
 </html>
