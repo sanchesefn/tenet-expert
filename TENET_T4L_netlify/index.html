@@ -50,7 +50,10 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 @media(min-width:720px){.models{grid-template-columns:repeat(3,1fr);}.grid2{grid-template-columns:1.1fr .9fr;}.actions{display:flex;flex-direction:column;}}
 .rank{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);}
 .rank b{font-size:16px;}
-.pct{font-variant-numeric:tabular-nums;font-size:26px;font-weight:800;letter-spacing:-.04em;}
+.rank.guest,.rank.head{display:grid;grid-template-columns:minmax(0,1fr) 72px 72px;align-items:center;gap:8px;}
+.rank.head{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;padding-bottom:8px;}
+.rank.head span:nth-child(2),.rank.head span:nth-child(3),.rank.guest .pct{text-align:right;}
+.pct{font-variant-numeric:tabular-nums;font-size:22px;font-weight:800;letter-spacing:-.04em;white-space:nowrap;}
 .empty{color:var(--muted);padding:8px 0;}
 .banner{min-height:150px;border:1px solid var(--border);border-radius:20px;margin-top:8px;background:radial-gradient(1200px 200px at 100% 0,#f7d7d9 0,transparent 50%),linear-gradient(180deg,#fff,#f3efe6);display:flex;align-items:flex-end;justify-content:space-between;gap:16px;padding:22px;box-shadow:var(--shadow);}
 .banner b{font-size:28px;letter-spacing:-.03em;}
@@ -671,16 +674,30 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const staffBlock=(title, rows)=>`<div class="card" style="margin-top:16px"><h2>${title}</h2>
           ${rows.map(r=>`<div class="rank"><div><b>${r.name}</b><p>${r.percent==null?"ещё не сдавал":m.name}</p></div><div class="pct">${r.percent==null?"—":r.percent+"%"}</div></div>`).join("")}</div>`;
       const guestModels=Object.values(MODELS).map(x=>{
-        const g1=rowsFor(1,x.id,true);
-        const g2=rowsFor(2,x.id,true);
-        const line=(label, rows)=> rows.length
-          ? rows.map(r=>`<div class="rank"><div><b>${escape(r.display||r.surname)}</b><p>${label}</p></div><div class="pct">${r.percent}%</div></div>`).join("")
-          : `<p class="empty">${label}: пока пусто</p>`;
+        const people={};
+        all.filter(r=> (r.model||"t4l")===x.id && r.surname).forEach(r=>{
+          const k=norm(r.surname||r.display);
+          if(STAFF.includes(k)) return;
+          if(!people[k]) people[k]={name:r.display||r.surname, e1:null, e2:null};
+          const n=Number(r.exam||1);
+          const cur=n===2?people[k].e2:people[k].e1;
+          if(cur==null || (r.percent||0)>cur) {
+            if(n===2) people[k].e2=r.percent; else people[k].e1=r.percent;
+          }
+        });
+        const rows=Object.values(people).sort((a,b)=>Math.max(b.e1||0,b.e2||0)-Math.max(a.e1||0,a.e2||0));
+        const body = rows.length
+          ? `<div class="rank head"><span>Фамилия</span><span>№1</span><span>№2</span></div>`+
+            rows.map(r=>`<div class="rank guest">
+              <b>${escape(r.name)}</b>
+              <span class="pct">${r.e1==null?"—":r.e1+"%"}</span>
+              <span class="pct">${r.e2==null?"—":r.e2+"%"}</span>
+            </div>`).join("")
+          : `<p class="empty">Пока никто не сдавал</p>`;
         return `<div class="card" style="margin-top:12px">
           <div class="eyebrow">${x.brand}</div>
           <h3>${x.name}</h3>
-          ${line("№1", g1)}
-          ${line("№2", g2)}
+          ${body}
         </div>`;
       }).join("");
       return `<p class="eyebrow">Отдел продаж</p><h1 style="font-size:40px">Рейтинг</h1>
