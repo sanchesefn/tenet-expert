@@ -742,7 +742,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       }
       function rankedExam(examNo){
         const map=bestMap(examNo, md);
-        const done=Object.values(map).sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
+        const done=Object.values(map)
+          .filter(p=>STAFF.includes(p.key))
+          .sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
         const staffWait=STAFF_SHOW.filter((name,i)=>!map[STAFF[i]]).map(name=>({name, percent:null}));
         return {done, staffWait};
       }
@@ -765,26 +767,33 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         const {done, staffWait}=rankedExam(examNo);
         const wait=includeStaffWait?staffWait:[];
         return `<div class="card" style="margin-top:16px">
-          <div class="eyebrow">${m.brand} ${m.name}</div>
+          <div class="eyebrow">${m.brand} ${m.name} · состав салона</div>
           <h2>${title}</h2>
-          ${done.length?podiumHtml(done):`<p class="empty" style="margin-top:12px">Пьедестал пуст — ещё нет результатов</p>`}
+          ${podiumHtml(done)}
           <div style="margin-top:8px">${listHtml(done, wait)}</div>
         </div>`;
       }
-      const guestDone=(()=>{
-        const map=bestMap(1, md);
-        return Object.values(map).filter(p=>!STAFF.includes(p.key)).sort((a,b)=>(b.percent||0)-(a.percent||0));
-      })();
+      function guestsFor(examNo){
+        const map=bestMap(examNo, md);
+        return Object.values(map).filter(p=>!STAFF.includes(p.key)).sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
+      }
+      const guest1=guestsFor(1);
+      const guest2=guestsFor(2);
       return `<p class="eyebrow">Отдел продаж</p><h1 style="font-size:40px">Рейтинг</h1>
-        <p class="lead">Пьедестал — топ-3 по модели. Ниже список остальных. Вкладки переключают автомобиль.</p>
+        <p class="lead">Основной пьедестал — только состав салона. Гости вынесены вниз, в отдельный сектор.</p>
         <p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>
         <div class="tabs">${Object.values(MODELS).map(x=>`<button class="${md===x.id?"on":""}" data-rate="${x.id}">${x.name}</button>`).join("")}</div>
         ${examCard("Аттестация №1", 1, true)}
         ${examCard("Аттестация №2", 2, true)}
         <h2 style="margin:28px 0 8px">Гостевой сектор · ${m.name}</h2>
-        <p class="lead">Фамилии вне основного состава по этой модели.</p>
+        <p class="lead">Все, кто не в составе салона. На основной пьедестал не попадают.</p>
         <div class="card">
-          ${guestDone.length? podiumHtml(guestDone)+listHtml(guestDone, []) : `<p class="empty">Пока никто не сдавал</p>`}
+          <div class="eyebrow">Аттестация №1</div>
+          ${guest1.length? podiumHtml(guest1)+listHtml(guest1, []) : `<p class="empty">Пока никто не сдавал</p>`}
+        </div>
+        <div class="card" style="margin-top:12px">
+          <div class="eyebrow">Аттестация №2</div>
+          ${guest2.length? podiumHtml(guest2)+listHtml(guest2, []) : `<p class="empty">Пока никто не сдавал</p>`}
         </div>
         <p style="color:var(--muted);font-size:13px;margin-top:12px">Код РОП открывает аттестацию №2 по модели, выбранной на старте.</p>
         <div class="card" style="margin-top:16px">
