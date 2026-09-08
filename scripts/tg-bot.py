@@ -10,6 +10,7 @@ MODELS = {
     "t4l": "T4L", "t7": "T7", "t8": "T8", "t9": "Tiggo 9", "a8": "Arrizo 8",
     "tiggo9": "Tiggo 9", "tiggo 9": "Tiggo 9", "arrizo8": "Arrizo 8", "arrizo 8": "Arrizo 8",
 }
+SKIP_TYPES = {"pass", "login"}
 
 def req(url, data=None, timeout=20):
     body = None
@@ -61,13 +62,16 @@ def make_code():
     alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     return "РОП-" + "".join(random.choice(alphabet) for _ in range(4))
 
+def make_pin():
+    return "".join(random.choice("23456789") for _ in range(4))
+
 def notify_new(lst):
     changed = False
     targets = CHAT_ALLOW
     if not targets:
         return False
     for rec in lst:
-        if not rec or rec.get("type") == "pass":
+        if not rec or rec.get("type") in SKIP_TYPES:
             continue
         if rec.get("status") != "done" or rec.get("tgSent"):
             continue
@@ -98,10 +102,9 @@ def notify_new(lst):
     return changed
 
 def issue_code(lst, surname, mid):
-    sn = " ".join((surname or "").split()).lower()
     rec = {
         "type": "pass",
-        "surname": sn,
+        "surname": " ".join((surname or "").split()).lower(),
         "display": surname.strip(),
         "model": mid,
         "code": make_code(),
@@ -112,21 +115,73 @@ def issue_code(lst, surname, mid):
     push(lst)
     return rec
 
+def upsert_login(lst, surname, pin=None):
+    sn = " ".join((surname or "").split()).lower()
+    code = (pin or make_pin()).strip().upper()
+    rec = None
+    for x in lst:
+        if x and x.get("type") == "login" and x.get("surname") == sn:
+            x["code"] = code
+            x["display"] = surname.strip()
+            x["at"] = datetime.now(timezone.utc).isoformat()
+            rec = x
+            break
+    if rec is None:
+        rec = {
+            "type": "login",
+            "surname": sn,
+            "display": surname.strip(),
+            "code": code,
+            "at": datetime.now(timezone.utc).isoformat(),
+        }
+        lst.append(rec)
+    push(lst)
+    return rec
+
 def handle_text(chat_id, text, lst):
     t = (text or "").strip()
     low = t.lower().replace("ё", "е")
     if low in ("/start", "старт", "/help", "помощь"):
         send(chat_id, (
             "Бот РОП TENET / CHERY\n\n"
-            "Сюда приходят результаты аттестаций.\n\n"
-            "Выдать код:\n"
-            "код Иванов t4l\n"
-            "код Лавров t9\n\n"
-            "Модели: t4l t7 t8 t9 a8\n"
-            "Код одноразовый, только на эту фамилию и модель.\n"
-            "Общий код РОП26 тоже работает."
+            "Личный вход:\n"
+            "пин Иванов\n"
+            "пин Иванов 4821\n"
+            "пины\n\n"
+            "Код на пересдачу:\n"
+            "код Иванов t4l\n\n"
+            "Модели: t4l t7 t8 t9 a8"
         ))
         return lst
+    if low in ("пины", "/пины"):
+        pins = [x for x in lst if x and x.get("type") == "login"]
+        if not pins:
+            send(chat_id, "Личных кодов пока нет. Выдайте: пин Иванов")
+            return lst
+        lines = [f"{x.get('display') or x.get('surname')}: {x.get('code')}" for x in pins]
+        send(chat_id, "Личные коды входа:\n" + "\n".join(lines))
+        return lst
+    if low.startswith("пин ") or low.startswith("/pin ") or low.startswith("/пин "):
+        parts = t.split()
+        if parts[0].lower().replace("ё","е") in ("/pin", "/пин", "пин"):
+            parts = parts[1:]
+        if not parts:
+            send(chat_id, "Формат: пин Фамилия\nили: пин Фамилия 4821")
+            return lst
+        given = None
+        if len(parts) >= 2 and parts[-1].isdigit() and 4 <= len(parts[-1]) <= 6:
+            given = parts[-1]
+            parts = parts[:-1]
+        if not parts:
+            send(chat_id, "Укажите фамилию.")
+            return lst
+        rec = upsert_login(lst, " ".join(parts), given)
+        send(chat_id, (
+            f"Вход для {rec['display']}:\n"
+            f"код {rec['code']}\n\n"
+            "Менеджер вводит фамилию и этот код на сайте."
+        ))
+        return pull()
     if low.startswith("/code") or low.startswith("код ") or low.startswith("/код"):
         parts = t.replace("/code", "код", 1).replace("/код", "код", 1).split()
         if len(parts) < 3:
@@ -144,7 +199,7 @@ def handle_text(chat_id, text, lst):
         ))
         return pull()
     if low in ("/list", "список"):
-        people = [x for x in lst if x and x.get("status") == "done" and x.get("type") != "pass"]
+        people = [x for x in lst if x and x.get("status") == "done" and x.get("type") not in SKIP_TYPES]
         if not people:
             send(chat_id, "Пока нет сданных попыток.")
             return lst

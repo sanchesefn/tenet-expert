@@ -32,6 +32,31 @@ jobs:
               html = "".join(p.read_text() for p in parts)
           else:
               html = Path("TENET_T4L_netlify/index.html").read_text()
+          html = html.replace(
+              'let view = state.surname ? "home" : "login";',
+              'let view = (state.surname && state.authed) ? "home" : "login";'
+          )
+          html = html.replace(
+              'if(state.surname && userRun() && !done)',
+              'if(state.authed && state.surname && userRun() && !done)'
+          )
+          html = html.replace(
+              'stopTick(); state.surname=""; state.display=""; save();',
+              'stopTick(); state.surname=""; state.display=""; state.authed=false; save();'
+          )
+          login = Path("login-fn.js")
+          if login.exists():
+              extra = login.read_text()
+              a = html.find("    function login(){")
+              b = html.find("    function homeLeadText(){")
+              if a >= 0 and b > a:
+                  html = html[:a] + extra + html[b:]
+          old_login = '''const doLogin=document.getElementById("doLogin");\n      if(doLogin) doLogin.onclick=async()=>{\n        const v=(document.getElementById("surname").value||"").trim();\n        const err=document.getElementById("loginErr");\n        if(v.length<2){ err.textContent="Введите фамилию."; return; }\n        state.surname=norm(v); state.display=v.replace(/\\s+/g," "); save();\n        await refreshLocks();\n        if(userRun()){ resumeExam(userRun()); return; }\n        view="home"; render();\n      };'''
+          new_login = '''const doLogin=document.getElementById("doLogin");\n      if(doLogin) doLogin.onclick=async()=>{\n        const v=(document.getElementById("surname").value||"").trim();\n        const pin=((document.getElementById("loginPin")||{}).value||"").trim();\n        const err=document.getElementById("loginErr");\n        if(v.length<2){ err.textContent="Введите фамилию."; return; }\n        if(!pin){ err.textContent="Введите личный код от РОП."; return; }\n        err.textContent="Проверяю код…";\n        await refreshLocks();\n        const rec=(remoteLocks||[]).find(x=>x && x.type==="login" && x.surname===norm(v));\n        if(!rec){ err.textContent="Код для этой фамилии ещё не выдан. Обратитесь к РОП."; return; }\n        if(String(rec.code||"").toUpperCase()!==pin.toUpperCase()){ err.textContent="Неверный код."; return; }\n        state.surname=norm(v); state.display=v.replace(/\\s+/g," "); state.authed=true; save();\n        if(userRun()){ resumeExam(userRun()); return; }\n        view="home"; render();\n      };'''
+          if old_login in html:
+              html = html.replace(old_login, new_login)
+          else:
+              print("doLogin block not found")
           patch = Path("study-fn.js")
           if patch.exists():
               extra = patch.read_text()
