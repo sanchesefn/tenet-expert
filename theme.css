@@ -27,7 +27,7 @@ nav.bot{display:none!important;}
 h1{font-size:clamp(36px,7vw,64px);line-height:.92;margin:0;letter-spacing:-.04em;font-weight:800;}
 .lead{color:var(--muted);line-height:1.55;max-width:440px;font-size:15px;}
 .card{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);text-align:left;}
-.models{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0 8px;}
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0 8px;}
 @media(min-width:720px){.models{grid-template-columns:repeat(3,1fr);}}
 .actions{display:flex;flex-direction:column;gap:12px;margin-top:24px;}
 .actions>*{width:100%;max-width:100%;display:block;}
@@ -43,40 +43,46 @@ h1{font-size:clamp(36px,7vw,64px);line-height:.92;margin:0;letter-spacing:-.04em
 
 .models .card,
 .model-card{
-  position:relative;
+  display:flex;
+  flex-direction:column;
+  padding:0;
   overflow:hidden;
-  min-height:176px;
+  min-height:0;
   text-align:left;
+  transition:transform .18s ease, box-shadow .18s ease;
 }
-.models .card h3,
-.model-card h3{margin-top:4px;}
-.models .card .eyebrow,
-.models .card h3,
-.models .card p,
-.model-card .txt{
+.models .card::before{
+  content:"";
+  display:block;
+  width:100%;
+  aspect-ratio:16/10;
+  background-color:#efeae0;
+  background-repeat:no-repeat;
+  background-position:center 58%;
+  background-size:contain;
+  border-bottom:1px solid var(--border);
+}
+.models .card::after,
+.model-card::after,
+.models .card img.car,
+.model-card .car{content:none!important;display:none!important;}
+.models .card[data-model="t4l"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d82ooa2to5r7ch3uu9q0/original");}
+.models .card[data-model="t7"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d40v48qto5r56gs4r870/original");}
+.models .card[data-model="t8"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d3efr4ato5r56gptjfn0/original");}
+.models .card[data-model="t9"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/cvr82nqto5r46kvt7jjg/original");}
+.models .card[data-model="a8"]::before{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/cu0fe8ato5r5uhvcupt0/original");}
+.models .card .txt,
+.models .card > .eyebrow,
+.models .card > h3,
+.models .card > p{
   position:relative;
   z-index:1;
-  max-width:58%;
+  max-width:none;
 }
-.models .card img.car,
-.model-card .car{display:none;}
-.models .card::after,
-.model-card::after{
-  content:"";
-  position:absolute;
-  right:-10%;
-  bottom:-16%;
-  width:82%;
-  height:94%;
-  background-repeat:no-repeat;
-  background-position:right bottom;
-  background-size:contain;
-  opacity:.48;
-  pointer-events:none;
-  mix-blend-mode:multiply;
-}
-.models .card[data-model="t4l"]::after{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d82ooa2to5r7ch3uu9q0/original");}
-.models .card[data-model="t7"]::after{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d40v48qto5r56gs4r870/original");}
-.models .card[data-model="t8"]::after{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/d3efr4ato5r56gptjfn0/original");}
-.models .card[data-model="t9"]::after{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/cvr82nqto5r46kvt7jjg/original");}
-.models .card[data-model="a8"]::after{background-image:url("https://img.perxis.ru/unsafe/720x0/filters:format(jpeg):quality(72)/chry/originals/cu0fe8ato5r5uhvcupt0/original");}
+.models .card .txt{padding:14px 16px 16px;}
+.models .card > .eyebrow{padding:14px 16px 0;}
+.models .card > h3{padding:4px 16px 0;margin:0;}
+.models .card > p{padding:6px 16px 16px;}
+.models .card .eyebrow{margin:0 0 4px;}
+.models .card h3{margin:0 0 6px;font-size:20px;}
+.models .card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(17,17,20,.08);}
