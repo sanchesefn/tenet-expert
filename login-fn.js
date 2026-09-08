@@ -1,9 +1,11 @@
     function login(){
-      return banner("Аттестация отдела продаж","TENET · CHERY")+`
-        <h1>Вход<span>фамилия и личный код</span></h1>
-        <p class="lead">Код выдаёт РОП. Без него нельзя войти под чужой фамилией.</p>
+      return `<section class="login-box">
+        <p class="eyebrow">TENET · CHERY</p>
+        <h2 class="login-title">Вход в аттестацию</h2>
+        <p class="login-sub">Фамилия и личный код от РОП</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" autocomplete="username" /></label>
-        <label class="field"><span>Личный код</span><input id="loginPin" placeholder="выдаёт РОП" autocomplete="current-password" /></label>
-        <div style="margin-top:16px"><button class="btn ivory" id="doLogin">Войти</button></div>
-        <p id="loginErr" style="color:var(--primary);font-size:13px"></p>`;
+        <label class="field"><span>Личный код</span><input id="loginPin" placeholder="4 цифры" inputmode="numeric" autocomplete="current-password" /></label>
+        <button class="btn ivory login-btn" id="doLogin">Войти</button>
+        <p id="loginErr" class="login-err"></p>
+      </section>`;
     }
