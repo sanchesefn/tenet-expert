@@ -69,7 +69,7 @@ h1{font-size:clamp(36px,7vw,64px);line-height:.92;margin:0;letter-spacing:-.04em
 .models .card[data-model="t4l"]::before{background-image:url("cars/t4l.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d7p04gqto5r7ch3usvi0/original");}
 .models .card[data-model="t7"]::before{background-image:url("cars/t7.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d40v48qto5r56gs4r870/original");}
 .models .card[data-model="t8"]::before{background-image:url("cars/t8.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d3efr4ato5r56gptjfn0/original");}
-.models .card[data-model="t9"]::before{background-image:url("cars/t9.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d3vknoqto5r56gs4qtm0/original");}
+.models .card[data-model="t9"]::before{background-image:url("cars/t9.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d9avnv2to5r6hlpdspfg/original");}
 .models .card[data-model="a8"]::before{background-image:url("cars/a8.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d9avncqto5r6hlpdspeg/original");}
 .models .card .txt,
 .models .card > .eyebrow,
