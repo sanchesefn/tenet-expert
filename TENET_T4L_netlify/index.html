@@ -25,7 +25,7 @@ html,body{margin:0;background:var(--bg);color:var(--fg);font-family:Inter,system
 button,[role=button]{cursor:pointer;font-family:inherit;}
 button:disabled{cursor:not-allowed;opacity:.4;}
 a{color:inherit;text-decoration:none;}
-.wrap{max-width:980px;margin:0 auto;padding:18px 16px 56px;}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 56px;}
 header.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%, transparent);backdrop-filter:blur(10px);padding:10px 0 12px;}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.08em;font-size:13px;text-transform:uppercase;}
 .mark{width:28px;height:28px;background:var(--primary);color:#fff;display:grid;place-items:center;font-size:12px;border-radius:7px;font-weight:800;}
@@ -90,6 +90,21 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .clock{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800;letter-spacing:-.04em;}
 .clock.warn{color:var(--primary);}
 .chip{border:1px solid var(--border);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;}
+.rate-board{display:flex;gap:10px;overflow-x:auto;margin-top:16px;padding-bottom:8px;-webkit-overflow-scrolling:touch;}
+.rate-col{flex:1 0 196px;min-width:196px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:12px 12px 10px;box-shadow:var(--shadow);}
+.rate-col .eyebrow{margin-bottom:2px;}
+.rate-col h3{font-size:17px;margin:0 0 10px;letter-spacing:-.03em;}
+.rate-head,.rate-person{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:4px;align-items:center;}
+.rate-head{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 0 6px;border-bottom:1px solid var(--border);}
+.rate-head span:nth-child(2),.rate-head span:nth-child(3),.rate-person .pct{text-align:right;}
+.rate-person{padding:8px 0;border-bottom:1px solid var(--border);}
+.rate-person b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rate-person p{margin:0;font-size:11px;color:var(--muted);line-height:1.3;}
+.rate-person .pct{font-size:14px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;white-space:nowrap;}
+.rate-person .pct.ok{color:var(--pass);}
+.rate-person .pct.low{color:var(--primary);}
+.rate-split{margin:10px 0 4px;border:0;border-top:1px solid var(--fg);padding-top:8px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.rate-col .empty{font-size:12px;padding:6px 0 4px;}
 
 .model-card .car{display:none;}
 .models{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
@@ -379,7 +394,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function rub(n){ return n.toLocaleString("ru-RU").replace(/\u00A0/g," "); }
     function shuffle(a){ const x=[...a]; for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; } return x; }
     function grade(p){ return p>=EXPERT?"expert":p>=PASS?"pass":p>=60?"retry":"fail"; }
-    const GRADE = {expert:{t:"Эксперт",l:"Можно ставить на горячие сделки."},pass:{t:"Зачёт",l:"Допуск есть."},retry:{t:"Пересдача",l:"Нужен код РОП."},fail:{t:"Не сдал",l:"Справочник и код РОП."}};
+    const GRADE = {expert:{t:"Эксперт",l:"90%+. Результат закреплён в рейтинге. Тренировки — по желанию."},pass:{t:"Зачёт",l:"Результат закреплён. До 90% — тренировка и пересдача по коду РОП."},retry:{t:"Пересдача",l:"Результат закреплён. Тренировка и пересдача — код РОП."},fail:{t:"Не сдал",l:"Результат закреплён. Тренировка и пересдача — код РОП."}};
     function escape(s){ return String(s||"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m])); }
     function packResult(rec){
       try { return "TENET1."+btoa(unescape(encodeURIComponent(JSON.stringify(rec)))).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,""); }
@@ -404,6 +419,8 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function recDone(r){ return Boolean(r && r.status !== "running"); }
     function hasExam1(){ return recDone(examRec(1)); }
     function hasExam2(){ return recDone(examRec(2)); }
+    function expertLocked(){ const r=examRec(1); return recDone(r) && (r.percent||0)>=EXPERT; }
+    function needsRetake(){ const r=examRec(1); return recDone(r) && (r.percent||0)<EXPERT && !hasExam2(); }
     function readyMaterials(){ return Boolean(state.seenStudy[model] && state.seenTrain[model]); }
     function pin2(){ return Boolean(state.unlock[lockKey(state.surname, model, 2)]); }
     function userRun(){
@@ -423,9 +440,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       return {surname:sn, display:rem.display||state.display, model:rem.model||model, exam:rem.exam||1, status:"running", paper:[], idx:0, answers:[], qDeadline:0, startedAt:Date.now(), broken:true};
     }
     function canExam1(){ return Boolean(state.surname) && !hasExam1() && !userRun(); }
-    function canExam2(){ return Boolean(state.surname) && hasExam1() && !hasExam2() && readyMaterials() && pin2() && !userRun(); }
+    function canExam2(){ return Boolean(state.surname) && needsRetake() && readyMaterials() && pin2() && !userRun(); }
     function inExam(){ return mode==="exam" && !done && paper.length>0; }
-    function canPractice(){ return hasExam1(); }
+    function canPractice(){ return hasExam1() && (expertLocked() || pin2() || hasExam2()); }
     function canStudy(){ return hasExam1(); }
     function withTimeout(promise, ms){
       return Promise.race([promise, new Promise((_,rej)=>setTimeout(()=>rej(new Error("timeout")), ms))]);
@@ -553,7 +570,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function login(){
       return banner("Аттестация отдела продаж","TENET · CHERY")+`
         <h1>Вход<span>по фамилии</span></h1>
-        <p class="lead">Одна фамилия — одна попытка на каждую модель. Обновление страницы не сбрасывает тест. Повтор — код РОП. Тренировка после зачёта.</p>
+        <p class="lead">Одна фамилия — одна попытка на модель. 90%+ сразу закрепляет в рейтинге. Ниже 90% — тренировка и пересдача по коду РОП, в рейтинге будет «было / стало».</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" /></label>
         <div style="margin-top:16px"><button class="btn ivory" id="doLogin">Войти</button></div>
         <p id="loginErr" style="color:var(--primary);font-size:13px"></p>`;
@@ -565,8 +582,45 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const e1=examRec(1), e2=examRec(2);
       const run=userRun();
       const runM=run && MODELS[run.model];
+      const expert=expertLocked();
+      const lead = !hasExam1()
+        ? "Аттестация №1 — одна попытка, обновление страницы её не сбрасывает. 90%+ сразу закрепляет в рейтинге. Ниже — пересдача по коду РОП."
+        : expert
+          ? "Аттестация сдана на 90%+. Результат закреплён. Справочник и тренировки открыты по желанию, пересдача не нужна."
+          : hasExam2()
+            ? "Первая попытка закреплена. Пересдача уже сдана — в рейтинге «было / стало»."
+            : "Первая попытка закреплена в рейтинге. Тренировка и пересдача открываются кодом РОП — рядом появится «стало».";
+      const exam1Card = run
+        ? `<button class="card ok" data-exam="${run.exam||1}" data-run="1"><h3>Продолжить аттестацию №${run.exam||1}</h3><p>${runM?runM.name+" · ":""}попытка уже идёт. Обновление страницы её не сбрасывает.</p></button>`
+        : canExam1()
+          ? `<button class="card ok" data-exam="1"><h3>Аттестация №1</h3><p>${bank().length} вопросов, ${QSEC} сек. Можно начать.</p></button>`
+          : expert
+            ? `<div class="card ok"><h3>Аттестация сдана · ${e1.percent}%</h3><p>Эксперт. Закреплено в рейтинге. Пересдача не нужна.</p></div>`
+            : `<div class="card ok"><h3>Аттестация №1 · ${e1?e1.percent+"%":""}</h3><p>Результат закреплён.${e2?" Стало "+e2.percent+"%.":" Пересдача — по коду РОП."}</p></div>`;
+      const studyBlock = canStudy()
+        ? `<button class="card ok" data-go="study"><h3>Справочник</h3><p>${expert?"Можно открыть в любой момент.":"Модель и конкуренты."}</p></button>`
+          + (canPractice()
+            ? `<button class="card ok" data-practice="all"><h3>Тренировка</h3><p>${expert?"По желанию, рейтинг от этого не меняется.":"Разбор. Можно пройти."}</p></button>`
+            : `<div class="card bad"><h3>Тренировка</h3><p>Откроется кодом РОП вместе с пересдачей.</p></div>`)
+        : `<div class="card bad"><h3>Справочник и тренировка</h3><p>Закрыто. Сначала аттестация №1.</p></div>`;
+      let retakeBlock="";
+      if(hasExam1() && !expert){
+        if(hasExam2()){
+          retakeBlock=`<div class="card ok"><h3>Пересдача сдана · ${e2.percent}%</h3><p>Было ${e1?e1.percent+"%":"—"} · стало ${e2.percent}%. В рейтинге оба числа.</p></div>`;
+        } else if(canExam2()){
+          retakeBlock=`<button class="card ok" data-exam="2"><h3>Пересдача</h3><p>Открыта. Результат ляжет рядом с первой попыткой.</p></button>`;
+        } else {
+          const why = !pin2() ? "Нужен код РОП." : "Сначала откройте справочник и пройдите тренировку.";
+          retakeBlock=`<div class="card bad"><h3>Пересдача</h3>
+            <p>${why} В рейтинге появится колонка «стало».</p>
+            ${!pin2()?`<label class="field"><span>Код РОП</span><input id="pinHome" /></label>
+            <button class="btn ghost" id="unlockHome">Открыть тренировку и пересдачу</button>
+            <p id="pinHomeErr" style="color:var(--primary)">${pinErr}</p>`:""}
+          </div>`;
+        }
+      }
       return banner(m.name, "Прайс-ориентир "+PRICE.date, m.brand)+`
-        <p class="lead">Вы вошли как <b>${escape(state.display)}</b>. Аттестация №1 — одна попытка, её нельзя сбросить обновлением страницы. Справочник и тренировка откроются после неё. №2 — после материалов и кода РОП.</p>
+        <p class="lead">Вы вошли как <b>${escape(state.display)}</b>. ${lead}</p>
         <button class="btn ghost" id="logout">Сменить фамилию</button>
         <div class="models">${Object.values(MODELS).map(x=>`
           <button class="card model-card" data-model="${x.id}" style="${x.id===model?"border-color:#161618":""}">
@@ -577,25 +631,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
             </div>
           </button>`).join("")}</div>
         <section class="actions">
-          ${run
-            ? `<button class="card ok" data-exam="${run.exam||1}" data-run="1"><h3>Продолжить аттестацию №${run.exam||1}</h3><p>${runM?runM.name+" · ":""}попытка уже идёт. Обновление страницы её не сбрасывает.</p></button>`
-            : canExam1()
-            ? `<button class="card ok" data-exam="1"><h3>Аттестация №1</h3><p>${bank().length} вопросов, ${QSEC} сек. Можно начать.</p></button>`
-            : `<div class="card ok"><h3>Аттестация №1 сдана</h3><p>${e1?e1.percent+"%":""}. Повторно закрыта.</p></div>`}
-          ${canStudy()
-            ? `<button class="card ok" data-go="study"><h3>Справочник</h3><p>Модель и конкуренты. Можно открыть.</p></button>
-               <button class="card ok" data-practice="all"><h3>Тренировка</h3><p>Разбор. Можно пройти.</p></button>`
-            : `<div class="card bad"><h3>Справочник и тренировка</h3><p>Закрыто. Сначала аттестация №1.</p></div>`}
-          ${hasExam2()
-            ? `<div class="card ok"><h3>Аттестация №2 сдана</h3><p>${e2?e2.percent+"%":""}</p></div>`
-            : canExam2()
-              ? `<button class="card ok" data-exam="2"><h3>Аттестация №2</h3><p>Открыта. Можно начать.</p></button>`
-              : `<div class="card bad"><h3>Аттестация №2</h3>
-                    <p>${hasExam1()?(readyMaterials()?"Материалы есть. Нужен код РОП.":"Сначала справочник и тренировка."):"Закрыто до аттестации №1."}</p>
-                    ${hasExam1()?`<label class="field"><span>Код РОП</span><input id="pinHome" /></label>
-                    <button class="btn ghost" id="unlockHome">Открыть №2</button>
-                    <p id="pinHomeErr" style="color:var(--primary)">${pinErr}</p>`:""}
-                  </div>`}
+          ${exam1Card}
+          ${studyBlock}
+          ${retakeBlock}
         </section>`;
     }
     const STUDY = {
@@ -650,9 +688,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         <div class="models" style="margin-top:12px">${Object.values(MODELS).map(x=>`<button class="chip" data-model="${x.id}">${x.name}</button>`).join("")}</div>
         <div class="tabs">${tabs.map(([id,l])=>`<button class="${studyTab===id?"on":""}" data-tab="${id}">${l}</button>`).join("")}</div>
         ${body}
-        <p style="color:var(--muted);font-size:13px;margin-top:10px">Просмотр этой модели засчитан для допуска к аттестации №2.</p>
+        <p style="color:var(--muted);font-size:13px;margin-top:10px">${needsRetake()?"Просмотр засчитан для допуска к пересдаче.":expertLocked()?"Справочник открыт. Тренировки по желанию.":"Справочник открыт после аттестации."}</p>
         <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn ghost" data-practice="all">Тренировка</button>
+          ${canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:needsRetake()?`<span class="chip">Тренировка — после кода РОП</span>`:""}
           <button class="btn ghost" data-go="home">Назад</button>
         </div>`;
     }
@@ -663,25 +701,31 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const run=userRun();
       if(run){
         const rm=MODELS[run.model]||m;
-        return `<p class="eyebrow">${rm.brand}</p><h1 style="font-size:40px">${rm.name} · аттестация №${run.exam||1}</h1>
+        return `<p class="eyebrow">${rm.brand}</p><h1 style="font-size:40px">${rm.name} · ${Number(run.exam)===2?"пересдача":"аттестация №1"}</h1>
           <p class="lead">Попытка уже начата. Те же вопросы, тот же таймер. Обновление страницы не даёт новую попытку.</p>
           <button class="btn ivory" id="startExam" data-n="${run.exam||1}">Продолжить</button>`;
       }
       if(want===1 && !canExam1()){
-        return `<h1 style="font-size:40px">${m.name}: аттестация №1 закрыта</h1>
-          <p class="lead">Первая попытка уже использована${examRec(1)?": "+examRec(1).percent+"%":""}. Дальше — справочник, тренировка и №2 по коду РОП.</p>
+        const e1=examRec(1);
+        if(expertLocked()){
+          return `<h1 style="font-size:40px">${m.name}: аттестация сдана</h1>
+            <p class="lead">${e1.percent}%. 90%+ закреплены в рейтинге. Пересдача не нужна — можно тренироваться по желанию.</p>
+            <button class="btn ivory" data-go="home">На старт</button>`;
+        }
+        return `<h1 style="font-size:40px">${m.name}: первая попытка закреплена</h1>
+          <p class="lead">${e1?e1.percent+"%. ":""}Дальше — справочник, тренировка и пересдача по коду РОП. В рейтинге будет «было / стало».</p>
           <button class="btn ivory" data-go="home">На старт</button>`;
       }
       if(want===2 && !canExam2()){
-        return `<h1 style="font-size:40px">${m.name}: аттестация №2</h1>
-          <p class="lead">${!hasExam1()?"Сначала №1.":!readyMaterials()?"Откройте справочник и пройдите тренировку.":"Введите код РОП."}</p>
-          <label class="field"><span>Код РОП</span><input id="pinBrief" /></label>
+        return `<h1 style="font-size:40px">${m.name}: пересдача</h1>
+          <p class="lead">${!hasExam1()?"Сначала аттестация №1.":expertLocked()?"90%+ уже засчитаны, пересдача не нужна.":hasExam2()?"Пересдача уже использована.":!pin2()?"Введите код РОП.":"Откройте справочник и пройдите тренировку."}</p>
+          ${hasExam1() && needsRetake() && !pin2()?`<label class="field"><span>Код РОП</span><input id="pinBrief" /></label>
           <p id="pinBriefErr" style="color:var(--primary)">${pinErr}</p>
-          <button class="btn ivory" id="unlockBrief">Открыть №2</button>`;
+          <button class="btn ivory" id="unlockBrief">Открыть тренировку и пересдачу</button>`:`<button class="btn ivory" data-go="home">На старт</button>`}`;
       }
-      return `<p class="eyebrow">${m.brand}</p><h1 style="font-size:40px">${m.name} · аттестация №${want}</h1>
-        <p class="lead">${bank().length} вопросов, ${QSEC} сек. Одна попытка. Обновить страницу = продолжить ту же попытку, не новую. Зачёт ${PASS}%.</p>
-        <button class="btn ivory" id="startExam" data-n="${want}">Начать №${want}</button>`;
+      return `<p class="eyebrow">${m.brand}</p><h1 style="font-size:40px">${m.name} · ${want===2?"пересдача":"аттестация №1"}</h1>
+        <p class="lead">${bank().length} вопросов, ${QSEC} сек. Одна попытка. Обновить страницу = продолжить ту же попытку. ${want===2?"Результат ляжет рядом с первой попыткой.":"Зачёт "+PASS+"%, эксперт "+EXPERT+"%+."}</p>
+        <button class="btn ivory" id="startExam" data-n="${want}">${want===2?"Начать пересдачу":"Начать №1"}</button>`;
     }
 
     function play(){
@@ -689,17 +733,17 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(done){
         const pct=paper.length?Math.round(correct/paper.length*100):0;
         const g=GRADE[grade(pct)];
-        return `<p class="eyebrow">${m.name} · аттестация №${mode==="exam"?(examSession||1):"тренировка"}</p>
+        return `<p class="eyebrow">${m.name} · ${mode==="exam"?(examSession===2?"пересдача":"аттестация №1"):"тренировка"}</p>
           <h1>${pct}<span style="font-size:24px"> / 100</span></h1>
           <p>${g.t}. ${g.l}</p>
-          <p>${correct} из ${paper.length} · ${escape(state.display)}</p>
+          <p>${correct} из ${paper.length} · ${escape(state.display)}${mode==="exam"&&examSession===2&&examRec(1)?" · было "+examRec(1).percent+"%":""}</p>
           <div class="grid2" style="margin-top:16px">${Object.entries(byCat).map(([k,v])=>`
             <div class="card"><div style="display:flex;justify-content:space-between"><span>${CATS[k]||k}</span><span>${v.ok}/${v.n}</span></div>
             <div class="bar" style="margin-top:8px"><i style="width:${v.n?v.ok/v.n*100:0}%"></i></div></div>`).join("")}</div>
           ${missed.length?`<h2 style="margin:22px 0 10px">Разбор ошибок</h2>`+missed.map(x=>`<div class="card" style="margin:8px 0"><b>${escape(x.p)}</b><p>${escape(x.x)}</p></div>`).join(""):""}
           <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
             <button class="btn ivory" data-go="rate">Рейтинг</button>
-            ${mode==="exam"?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
+            ${mode==="exam"&&canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
             <button class="btn ghost" data-go="home">Модели</button>
           </div>`;
       }
@@ -728,9 +772,6 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(!state.surname) return login();
       const local=Object.values(state.locks||{});
       const all=[...remoteLocks, ...local].filter(r=>r && r.surname);
-      rateModel = rateModel || model || "t4l";
-      const md = rateModel;
-      const m = MODELS[md] || MODELS.t4l;
       function bestMap(examNo, modelId){
         const rows=all.filter(r=>Number(r.exam||1)===examNo && (r.model||"t4l")===modelId && r.status!=="running");
         const map={};
@@ -740,75 +781,65 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         });
         return map;
       }
-      function rankedExam(examNo){
-        const map=bestMap(examNo, md);
-        const done=Object.values(map)
-          .filter(p=>STAFF.includes(p.key))
-          .sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
-        const staffWait=STAFF_SHOW.filter((name,i)=>!map[STAFF[i]]).map(name=>({name, percent:null}));
-        return {done, staffWait};
+      function pair(key, name, modelId){
+        const a=bestMap(1, modelId)[key];
+        const b=bestMap(2, modelId)[key];
+        return {key, name:(a&&a.name)||(b&&b.name)||name, was:a?a.percent:null, now:b?b.percent:null};
       }
-      function podiumHtml(done){
-        const top=done.slice(0,3);
-        const slots=[top[1]||null, top[0]||null, top[2]||null];
-        const meta=[{cls:"p2",n:"2 место"},{cls:"p1",n:"1 место"},{cls:"p3",n:"3 место"}];
-        return `<div class="podium">${slots.map((p,i)=> p
-          ? `<div class="pod ${meta[i].cls}"><div class="who">${escape(p.name)}<span>${meta[i].n}</span></div><div class="step"><div class="place">${i===1?"I":i===0?"II":"III"}</div><div class="score">${p.percent}%</div></div></div>`
-          : `<div class="pod ${meta[i].cls} ghost"><div class="who">—<span>${meta[i].n}</span></div><div class="step"><div class="place">${i===1?"I":i===0?"II":"III"}</div></div></div>`
-        ).join("")}</div>`;
+      function pctCell(v){
+        if(v==null) return `<span class="pct">—</span>`;
+        const cls=v>=EXPERT?"ok":v<PASS?"low":"";
+        return `<span class="pct ${cls}">${v}%</span>`;
       }
-      function listHtml(done, wait){
-        const rest=done.slice(3);
-        if(!rest.length && !wait.length) return `<p class="empty">Остальных результатов пока нет</p>`;
-        return rest.map((r,i)=>`<div class="rank"><span class="place-n">${i+4}</span><div><b>${escape(r.name)}</b></div><div class="pct">${r.percent}%</div></div>`).join("")+
-          wait.map(r=>`<div class="rank"><span class="place-n">—</span><div><b>${escape(r.name)}</b><p>ещё не сдавал</p></div><div class="pct">—</div></div>`).join("");
+      function personRow(p, wait){
+        const extra=wait && p.was==null && p.now==null ? `<p>ещё не сдавал</p>` : "";
+        return `<div class="rate-person"><div><b>${escape(p.name)}</b>${extra}</div>${pctCell(p.was)}${pctCell(p.now)}</div>`;
       }
-      function examCard(title, examNo, includeStaffWait){
-        const {done, staffWait}=rankedExam(examNo);
-        const wait=includeStaffWait?staffWait:[];
-        return `<div class="card" style="margin-top:16px">
-          <div class="eyebrow">${m.brand} ${m.name} · состав салона</div>
-          <h2>${title}</h2>
-          ${podiumHtml(done)}
-          <div style="margin-top:8px">${listHtml(done, wait)}</div>
+      function modelCol(m){
+        const staffRows=STAFF.map((key,i)=>pair(key, STAFF_SHOW[i], m.id));
+        const taken=staffRows.filter(p=>p.was!=null || p.now!=null)
+          .sort((a,b)=>(b.was||0)-(a.was||0) || a.name.localeCompare(b.name,"ru"));
+        const wait=staffRows.filter(p=>p.was==null && p.now==null);
+        const guestKeys=new Set();
+        [1,2].forEach(n=>{
+          Object.values(bestMap(n, m.id)).forEach(p=>{ if(!STAFF.includes(p.key)) guestKeys.add(p.key); });
+        });
+        const guests=Array.from(guestKeys).map(k=>{
+          const a=bestMap(1,m.id)[k]; const b=bestMap(2,m.id)[k];
+          return pair(k, (a&&a.name)||(b&&b.name)||k, m.id);
+        }).sort((a,b)=>(b.was||0)-(a.was||0) || a.name.localeCompare(b.name,"ru"));
+        return `<div class="rate-col">
+          <div class="eyebrow">${m.brand}</div>
+          <h3>${m.name}</h3>
+          <div class="rate-head"><span>состав</span><span>было</span><span>стало</span></div>
+          ${taken.length?taken.map(p=>personRow(p,false)).join(""):""}
+          ${wait.map(p=>personRow(p,true)).join("")}
+          ${!taken.length && !wait.length?`<p class="empty">Пока пусто</p>`:""}
+          <div class="rate-split">гости</div>
+          ${guests.length?guests.map(p=>personRow(p,false)).join(""):`<p class="empty">Нет гостевых сдач</p>`}
         </div>`;
       }
-      function guestsFor(examNo){
-        const map=bestMap(examNo, md);
-        return Object.values(map).filter(p=>!STAFF.includes(p.key)).sort((a,b)=>(b.percent||0)-(a.percent||0) || a.name.localeCompare(b.name,"ru"));
-      }
-      const guest1=guestsFor(1);
-      const guest2=guestsFor(2);
+      const pinNeeded=hasExam1() && !expertLocked() && !hasExam2();
       return `<p class="eyebrow">Отдел продаж</p><h1 style="font-size:40px">Рейтинг</h1>
-        <p class="lead">Основной пьедестал — только состав салона. Гости вынесены вниз, в отдельный сектор.</p>
+        <p class="lead">Все модели в одном блоке. Основной список — состав салона. Гости в той же колонке, под чертой. «Стало» появляется только после пересдачи (если №1 была ниже 90%).</p>
         <p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>
-        <div class="tabs">${Object.values(MODELS).map(x=>`<button class="${md===x.id?"on":""}" data-rate="${x.id}">${x.name}</button>`).join("")}</div>
-        ${examCard("Аттестация №1", 1, true)}
-        ${examCard("Аттестация №2", 2, true)}
-        <h2 style="margin:28px 0 8px">Гостевой сектор · ${m.name}</h2>
-        <p class="lead">Все, кто не в составе салона. На основной пьедестал не попадают.</p>
-        <div class="card">
-          <div class="eyebrow">Аттестация №1</div>
-          ${guest1.length? podiumHtml(guest1)+listHtml(guest1, []) : `<p class="empty">Пока никто не сдавал</p>`}
-        </div>
+        <div class="rate-board">${Object.values(MODELS).map(modelCol).join("")}</div>
+        ${pinNeeded?`
+        <p style="color:var(--muted);font-size:13px;margin-top:16px">Код РОП открывает тренировку и пересдачу по модели, выбранной на старте.</p>
         <div class="card" style="margin-top:12px">
-          <div class="eyebrow">Аттестация №2</div>
-          ${guest2.length? podiumHtml(guest2)+listHtml(guest2, []) : `<p class="empty">Пока никто не сдавал</p>`}
-        </div>
-        <p style="color:var(--muted);font-size:13px;margin-top:12px">Код РОП открывает аттестацию №2 по модели, выбранной на старте.</p>
-        <div class="card" style="margin-top:16px">
           <b>Код РОП</b>
           <label class="field"><span>Код для ${escape(state.display)} / ${MODELS[model].name}</span><input id="pin" /></label>
           <p id="pinErr" style="color:var(--primary)">${pinErr}</p>
-          <button class="btn ghost" id="unlockHist">Открыть №2</button>
-        </div>`;
+          <button class="btn ghost" id="unlockHist">Открыть тренировку и пересдачу</button>
+        </div>`:`<p style="color:var(--muted);font-size:13px;margin-top:16px">${expertLocked()?"По этой модели 90%+ уже закреплены.":hasExam2()?"Пересдача по выбранной модели уже в колонке «стало».":"Сначала аттестация №1 — затем рейтинг зафиксирует результат."}</p>`}`;
     }
 
         function okNow(q){ return q.c.length===selected.length && q.c.every(x=>selected.includes(x)); }
     function tryUnlock(code){
       if((code||"").trim().toUpperCase()!==PIN){ pinErr="Неверный код."; render(); return; }
       if(!hasExam1()){ pinErr="Сначала аттестация №1."; render(); return; }
-      if(!readyMaterials()){ pinErr="Сначала откройте справочник и пройдите тренировку по этой модели."; render(); return; }
+      if(expertLocked()){ pinErr="90%+ уже засчитаны. Пересдача не нужна."; render(); return; }
+      if(hasExam2()){ pinErr="Пересдача по этой модели уже использована."; render(); return; }
       state.unlock[lockKey(state.surname, model, 2)]=true; save(); pinErr=""; render();
     }
     function compactPaper(){ return paper.map(q=>({id:q.id, o:(q.o||[]).map(x=>x[0])})); }
