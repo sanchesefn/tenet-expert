@@ -80,59 +80,19 @@ NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.o
         if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
       });
 '''
-OLD_BINDS = [
-'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
-      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
-      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
-        const vin=b.dataset.kmVin||"";
-        kmVin=vin;
-        const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===vin);
-        if(car && typeof kmIdFromCar==="function"){
-          const nid=kmIdFromCar(car);
-          if(nid && nid!==kmId){ kmId=nid; kmShown=""; }
-        }
-        view="calc"; render();
-      });
-      ["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cMonths","cRate"].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
-      });
-'''
-]
-replaced = False
-for old in OLD_BINDS:
-    if old in html:
-        html = html.replace(old, NEW_BIND)
-        replaced = True
-        print("calc bind replaced")
-        break
-if not replaced:
-    html2, n = re.subn(
-        r'\["kmRrc","kmInv".*?\]\.forEach\(id=>\{\s*const el=document\.getElementById\(id\);\s*if\(el\) el\.addEventListener\("change", \(\)=>\{ view="calc"; render\(\); \}\);\s*\}\);',
-        BIND_IDS + '''.forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
-      });''',
-        html,
-        count=1,
-        flags=re.S
-    )
-    if n:
-        html = html2
-        replaced = True
-        print("calc bind ids patched", n)
-if "data-down-mode" not in html:
-    html=html.replace(
-        'document.querySelectorAll("[data-km-id]")',
-        '''document.querySelectorAll("[data-down-mode]").forEach(b=>b.onclick=()=>{
-        const el=document.getElementById("cDownMode");
-        if(el) el.value=b.dataset.downMode||"pct";
-        view="calc"; render();
-      });
-      document.querySelectorAll("[data-km-id]")''',
-        1
-    )
-    print("down-mode bind inserted")
+if 'querySelectorAll("[data-km-id]")' not in html:
+    for needle in (
+        '      const cPreset=document.getElementById("cPreset");',
+        '      document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{',
+    ):
+        if needle in html:
+            html = html.replace(needle, NEW_BIND + needle, 1)
+            print("calc bind inserted")
+            break
+    else:
+        print("calc bind not found")
+else:
+    print("calc bind already in html")
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
