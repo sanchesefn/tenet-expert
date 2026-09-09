@@ -16,7 +16,7 @@
       const nWay=scoped.filter(x=>x.status==="way").length;
       const byModel={};
       list.forEach(r=>{ (byModel[r.model]=byModel[r.model]||[]).push(r); });
-      const modelOrder=["t4l","t7","t8","t9","t7l","a8"];
+      const modelOrder=["t4","t4l","t7","t8","t9","t7l","a8"];
       function block(rows){
         if(!rows.length) return `<p class="empty">Нет машин</p>`;
         const showSalon=rows.some(r=>salonLabel(r.salon));
@@ -39,7 +39,7 @@
       }
       const body = list.length
         ? modelOrder.filter(id=>byModel[id]).map(id=>{
-            const m=MODELS[id];
+            const m=MODELS[id]||{id,brand:"TENET",name:id.toUpperCase()};
             const rows=byModel[id];
             const inn=STOCK.filter(x=>x.model===id && x.status==="in").length;
             const way=STOCK.filter(x=>x.model===id && x.status==="way").length;
@@ -58,8 +58,8 @@
         <p class="lead">Непроданные и отложенные из Logicstars, TENET и CHERY. <b>В наличии</b> — у дилера. <b>В пути</b> — завод или Домодедово. У T7 — салон Brown, дата производства и зелёная плашка МПТ. Снимок ${meta.updated}.</p>
         <div class="study-pick" style="margin-top:12px">
           <button class="chip ${stockFilter==="all"?"on":""}" data-stock="all">Все · ${STOCK.length}</button>
-          ${["t4l","t7","t8","t9","t7l","a8"].map(id=>{
-            const m=MODELS[id];
+          ${["t4","t4l","t7","t8","t9","t7l","a8"].map(id=>{
+            const m=MODELS[id]||{id,brand:"TENET",name:id.toUpperCase()};
             const n=STOCK.filter(x=>x.model===id).length;
             return `<button class="chip ${stockFilter===id?"on":""}" data-stock="${id}">${m.name}${n?` · ${n}`:" · нет"}</button>`;
           }).join("")}
