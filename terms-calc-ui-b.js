@@ -42,6 +42,8 @@
       const kmK=km/1000;
       const ok=kmK+0.05>=lo && kmK-0.05<=hi;
       const price=Math.round(carPrice);
+      const fee=typeof KM_BANK_FEE==="number"?KM_BANK_FEE:30000;
+      const extras=useLoan?(addons+(pack||0)+fee):0;
       const downMode=kmStr("cDownMode","pct");
       const months=kmVal("cMonths", 60);
       let downPct=kmVal("cDownPct", 20);
@@ -50,12 +52,13 @@
       if(downMode==="pct") down=Math.round(price*Math.max(0,downPct)/100);
       else downPct=price>0?Math.round(down*1000/price)/10:0;
       down=Math.max(0, Math.min(price, down));
-      const credit=Math.max(0,price-down);
+      const credit=Math.max(0,price-down+extras);
       const rateGroup=typeof kmRateGroup==="function"?kmRateGroup(m):"t4l_t7";
       const banks=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
-        const look=typeof kmBankRate==="function"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months};
-        const pay=calcPay(price, down, months, look.rate);
-        return Object.assign({}, b, {rate:look.rate, term:look.term, pay, over:pay*months-credit});
+        const look=typeof kmBankRate==="function"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};
+        const term=look.term||months;
+        const pay=calcPay(price+extras, down, term, look.rate);
+        return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-credit});
       });
       return banner("Калькулятор","КМ и платёж · база "+TERMS_DATE,"TENET")+`
         <p class="lead">Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит».</p>
@@ -88,7 +91,7 @@
           <div class="km-right">
             ${useLoan?`<div class="card">
               <p class="eyebrow">Кредит · ${escape(m.name)}</p>
-              <p class="calc-note">От цены авто со скидками ${rub(price)} ₽. Д/О и каско в кредит не входят.</p>
+              <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.</p>
               <p class="eyebrow" style="margin-top:12px">Первый взнос</p>
               <div class="down-mode">
                 <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
@@ -101,9 +104,15 @@
               <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто</p>
               <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
               <p class="eyebrow" style="margin-top:16px">Платёж в месяц</p>
-              ${banks.map(b=>`<div class="bank-row"><span><b>${escape(b.name)}</b><br/><small>${b.rate}% · ПВ ${downPct}% · ${months} мес. · переплата ~${rub(Math.round(b.over))}</small></span><span class="pay">${rub(Math.round(b.pay))} ₽</span></div>`).join("")}
-              <p class="calc-note">Кредит ${rub(credit)} ₽. Ставки TENET ФИНАНС, ИП 1890/И. Зависят от модели, срока и ПВ. Банк подтверждает сам.</p>
+              ${banks.map(b=>{
+                const yearsWant=Math.round(months/12);
+                const yearsHave=Math.round(b.term/12);
+                const note=b.capped?`нет ${yearsWant} ${yearsWant===1?"года":"лет"} · считаем ${b.term} мес. (${yearsHave} ${yearsHave===1?"год":yearsHave<5?"года":"лет"})`: `${b.term} мес.`;
+                return `<div class="bank-row"><span><b>${escape(b.name)}</b><br/><small>${b.rate}% · ПВ ${downPct}% от авто · ${note} · переплата ~${rub(Math.round(b.over))}</small></span><span class="pay">${rub(Math.round(b.pay))} ₽</span></div>`;
+              }).join("")}
+              <p class="calc-note">Кредит ${rub(credit)} ₽ = авто ${rub(price)} − ПВ ${rub(down)} + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка. Ставки TENET ФИНАНС, ИП 1890/И.</p>
             </div>`:`<div class="card"><p class="eyebrow">Кредит</p><p class="lead" style="max-width:none">Включите галочку «Кредит», чтобы открыть расчёт платежа и каско расширенное.</p></div>`}
+            ${typeof kmPrioRecs==="function"?kmPrioRecs(m, price, downPct, months, extras):""}
             ${kmSideList(m)}
           </div>
         </div>
