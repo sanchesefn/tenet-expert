@@ -1,5 +1,5 @@
-    function sheet(headers, rows){
-      return `<div class="sheet-wrap"><table class="sheet"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+    function termCard(title, value, note){
+      return `<article class="term-card"><b>${escape(title)}</b>${value?`<div class="num">${value}</div>`:""}${note?`<small>${note}</small>`:""}</article>`;
     }
     function kmTrimFit(m, car){
       const t=(car.trim||"").toLowerCase();
@@ -47,9 +47,20 @@
       if(car.model==="t7l") return "t7l";
       return "";
     }
+    function kmLineOf(id){
+      if(id==="t4p") return "T4";
+      if(id==="t4la"||id==="t4lp") return "T4L";
+      if(id==="t7a"||id==="t7p"||id==="t7a4"||id==="t7p4") return "T7";
+      if(id==="t8a"||id==="t8p"||id==="t8p4"||id==="t8u4") return "T8";
+      if(id==="ta8p"||id==="ta8u") return "TENET A8";
+      if(id==="t9p"||id==="t9u") return "Tiggo 9";
+      if(id==="a8a"||id==="a8p"||id==="a8u") return "Arrizo 8";
+      if(id==="t7l") return "Tiggo 7 L";
+      return "Другие";
+    }
     function kmStockCars(m){
       const list=typeof STOCK!=="undefined"?STOCK:[];
-      return list.filter(c=>c.model===m.stock);
+      return list.filter(c=>c.model===m.stock && kmTrimFit(m,c));
     }
     function terms(){
       if(needAuth()) return login();
@@ -57,25 +68,21 @@
         `<div class="terms-col">`+
         `<p class="lead">Клиенту называть рекомендованную цену. Максимум с выгодами — после расчёта РОП. КМ — коридор доходности без НДС, тыс. руб.</p>`+
         `<div class="note-box">Скидки импортёра не обещать, если их нет в прайсе. Цифры внутренние.</div>`+
-        `<div class="terms-grid">`+
-        `<section class="terms-span"><h2>Доходность</h2>`+
-        sheet(["Модель","Комплектация","КМ","Доп. условия"], KM_CORRIDOR.map(r=>`<tr><td><b>${escape(r.model)}</b></td><td>${escape(r.trim)}</td><td class="num">${escape(r.km)}</td><td style="color:var(--muted);font-size:12px">${escape(r.note||"")}</td></tr>`).join(""))+
-        `</section>`+
-        `<section><h2>Бонусы</h2>`+
-        sheet(["Модель","Комплектация","Бонус"], TERMS_BONUS.map(r=>`<tr><td><b>${escape(r.model)}</b></td><td>${escape(r.trim)}</td><td class="num">${escape(r.bonus)}</td></tr>`).join(""))+
-        `</section>`+
-        `<section><h2>Спец инвойс</h2>`+
-        sheet(["Модель","Комплектация","Цена с уч. допов"], TERMS_INV.map(r=>`<tr><td><b>${escape(r.model)}</b></td><td>${escape(r.trim)}</td><td class="num">${escape(r.price)}</td></tr>`).join(""))+
-        `</section>`+
-        `<section class="terms-span"><h2>МПТ / субсидия TENET</h2>`+
-        `<div class="terms-grid">`+
-        TERMS_MPT.map(g=>`<div><h3 style="margin:8px 0 6px;font-size:16px">${escape(g.line)}</h3>`+sheet(["Дата производства","Условие"], g.rows.map(r=>`<tr><td>${escape(r[0])}</td><td><b>${escape(r[1])}</b></td></tr>`).join(""))+`</div>`).join("")+
-        `</div></section>`+
-        `<section class="terms-span"><h2>Приоритет · ${TERMS_PRIO.length} авто</h2>`+
+        `<h2>Доходность</h2>`+
+        `<div class="terms-cards">`+KM_CORRIDOR.map(r=>termCard(r.model+" · "+r.trim, escape(r.km), r.note?escape(r.note):"")).join("")+`</div>`+
+        `<h2>Бонусы</h2>`+
+        `<div class="terms-cards">`+TERMS_BONUS.map(r=>termCard(r.model+" · "+r.trim, escape(r.bonus), "")).join("")+`</div>`+
+        `<h2>Спец инвойс</h2>`+
+        `<div class="terms-cards">`+TERMS_INV.map(r=>termCard(r.model+" · "+r.trim, escape(r.price), "")).join("")+`</div>`+
+        `<h2>МПТ / субсидия TENET</h2>`+
+        `<div class="terms-cards">`+TERMS_MPT.map(g=>`<article class="term-card"><b>${escape(g.line)}</b>`+g.rows.map(r=>`<small>${escape(r[0])} · <b>${escape(r[1])}</b></small>`).join("")+`</article>`).join("")+`</div>`+
+        `<h2>Приоритет · ${TERMS_PRIO.length} авто</h2>`+
         `<p class="lead">Личный план 2 · командный план 12. Всего 14.</p>`+
-        sheet(["Авто","VIN","Цвет","Взнос","Бонус"], TERMS_PRIO.map(r=>`<tr><td><b>${escape(r.model)}</b><div style="color:var(--muted);font-size:12px">${escape(r.trim)} · ${escape(r.year)}${r.extra?" · "+escape(r.extra):""}</div></td><td class="vin">${escape(r.vin)}</td><td>${escape(r.color)}</td><td class="num">${r.pay?rub(r.pay):"—"}</td><td class="num">${r.bonus?rub(r.bonus):"—"}</td></tr>`).join(""))+
-        `</section>`+
-        `</div>`+
+        `<div class="terms-cards">`+TERMS_PRIO.map(r=>termCard(
+          r.model+" · "+r.trim,
+          (r.pay?rub(r.pay):"—")+" / "+(r.bonus?rub(r.bonus):"—"),
+          escape(r.vin)+" · "+escape(r.color)+(r.extra?" · "+escape(r.extra):"")+" · "+escape(r.year)
+        )).join("")+`</div>`+
         `<p class="lead">Доплата за 4WD на T7 — 205 000 ₽. Мотор T7 везде 1.6T 150.</p>`+
         `<div class="who-line"><button class="btn ivory" data-go="calc">В калькулятор</button><button class="btn ghost" data-go="docs">Документы</button></div>`+
         `</div>`;
@@ -95,21 +102,27 @@
       const n=Number(String(el.value||"").replace(/\s+/g,""));
       return Number.isFinite(n)?n:def;
     }
+    function kmChipGroups(active){
+      const order=["T4","T4L","T7","T8","TENET A8","Tiggo 9","Arrizo 8","Tiggo 7 L"];
+      const groups={};
+      KM_MODELS.forEach(x=>{
+        const g=kmLineOf(x.id);
+        (groups[g]=groups[g]||[]).push(x);
+      });
+      return order.filter(g=>groups[g]).map(g=>`<div class="km-line"><p class="stock-h">${g}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`).join("");
+    }
     function kmSideList(m){
       const cars=kmStockCars(m).slice().sort((a,b)=>{
         const pa=PRIO_VINS.has(a.vin)?0:1;
         const pb=PRIO_VINS.has(b.vin)?0:1;
         if(pa!==pb) return pa-pb;
-        const fa=kmTrimFit(m,a)?0:1;
-        const fb=kmTrimFit(m,b)?0:1;
-        if(fa!==fb) return fa-fb;
         if(a.status!==b.status) return a.status==="in"?-1:1;
         return (a.color||"").localeCompare(b.color||"");
       });
       const inn=cars.filter(c=>c.status==="in").length;
       const way=cars.filter(c=>c.status==="way").length;
       if(!cars.length){
-        return `<div class="card stock-side"><p class="eyebrow">Склад</p><p class="lead" style="max-width:none">Нет машин этой модели в наличии и в пути.</p></div>`;
+        return `<div class="card stock-side"><p class="eyebrow">Склад · ${escape(m.name)}</p><p class="lead" style="max-width:none">Нет этой комплектации в наличии и в пути.</p></div>`;
       }
       const block=(title, arr)=>!arr.length?"":`<p class="stock-h">${title} · ${arr.length}</p>`+arr.map(c=>{
         const prio=PRIO_VINS.has(c.vin);
@@ -123,7 +136,7 @@
       }).join("");
       return `<div class="card stock-side">
         <p class="eyebrow">Склад · ${escape(m.name)}</p>
-        <p class="lead" style="max-width:none;margin:0 0 10px">В наличии ${inn} · в пути ${way}. Приоритет подсвечен.</p>
+        <p class="lead" style="max-width:none;margin:0 0 10px">Только эта комплектация. В наличии ${inn} · в пути ${way}.</p>
         ${block("В наличии", cars.filter(c=>c.status==="in"))}
         ${block("В пути", cars.filter(c=>c.status==="way"))}
       </div>`;
