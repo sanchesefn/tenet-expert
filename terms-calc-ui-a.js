@@ -102,6 +102,12 @@
       const n=Number(String(el.value||"").replace(/\s+/g,""));
       return Number.isFinite(n)?n:def;
     }
+    function kmStr(id, def){
+      const el=document.getElementById(id);
+      if(!el) return def;
+      const v=String(el.value||"").trim();
+      return v||def;
+    }
     function kmChipGroups(active){
       const order=["T4","T4L","T7","T8","TENET A8","Tiggo 9","Arrizo 8","Tiggo 7 L"];
       const groups={};
