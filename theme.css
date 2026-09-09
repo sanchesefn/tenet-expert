@@ -1,1 +1,15 @@
-PLACEHOLDER
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+:root {
+  --bg:#f4f1ea;
+  --fg:#111114;
+  --muted:#5c5a54;
+  --surface:#fffcf7;
+  --border:#e4dfd4;
+  --primary:#c81e2b;
+  --primary-ink:#fff;
+  --pass:#1f7a4d;
+  --ok-bg:#e8f6ee;
+  --bad-bg:#fdecee;
+  --shadow:0 1px 0 rgba(17,17,20,.04), 0 12px 40px rgba(17,17,20,.06);
+  --radius:14px;
+}
