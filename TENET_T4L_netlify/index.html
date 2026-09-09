@@ -207,7 +207,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 <body>
   <div class="wrap">
     <header class="top">
-      <div class="brand" id="brandLine"><span class="mark">T</span> <span id="brandText">TENET · CHERY</span></div>
+      <div class="brand" id="brandLine"><span class="mark">A</span> <span id="brandText">АТТЕСТАЦИЯ</span></div>
       <nav class="desk" id="navDesk"></nav>
     </header>
     <main id="app"><p style="padding:24px">Загрузка…</p></main>
@@ -664,11 +664,10 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const b=document.getElementById("navBot");
       if(d) d.innerHTML=html;
       if(b) b.innerHTML=html;
-      const m=MODELS[model]||MODELS.t4l;
       const bt=document.getElementById("brandText");
-      if(bt) bt.textContent = m.brand+" "+m.name;
+      if(bt) bt.textContent = "АТТЕСТАЦИЯ";
       const mark=document.querySelector(".mark");
-      if(mark) mark.textContent = m.brand==="CHERY" ? "C" : "T";
+      if(mark) mark.textContent = "A";
     }
     function render(){
       try{
