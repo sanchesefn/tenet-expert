@@ -7,13 +7,35 @@ if m:
     for x in stock:
         x["mpt"]=x.get("vin") in MPT_VINS
         salon=str(x.get("salon") or "")
-        if "коричнево" in salon.lower().replace("ё","е"):
+        if "коричнев" in salon.lower().replace("ё","е"):
             x["salon"]="Brown"
         if x.get("vin")=="EDEEB31B8TE003261":
             x["model"]="t4"
             x["name"]="T4"
+        t=str(x.get("trim") or "").lower()
+        mid=str(x.get("model") or "")
+        rrc=None
+        if mid=="t4": rrc=2449000
+        elif mid=="t4l": rrc=2479000 if "прайм" in t else 2329000
+        elif mid=="t7":
+            if "4wd" in t and "прайм" in t: rrc=3190000
+            elif "4wd" in t: rrc=2990000
+            elif "прайм" in t: rrc=2985000
+            else: rrc=2785000
+        elif mid=="t8":
+            if "ультра" in t: rrc=3885000
+            elif "4wd" in t: rrc=3630000
+            elif "прайм" in t: rrc=3299000
+            else: rrc=3099000
+        elif mid=="t9": rrc=4335000 if "прайм" in t else 4640000
+        elif mid=="a8":
+            if "ультра" in t: rrc=3275000
+            elif "актив" in t: rrc=2865000
+            else: rrc=3060000
+        elif mid=="t7l": rrc=2735000
+        if rrc: x["rrc"]=rrc
     if not any(x.get("vin")=="EDEDB21B7SD723791" for x in stock):
-        stock.append({"vin":"EDEDB21B7SD723791","model":"t7l","name":"Tiggo 7 L","trim":"Актив","color":"Серебристый","status":"in","note":"В салоне · с 06.08.2026","invoice":False,"salon":"","prod":"","rrc":None,"mpt":False})
+        stock.append({"vin":"EDEDB21B7SD723791","model":"t7l","name":"Tiggo 7 L","trim":"Актив","color":"Серебристый","status":"in","note":"В салоне · с 06.08.2026","invoice":False,"salon":"","prod":"","rrc":2735000,"mpt":False})
     html=html[:m.start(1)]+json.dumps(stock, ensure_ascii=False)+html[m.end(1):]
     print("stock patched", sum(1 for x in stock if x.get("mpt")), "mpt", len(stock), "cars")
 
@@ -27,7 +49,7 @@ if 'id:"t4"' not in html:
         't4l: {id:"t4l", brand:"TENET", name:"T4L"',
         't4:  {id:"t4", brand:"TENET", name:"T4", rivals:"", examN:0, img:"cars/t4l.jpg"},\n      t4l: {id:"t4l", brand:"TENET", name:"T4L"'
     )
-html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!=="t7l"&&x.id!=="t4")')
+html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!="t7l"&&x.id!="t4")'.replace('!=','!=='))
 html=html.replace(
     '<p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>',
     ''
@@ -38,6 +60,8 @@ html=html.replace(
 )
 if ".st.mpt{" not in html:
     html=html.replace("</style>", ".st.mpt{background:#cfe8d1;color:#1b5e20;}\n</style>", 1)
+if ".stock-car.mpt{" not in html:
+    html=html.replace("</style>", ".stock-car.mpt{border-color:#2e7d32;background:#e8f5e9}.mpt-tag{display:block;color:#1b5e20;font-weight:700;font-size:12px;margin:4px 0 2px}\n</style>", 1)
 
 html=html.replace(
     '["terms","₽","Торговые условия","Прайс 01.09.2026, трейд-ин и кредит T7"]',
@@ -127,6 +151,15 @@ if 'querySelectorAll("[data-km-id]")' not in html:
         print("calc bind not found")
 else:
     print("calc bind already in html")
+
+html=html.replace(
+    '{model:"T4",vin:"EDEED31B1SE053704",trim:"Prime 4WD",year:"2025",color:"Белый",extra:"Сидоров",pay:500,bonus:1000}',
+    '{model:"T4",vin:"EDEED31B1SE053704",trim:"Prime 4WD",year:"2025",color:"Белый",extra:"",seller:"Сидоров",sold:true,pay:500,bonus:1000}'
+)
+html=html.replace(
+    '{model:"Tiggo 9",vin:"EDEDD24B1SG002595",trim:"Ultra",year:"2025",color:"Чёрный",extra:"Новиков",pay:500,bonus:0}',
+    '{model:"Tiggo 9",vin:"EDEDD24B1SG002595",trim:"Ultra",year:"2025",color:"Чёрный",extra:"",seller:"Новиков",sold:true,pay:500,bonus:0}'
+)
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
