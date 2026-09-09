@@ -33,10 +33,11 @@
       const useMpt=kmVal("kmFleetMpt", false);
       const useTi=kmVal("kmUseTi", false);
       let price=f.rrc;
+      const fleetCut=Math.max(0, f.rrc-(f.tidy||f.rrc));
       const steps=[];
-      if(useFleet){ price=f.tidy; steps.push("флит скидка AN "+rub(f.an)+" → цена AP "+rub(f.tidy)); }
-      if(useMpt){ price=Math.round(price*0.9); steps.push("МПТ −10%"); }
+      if(useFleet){ price=f.tidy; steps.push("флит −"+rub(fleetCut)); }
       if(useTi){ price=Math.max(0, price-FLEET_TI); steps.push("трейд-ин −"+rub(FLEET_TI)); }
+      if(useMpt){ price=Math.round(price*0.9); steps.push("МПТ −10%"); }
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===kmVin);
       return banner("Калькулятор","Флит · BFS Совкомбанк лизинг","TENET")+`
         <p class="lead">Корпоративный VIN. Стандартный кредит запрещён. Считаем BFS Совкомбанк лизинг.</p>
@@ -46,9 +47,9 @@
             <p class="eyebrow">BFS Совкомбанк лизинг · ${escape(f.name)}</p>
             ${car?`<p class="calc-note">${escape(car.vin)} · ${escape(car.color||"")} · ${escape(car.trim||"")}</p>`:""}
             <div class="note-box">Сбер / Альфа / Т-Банк нельзя. BFS: Каркаде, Т-Лизинг, Европлан, Сберлизинг, Газпромбанк Лизинг, Совкомбанк Лизинг.</div>
-            <label class="check-row"><input id="kmFleetDisc" type="checkbox" ${useFleet?"checked":""} /> <span>Флит скидка · макс. выгода ${rub(f.an)}</span></label>
-            <label class="check-row"><input id="kmFleetMpt" type="checkbox" ${useMpt?"checked":""} /> <span>МПТ −10% от получившейся цены</span></label>
-            <label class="check-row"><input id="kmUseTi" type="checkbox" ${useTi?"checked":""} /> <span>Трейд-ин −${rub(FLEET_TI)} после скидок</span></label>
+            <label class="check-row"><input id="kmFleetDisc" type="checkbox" ${useFleet?"checked":""} /> <span>Флит скидка ${rub(fleetCut)} · макс. выгода ${rub(f.an)}</span></label>
+            <label class="check-row"><input id="kmUseTi" type="checkbox" ${useTi?"checked":""} /> <span>Трейд-ин ${rub(FLEET_TI)}</span></label>
+            <label class="check-row"><input id="kmFleetMpt" type="checkbox" ${useMpt?"checked":""} /> <span>МПТ −10%</span></label>
             <div class="note-box" style="margin-top:14px">
               <p class="eyebrow" style="margin:0 0 6px">Итоговая цена</p>
               ${price<f.rrc?`<div class="calc-out" style="text-decoration:line-through;opacity:.42;margin-bottom:2px">${rub(f.rrc)} ₽</div>`:""}
@@ -63,7 +64,7 @@
               <div class="bank-row"><span>Макс. выгода AN</span><span class="pay">${rub(f.an)} ₽</span></div>
               <div class="bank-row"><span>Цена AP без тюнинга</span><span class="pay">${rub(f.tidy)} ₽</span></div>
               <div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>
-              <p class="calc-note">Порядок: флит скидка → МПТ −10% → трейд-ин.</p>
+              <p class="calc-note">Порядок: флит скидка → трейд-ин → МПТ −10%.</p>
             </div>
             ${kmSideList(m)}
           </div>
