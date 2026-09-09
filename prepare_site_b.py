@@ -57,9 +57,14 @@ if tc.exists():
     else:
         print("terms/stock anchors not found", a, b)
 
-BIND_IDS = '["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cMonths","cRate"]'
+BIND_IDS = '["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmUseDcTi","kmUseDcCr","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cDownPct","cDownMode","cMonths"]'
 NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
       document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
+      document.querySelectorAll("[data-down-mode]").forEach(b=>b.onclick=()=>{
+        const el=document.getElementById("cDownMode");
+        if(el) el.value=b.dataset.downMode||"pct";
+        view="calc"; render();
+      });
       document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
         const vin=b.dataset.kmVin||"";
         kmVin=vin;
@@ -92,39 +97,6 @@ OLD_BINDS = [
         const el=document.getElementById(id);
         if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
       });
-''',
-'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
-      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
-      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
-        const vin=b.dataset.kmVin||"";
-        kmVin=vin;
-        const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===vin);
-        if(car && typeof kmIdFromCar==="function"){
-          const nid=kmIdFromCar(car);
-          if(nid && nid!==kmId){ kmId=nid; kmShown=""; }
-        }
-        view="calc"; render();
-      });
-      ["kmRrc","kmInv","kmUseTi","kmUseCr","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
-      });
-''',
-'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
-      const kmPreset=document.getElementById("kmPreset");
-      if(kmPreset) kmPreset.onchange=()=>{ kmId=kmPreset.value; kmShown=""; view="calc"; render(); };
-      ["kmRrc","kmInv","kmUseTi","kmUseCr","kmPrio","kmFam","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
-      });
-''',
-'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
-      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
-      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{ kmVin=b.dataset.kmVin||""; view="calc"; render(); });
-      ["kmRrc","kmInv","kmUseTi","kmUseCr","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
-        const el=document.getElementById(id);
-        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
-      });
 '''
 ]
 replaced = False
@@ -149,15 +121,18 @@ if not replaced:
         html = html2
         replaced = True
         print("calc bind ids patched", n)
-if not replaced:
-    needle = '      const cPreset=document.getElementById("cPreset");'
-    if needle in html and "data-km-id" not in html[html.find("function bind()"):html.find("function bind()")+2800]:
-        html = html.replace(needle, NEW_BIND + needle, 1)
-        print("calc bind inserted")
-    elif "kmUseLoan" in html:
-        print("calc bind already current")
-    else:
-        print("calc bind not found")
+if "data-down-mode" not in html:
+    html=html.replace(
+        'document.querySelectorAll("[data-km-id]")',
+        '''document.querySelectorAll("[data-down-mode]").forEach(b=>b.onclick=()=>{
+        const el=document.getElementById("cDownMode");
+        if(el) el.value=b.dataset.downMode||"pct";
+        view="calc"; render();
+      });
+      document.querySelectorAll("[data-km-id]")''',
+        1
+    )
+    print("down-mode bind inserted")
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
