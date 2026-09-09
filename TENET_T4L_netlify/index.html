@@ -218,6 +218,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     const PRICE = { date: "01.09.2026", active: 2329000, prime: 2479000, delta: 150000 };
     const PASS = 80, EXPERT = 90, QSEC = 30, PRACTICE_N = 12;
     const PIN = "РОП26";
+    const LOGIN_PINS = {"леонтьев":"1010","спицын":"6669","кокуркин":"8736","якубовская":"6588","сидоров":"4969","лавров":"7472","тальков":"9858","ахмадуллин":"3597","демьянов":"8942"};
     const CLOUD_ID = "o6nq7rki";
     const CLOUD_KEY = "4fmBrr2H";
     const CATS = {
@@ -506,7 +507,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     state.seenStudy = state.seenStudy || {};
     state.seenTrain = state.seenTrain || {};
     state.runs = state.runs || {};
-    let view = state.surname ? "home" : "login";
+    let view = (state.surname && state.authed) ? "home" : "login";
     let rateModel = state.model || "t4l";
     let model = state.model || "t4l";
     let paper = [], idx = 0, selected = [], locked = false, done = false, closing = false;
@@ -521,7 +522,25 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       catch { return {surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}; }
     }
     function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
-    function norm(s){ return (s||"").trim().replace(/\s+/g," ").toLowerCase(); }
+    function norm(s){ return (s||"").trim().replace(/\s+/g," ").replace(/ё/g,"е").replace(/Ё/g,"е").toLowerCase(); }
+    function pinDigits(s){ return String(s||"").replace(/\D/g,""); }
+    function pinEq(a,b){
+      if(!a || !b) return false;
+      const x=pinDigits(a), y=pinDigits(b);
+      if(x && y && x===y) return true;
+      return String(a).trim().toUpperCase()===String(b).trim().toUpperCase();
+    }
+    async function bakedPin(sn){
+      const local=(typeof LOGIN_PINS==="object" && LOGIN_PINS && LOGIN_PINS[sn]) || "";
+      try{
+        const r=await withTimeout(fetch("pins.json?t="+Date.now(),{cache:"no-store"}),4000);
+        if(r.ok){
+          const extra=await r.json();
+          if(extra && extra[sn]) return String(extra[sn]);
+        }
+      }catch(e){}
+      return local;
+    }
     function rub(n){ return n.toLocaleString("ru-RU").replace(/\u00A0/g," "); }
     function shuffle(a){ const x=[...a]; for(let i=x.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [x[i],x[j]]=[x[j],x[i]]; } return x; }
     function grade(p){ return p>=EXPERT?"expert":p>=PASS?"pass":p>=60?"retry":"fail"; }
@@ -1332,15 +1351,47 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       const doLogin=document.getElementById("doLogin");
       if(doLogin) doLogin.onclick=async()=>{
         const v=(document.getElementById("surname").value||"").trim();
+        const pinRaw=((document.getElementById("loginPin")||{}).value||"").trim();
         const err=document.getElementById("loginErr");
+        if(!err) return;
         if(v.length<2){ err.textContent="Введите фамилию."; return; }
-        state.surname=norm(v); state.display=v.replace(/\s+/g," "); save();
+        if(!pinRaw){ err.textContent="Введите личный код от РОП."; return; }
+        err.textContent="Проверяю код…";
+        const sn=norm(v);
+        const baked=await bakedPin(sn);
+        if(pinEq(pinRaw, baked)){
+          state.surname=sn; state.display=v.replace(/\s+/g," "); state.authed=true; save();
+          refreshLocks().catch(()=>{});
+          if(userRun()){ resumeExam(userRun()); return; }
+          view="home"; render();
+          return;
+        }
         await refreshLocks();
+        const rec=(remoteLocks||[]).find(x=>x && x.type==="login" && x.surname===sn);
+        const cloud=rec && rec.code;
+        const ok=pinEq(pinRaw, cloud);
+        if(!ok){
+          if(!syncOk && !baked){
+            err.textContent="Нет связи с сервером кодов. Откройте сайт в Chrome или Safari — не из Telegram — и повторите.";
+            return;
+          }
+          if(!cloud && !baked){
+            err.textContent="Код для этой фамилии ещё не выдан. Нажмите «Запросить код у РОП».";
+            return;
+          }
+          err.textContent="Неверный код. Только цифры, без пробелов. Откройте сайт в Chrome / Safari, не из Telegram.";
+          return;
+        }
+        state.surname=sn; state.display=v.replace(/\s+/g," "); state.authed=true; save();
         if(userRun()){ resumeExam(userRun()); return; }
         view="home"; render();
       };
+      ["surname","loginPin"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("keydown", e=>{ if(e.key==="Enter"){ e.preventDefault(); if(doLogin) doLogin.click(); } });
+      });
       const logout=document.getElementById("logout");
-      if(logout) logout.onclick=()=>{ persistRun(true); stopTick(); state.surname=""; state.display=""; save(); view="login"; paper=[]; mode="exam"; done=false; render(); };
+      if(logout) logout.onclick=()=>{ persistRun(true); stopTick(); state.surname=""; state.display=""; state.authed=false; save(); view="login"; paper=[]; mode="exam"; done=false; render(); };
       document.querySelectorAll("[data-exam]").forEach(b=>b.onclick=()=>{ examSession=Number(b.dataset.exam)||1; window._wantExam=examSession; view="quiz"; render(); });
       document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{ studyTab=b.dataset.tab; render(); });
       document.querySelectorAll("[data-rate]").forEach(b=>b.onclick=()=>{ rateModel=b.dataset.rate; render(); });

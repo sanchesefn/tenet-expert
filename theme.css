@@ -117,6 +117,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .login-box .field{max-width:none;margin-top:14px;}
 .login-btn{width:100%;margin-top:18px;}
 .login-err{color:var(--primary);font-size:13px;min-height:18px;margin:10px 0 0;}
+#loginPin{letter-spacing:.28em;font-variant-numeric:tabular-nums;font-weight:700;}
 .model-card .car{display:none;}
 .models{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:18px;}
 .model-row{
