@@ -14,3 +14,6 @@
 .bank-row:last-child{border-bottom:0}
 .bank-row b{font-size:14px}
 .bank-row .pay{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.stock-car.mpt{border-color:#2e7d32;background:#e8f5e9}
+.stock-car.mpt .mpt-tag,.mpt-tag{display:block;color:#1b5e20;font-weight:700;font-size:12px;margin:4px 0 2px}
+.rec-box .stock-car{width:100%;text-align:left;margin:0 0 8px}
