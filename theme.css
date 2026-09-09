@@ -239,7 +239,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .hub-card[data-go="home"]::before{background-image:url("hub/attest.jpg?v=2");background-position:50% 55%;}
 .hub-card[data-go="terms"]::before{background-image:url("hub/terms.jpg?v=1");background-position:55% 42%;}
 .hub-card[data-go="calc"]::before{background-image:url("hub/calc.jpg?v=1");background-position:38% 48%;}
-.hub-card[data-go="stock"]::before{background-image:url("hub/stock.jpg?v=2");background-position:50% 58%;}
+.hub-card[data-go="stock"]::before{background-image:url("hub/stock.jpg?v=3");background-position:50% 58%;}
 .hub-card[data-go="docs"]::before{background-image:url("hub/docs.jpg?v=1");background-position:50% 50%;}
 .hub-mark{
   position:absolute;
