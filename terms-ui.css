@@ -1,0 +1,10 @@
+.terms-col{max-width:1080px}
+.terms-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 22px}
+.term-card{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
+.term-card b{display:block;font-size:15px;letter-spacing:-.02em}
+.term-card .num{font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums}
+.term-card small{display:block;color:var(--muted);font-size:12px;line-height:1.35;margin-top:6px}
+.km-line{margin:4px 0 12px}
+.km-line .stock-h{margin:10px 0 6px}
+.km-right{display:flex;flex-direction:column;gap:14px}
+.stock-side{max-height:520px;overflow:auto}
