@@ -14,7 +14,7 @@
       return `<p class="eyebrow">${m.brand} · справочник</p>
         <h2 class="study-title">${m.name}</h2>
         <p class="study-sub">${m.rivals}</p>
-        <div class="study-pick">${Object.values(MODELS).map(x=>`<button class="chip ${x.id===model?"on":""}" data-model="${x.id}">${x.name}</button>`).join("")}</div>
+        <div class="study-pick">${Object.values(MODELS).filter(x=>x.id!=="t7l").map(x=>`<button class="chip ${x.id===model?"on":""}" data-model="${x.id}">${x.name}</button>`).join("")}</div>
         <div class="tabs">${tabs.map(([id,l])=>`<button class="${studyTab===id?"on":""}" data-tab="${id}">${l}</button>`).join("")}</div>
         ${body}
         <p style="color:var(--muted);font-size:13px;margin-top:10px;line-height:1.45">${needsRetake()?"Просмотр засчитан для допуска к пересдаче.":expertLocked()?"Справочник открыт. Тренировки по желанию.":"Справочник открыт после аттестации."} PDF — вкладка «Материалы», «Открыть» / «Скачать».</p>

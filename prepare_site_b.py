@@ -19,8 +19,11 @@ if 't7l:' not in html:
         'a8:  {id:"a8", brand:"CHERY", name:"Arrizo 8"',
         't7l: {id:"t7l", brand:"CHERY", name:"Tiggo 7 L", rivals:"Jolion, X70, Dashing", examN:0, img:"cars/t9.jpg"},\n      a8:  {id:"a8", brand:"CHERY", name:"Arrizo 8"'
     )
-html=html.replace('const modelOrder=["t4l","t7","t8","t9","a8"];','const modelOrder=["t4l","t7","t8","t9","t7l","a8"];')
-html=html.replace('${["t4l","t7","t8","t9","a8"].map(id=>{','${["t4l","t7","t8","t9","t7l","a8"].map(id=>{')
+html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!=="t7l")')
+html=html.replace(
+    '<p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>',
+    ''
+)
 html=html.replace(
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}</td>',
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}</td>'
@@ -45,6 +48,11 @@ if "let kmVin" not in html:
     html=html.replace(
         'let kmShown = "";',
         'let kmShown = "";\n    let kmVin = "";'
+    )
+if 'if(model==="t7l")' not in html:
+    html=html.replace(
+        'let stockStatus = "all";',
+        'let stockStatus = "all";\n    if(model==="t7l") model="t7";'
     )
 
 tc = Path("terms-calc-fn.js")
