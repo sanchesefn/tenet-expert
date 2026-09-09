@@ -56,7 +56,7 @@
             <label class="field" style="max-width:none"><span>Сумма счёта, ₽ · из условий ${TERMS_DATE}</span><input id="kmInv" inputmode="numeric" value="${invoice}" /></label>
             <label class="check-row"><input id="kmUseTi" type="checkbox" ${useTi?"checked":""} /> <span>Трейд-ин ${m.ti?rub(m.ti)+" / возмещение "+rub(m.tiBack):"нет в базе"}</span></label>
             <label class="check-row"><input id="kmUseLoan" type="checkbox" ${useLoan?"checked":""} /> <span>Кредит</span></label>
-            ${hasDealCr&&useLoan?`<label class="check-row"><input id="kmUseCr" type="checkbox" ${useCr?"checked":""} /> <span>Выгодный кредит ${rub(m.cr)} / возмещение ${rub(m.crBack)}</span></label>`:""}
+            ${hasDealCr&&useLoan?`<label class="check-row"><input id="kmUseCr" type="checkbox" ${useCr?"checked":""} /> <span>Выгодный кредит 50/30 · ${rub(m.cr)} / возмещение ${rub(m.crBack)}</span></label>`:""}
             <label class="field" style="max-width:none"><span>Спецпредложение, ₽</span><input id="kmSpec" inputmode="numeric" value="${spec}" /></label>
             ${useTi?`<label class="field" style="max-width:none"><span>Скидка от ДЦ за трейд-ин, ₽</span><input id="kmDcTi" inputmode="numeric" value="${dcTi}" /></label>`:""}
             ${useLoan?`<label class="field" style="max-width:none"><span>Скидка от ДЦ за кредит, ₽</span><input id="kmDcCr" inputmode="numeric" value="${dcCr}" /></label>`:""}
@@ -74,9 +74,8 @@
           <div class="km-right">
             ${useLoan?`<div class="card">
               <p class="eyebrow">Кредит · ${escape(m.name)}</p>
-              <p class="calc-note">Считается от цены авто со скидками: ${rub(price)} ₽</p>
-              <label class="field" style="max-width:none;margin-top:8px"><span>Цена авто для кредита, ₽</span><input id="cPrice" inputmode="numeric" value="${price}" /></label>
-              <label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>
+              <p class="calc-note">Считается от цены авто со скидками: ${rub(price)} ₽. Д/О, КАСКО и СЖ в кредит не входят.</p>
+              <label class="field" style="max-width:none;margin-top:8px"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>
               <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
               <label class="field" style="max-width:none"><span>Ставка, % годовых</span><input id="cRate" inputmode="decimal" value="${rate}" /></label>
               <p class="eyebrow" style="margin-top:16px">Платёж в месяц</p>

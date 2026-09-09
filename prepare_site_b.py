@@ -57,7 +57,43 @@ if tc.exists():
     else:
         print("terms/stock anchors not found", a, b)
 
+BIND_IDS = '["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cMonths","cRate"]'
 NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
+      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
+      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
+        const vin=b.dataset.kmVin||"";
+        kmVin=vin;
+        const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===vin);
+        if(car && typeof kmIdFromCar==="function"){
+          const nid=kmIdFromCar(car);
+          if(nid && nid!==kmId){ kmId=nid; kmShown=""; }
+        }
+        view="calc"; render();
+      });
+      ''' + BIND_IDS + '''.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
+      });
+'''
+OLD_BINDS = [
+'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
+      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
+      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
+        const vin=b.dataset.kmVin||"";
+        kmVin=vin;
+        const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===vin);
+        if(car && typeof kmIdFromCar==="function"){
+          const nid=kmIdFromCar(car);
+          if(nid && nid!==kmId){ kmId=nid; kmShown=""; }
+        }
+        view="calc"; render();
+      });
+      ["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cMonths","cRate"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
+      });
+''',
+'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
       document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
       document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
         const vin=b.dataset.kmVin||"";
@@ -73,8 +109,7 @@ NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.o
         const el=document.getElementById(id);
         if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
       });
-'''
-OLD_BINDS = [
+''',
 '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
       const kmPreset=document.getElementById("kmPreset");
       if(kmPreset) kmPreset.onchange=()=>{ kmId=kmPreset.value; kmShown=""; view="calc"; render(); };
@@ -100,11 +135,26 @@ for old in OLD_BINDS:
         print("calc bind replaced")
         break
 if not replaced:
+    html2, n = re.subn(
+        r'\["kmRrc","kmInv".*?\]\.forEach\(id=>\{\s*const el=document\.getElementById\(id\);\s*if\(el\) el\.addEventListener\("change", \(\)=>\{ view="calc"; render\(\); \}\);\s*\}\);',
+        BIND_IDS + '''.forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
+      });''',
+        html,
+        count=1,
+        flags=re.S
+    )
+    if n:
+        html = html2
+        replaced = True
+        print("calc bind ids patched", n)
+if not replaced:
     needle = '      const cPreset=document.getElementById("cPreset");'
     if needle in html and "data-km-id" not in html[html.find("function bind()"):html.find("function bind()")+2800]:
         html = html.replace(needle, NEW_BIND + needle, 1)
         print("calc bind inserted")
-    elif "data-km-id" in html:
+    elif "kmUseLoan" in html:
         print("calc bind already current")
     else:
         print("calc bind not found")
