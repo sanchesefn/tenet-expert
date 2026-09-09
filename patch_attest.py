@@ -1,18 +1,43 @@
 from pathlib import Path
+from attest_repl_a import REPLACES_A
+from attest_repl_b import REPLACES_B
 
-REPLACES = [
-    (
-        'o:[["a","340 л"],["b","475–1500 л"],["c","337 л"],["d","330 л"]]',
-        'o:[["a","340–1150 л"],["b","475–1500 л"],["c","337–1133 л"],["d","330–1200 л"]]',
-    ),
-    (
-        '["d","203 мм между осями без нагрузки"]',
-        '["d","203 мм"]',
-    ),
-    (
-        '{id:"tire",cat:"tech",type:"single",p:"Шины, экраны и гарантия T4L?",o:[["a","215/60 R17, один экран 9″, 3 года"],["b","225/60 R18, два экрана 10,25″, 5 лет / 150 000 км"],["c","235/55 R19 и люк в базе"],["d","205/65 R16 и гарантия 2 года"]],c:["b"],x:"18-дюймовые диски, два дисплея 10,25″, техподдержка 5 лет или 150 000 км. Прицеп без тормозов — 750 кг."},',
-        '{id:"tire",cat:"tech",type:"single",p:"Размер шин T4L?",o:[["a","215/60 R17"],["b","225/60 R18"],["c","235/55 R19"],["d","205/65 R16"]],c:["b"],x:"Штатный размер T4L — 225/60 R18."},',
-    ),
-]
-DELETE_IDS = ["terms","child","store80","t7s4","t8s4","t9p5","t9s3","t9obj","a8p5","a8s4","a8arg"]
-print('incomplete')
+REPLACES = REPLACES_A + REPLACES_B
+DELETE_IDS = ["terms", "child", "store80", "t7s4", "t8s4", "t9p5", "t9s3", "t9obj", "a8p5", "a8s4", "a8arg"]
+
+def strip_obj(html, qid):
+    token = '{id:"%s"' % qid
+    i = html.find(token)
+    if i < 0:
+        print("missing delete", qid)
+        return html
+    j = html.find("},", i)
+    if j < 0:
+        print("no end", qid)
+        return html
+    return html[:i] + html[j + 2 :]
+
+def main():
+    p = Path("_site/index.html")
+    if not p.exists():
+        print("skip attest, no _site")
+        return
+    html = p.read_text(encoding="utf-8")
+    n = 0
+    for old, new in REPLACES:
+        if old in html:
+            html = html.replace(old, new, 1)
+            n += 1
+        else:
+            print("MISS", old[:80])
+    for qid in DELETE_IDS:
+        before = html
+        html = strip_obj(html, qid)
+        if html != before:
+            n += 1
+            print("deleted", qid)
+    p.write_text(html, encoding="utf-8")
+    print("attest patched", n)
+
+if __name__ == "__main__":
+    main()
