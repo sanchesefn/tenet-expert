@@ -72,6 +72,41 @@ if css_path.exists() and css_path.stat().st_size > 1000:
 else:
     print("skip tiny/missing theme.css")
 
+EXTRA_CSS = """
+.terms-col{max-width:720px}
+.terms-grid{display:grid;gap:4px 28px}
+@media(min-width:900px){
+  .terms-grid{grid-template-columns:1fr 1fr;max-width:860px}
+  .terms-span{grid-column:1/-1}
+}
+.sheet-wrap{overflow:auto;max-width:720px}
+.sheet{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 18px}
+.km-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:8px;margin:8px 0 16px}
+.km-grid .chip{width:100%;text-align:left;white-space:normal;line-height:1.25;padding:10px 12px;min-height:54px}
+.km-grid .chip small{display:block;opacity:.72;font-size:11px;font-weight:600;margin-top:3px}
+.check-row{display:flex;gap:12px;align-items:center;margin-top:14px;padding:14px 16px;border:1px solid var(--border);border-radius:12px;background:#fff;cursor:pointer}
+.check-row input{width:22px;height:22px;accent-color:var(--primary);flex:0 0 22px}
+.check-row span{font-size:15px;font-weight:600;line-height:1.3}
+.km-layout{display:grid;gap:14px;margin-top:8px}
+@media(min-width:960px){.km-layout{grid-template-columns:minmax(0,1.1fr) minmax(280px,.9fr);align-items:start}}
+.stock-side{max-height:720px;overflow:auto}
+.stock-h{margin:12px 0 8px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.stock-car{width:100%;text-align:left;border:1px solid var(--border);background:#fff;border-radius:12px;padding:10px 12px;margin:0 0 8px;display:block}
+.stock-car.on{border-color:var(--fg);box-shadow:0 0 0 1px var(--fg)}
+.stock-car.prio{background:#fff6d8;border-color:#e0b84a}
+.stock-car.prio.on{border-color:#b88912;box-shadow:0 0 0 1px #b88912}
+.stock-car b{display:block;font-size:13px;letter-spacing:-.02em}
+.stock-car .vin{display:block;margin-top:3px}
+.stock-meta{display:block;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.35}
+.dc-result{margin-top:14px}
+"""
+if ".km-grid{" not in html:
+    html = html.replace("</style>", EXTRA_CSS + "\n</style>", 1)
+    print("extra css injected")
+elif ".dc-result{" not in html:
+    html = html.replace("</style>", EXTRA_CSS + "\n</style>", 1)
+    print("extra css refreshed")
+
 head = html[: html.find("<style>")] if "<style>" in html else html[:400]
 if "<title>" in head and "</title>" not in head:
     i = html.find("<style>")
@@ -88,7 +123,7 @@ try:
     lst = json.loads(text or "[]")
     for x in lst:
         if x and x.get("type")=="login" and x.get("surname") and x.get("code"):
-            pins[str(x["surname"]).replace("ё","е").replace("Ё","Е").lower()] = str(x["code"])
+            pins[str(x["surname"]).replace("ё","е").replace("Ё","е").lower()] = str(x["code"])
     print("baked pins", pins)
 except Exception as e:
     print("pins fetch fail", e)
@@ -134,7 +169,12 @@ html=html.replace(
 if "let calcMode" not in html:
     html=html.replace(
         'let stockStatus = "all";',
-        'let stockStatus = "all";\n    let calcMode = "pay";\n    let kmId = "t4lp";\n    let kmShown = "";'
+        'let stockStatus = "all";\n    let calcMode = "pay";\n    let kmId = "t4lp";\n    let kmShown = "";\n    let kmVin = "";'
+    )
+if "let kmVin" not in html:
+    html=html.replace(
+        'let kmShown = "";',
+        'let kmShown = "";\n    let kmVin = "";'
     )
 
 tc = Path("terms-calc-fn.js")
@@ -150,18 +190,57 @@ if tc.exists():
     else:
         print("terms/stock anchors not found", a, b)
 
-bind_km = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
+NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
+      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
+      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{
+        const vin=b.dataset.kmVin||"";
+        kmVin=vin;
+        const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===vin);
+        if(car && typeof kmIdFromCar==="function"){
+          const nid=kmIdFromCar(car);
+          if(nid && nid!==kmId){ kmId=nid; kmShown=""; }
+        }
+        view="calc"; render();
+      });
+      ["kmRrc","kmInv","kmUseTi","kmUseCr","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
+      });
+'''
+OLD_BINDS = [
+'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
       const kmPreset=document.getElementById("kmPreset");
       if(kmPreset) kmPreset.onchange=()=>{ kmId=kmPreset.value; kmShown=""; view="calc"; render(); };
       ["kmRrc","kmInv","kmUseTi","kmUseCr","kmPrio","kmFam","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
         const el=document.getElementById(id);
         if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
       });
+''',
+'''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
+      document.querySelectorAll("[data-km-id]").forEach(b=>b.onclick=()=>{ kmId=b.dataset.kmId; kmShown=""; kmVin=""; view="calc"; render(); });
+      document.querySelectorAll("[data-km-vin]").forEach(b=>b.onclick=()=>{ kmVin=b.dataset.kmVin||""; view="calc"; render(); });
+      ["kmRrc","kmInv","kmUseTi","kmUseCr","kmSpec","kmDc","kmDo","kmCard","kmCasco"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
+      });
 '''
-needle = '      const cPreset=document.getElementById("cPreset");'
-if needle in html and "data-calc-mode" not in html[html.find("function bind()"):html.find("function bind()")+2500]:
-    html = html.replace(needle, bind_km + needle, 1)
-    print("calc bind patched")
+]
+replaced = False
+for old in OLD_BINDS:
+    if old in html:
+        html = html.replace(old, NEW_BIND)
+        replaced = True
+        print("calc bind replaced")
+        break
+if not replaced:
+    needle = '      const cPreset=document.getElementById("cPreset");'
+    if needle in html and "data-km-id" not in html[html.find("function bind()"):html.find("function bind()")+2800]:
+        html = html.replace(needle, NEW_BIND + needle, 1)
+        print("calc bind inserted")
+    elif "data-km-id" in html:
+        print("calc bind already current")
+    else:
+        print("calc bind not found")
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
