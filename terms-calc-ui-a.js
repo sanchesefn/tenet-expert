@@ -1,6 +1,36 @@
     function termCard(title, value, note){
       return `<article class="term-card"><b>${escape(title)}</b>${value?`<div class="num">${value}</div>`:""}${note?`<small>${note}</small>`:""}</article>`;
     }
+    function termGroup(rows, valKey){
+      const order=[], map={};
+      rows.forEach(r=>{
+        const k=r.model;
+        if(!map[k]){ map[k]=[]; order.push(k); }
+        map[k].push(r);
+      });
+      return order.map(model=>{
+        const list=map[model];
+        const body=list.map(r=>`<div class="term-row"><span>${escape(r.trim)}</span><b class="num">${escape(r[valKey]||"")}</b></div>${r.note?`<small>${escape(r.note)}</small>`:""}`).join("");
+        return `<article class="term-card term-group"><b>${escape(model)}</b>${body}</article>`;
+      }).join("");
+    }
+    function prioList(){
+      const soldBy={};
+      TERMS_PRIO.forEach(r=>{
+        if(r.sold && r.seller) soldBy[r.seller]=(soldBy[r.seller]||0)+1;
+      });
+      return `<ol class="prio-list">`+TERMS_PRIO.map((r,i)=>{
+        const sold=!!r.sold;
+        const n=r.seller?soldBy[r.seller]||0:0;
+        const mark=sold&&r.seller?`<span class="sold-mark">Продано · ${escape(r.seller)} <i>${n>=2?"2":"1"}</i></span>`:"";
+        const extra=r.extra?` · ${escape(r.extra)}`:"";
+        return `<li class="prio-item${sold?" sold":""}">
+          <div class="prio-top"><b>${i+1}. ${escape(r.model)} · ${escape(r.trim)}</b>${mark}</div>
+          <div class="prio-meta">${escape(r.vin)} · ${escape(r.color)} · ${escape(r.year)}${extra}</div>
+          <div class="prio-pay">${r.pay?rub(r.pay):"—"} / ${r.bonus?rub(r.bonus):"—"}</div>
+        </li>`;
+      }).join("")+`</ol>`;
+    }
     function kmTrimFit(m, car){
       const t=(car.trim||"").toLowerCase();
       const id=m.id;
@@ -69,20 +99,16 @@
         `<p class="lead">Клиенту называть рекомендованную цену. Максимум с выгодами — после расчёта РОП. КМ — коридор доходности без НДС, тыс. руб.</p>`+
         `<div class="note-box">Скидки импортёра не обещать, если их нет в прайсе. Цифры внутренние.</div>`+
         `<h2>Доходность</h2>`+
-        `<div class="terms-cards">`+KM_CORRIDOR.map(r=>termCard(r.model+" · "+r.trim, escape(r.km), r.note?escape(r.note):"")).join("")+`</div>`+
+        `<div class="terms-cards">`+termGroup(KM_CORRIDOR,"km")+`</div>`+
         `<h2>Бонусы</h2>`+
-        `<div class="terms-cards">`+TERMS_BONUS.map(r=>termCard(r.model+" · "+r.trim, escape(r.bonus), "")).join("")+`</div>`+
+        `<div class="terms-cards">`+termGroup(TERMS_BONUS,"bonus")+`</div>`+
         `<h2>Спец инвойс</h2>`+
         `<div class="terms-cards">`+TERMS_INV.map(r=>termCard(r.model+" · "+r.trim, escape(r.price), "")).join("")+`</div>`+
         `<h2>МПТ / субсидия TENET</h2>`+
         `<div class="terms-cards">`+TERMS_MPT.map(g=>`<article class="term-card"><b>${escape(g.line)}</b>`+g.rows.map(r=>`<small>${escape(r[0])} · <b>${escape(r[1])}</b></small>`).join("")+`</article>`).join("")+`</div>`+
         `<h2>Приоритет · ${TERMS_PRIO.length} авто</h2>`+
-        `<p class="lead">Личный план 2 · командный план 12. Всего 14.</p>`+
-        `<div class="terms-cards">`+TERMS_PRIO.map(r=>termCard(
-          r.model+" · "+r.trim,
-          (r.pay?rub(r.pay):"—")+" / "+(r.bonus?rub(r.bonus):"—"),
-          escape(r.vin)+" · "+escape(r.color)+(r.extra?" · "+escape(r.extra):"")+" · "+escape(r.year)
-        )).join("")+`</div>`+
+        `<p class="lead">Личный план 2 · командный план 12. Всего 14. Порядок как в файле.</p>`+
+        prioList()+
         `<p class="lead">Доплата за 4WD на T7 — 205 000 ₽. Мотор T7 везде 1.6T 150.</p>`+
         `<div class="who-line"><button class="btn ivory" data-go="calc">В калькулятор</button><button class="btn ghost" data-go="docs">Документы</button></div>`+
         `</div>`;
