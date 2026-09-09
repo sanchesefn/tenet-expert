@@ -1,6 +1,6 @@
     function salonLabel(s){
       const t=String(s||"");
-      if(/коричнево/i.test(t)) return "Brown";
+      if(/коричнев/i.test(t)) return "Brown";
       return t;
     }
     function stock(){
