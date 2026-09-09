@@ -28,5 +28,9 @@ else:
 """
     if ".st.corp{" not in html:
         html = html.replace("</style>", extra_css + "\n</style>", 1)
+    html = html.replace(
+        '["kmRrc","kmInv","kmUseTi"',
+        '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt"'
+    )
     p.write_text(html)
     print("fleet patched")
