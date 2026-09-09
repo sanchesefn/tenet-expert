@@ -37,7 +37,7 @@
       const margin=rrc-invoice;
       const carPrice=rrc-discount;
       const client=carPrice+addons;
-      const iron=margin-discount+tiBack+crBack+spec+bonus*1.2;
+      const iron=margin-discount+tiBack+crBack+bonus*1.2;
       const km=(addons*0.3+casco*0.3+card*0.8+iron)/m.vat-carPrice*m.fee;
       const kmK=km/1000;
       const ok=kmK+0.05>=lo && kmK-0.05<=hi;
