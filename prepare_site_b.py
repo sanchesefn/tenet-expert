@@ -49,7 +49,7 @@ if 'id:"t4"' not in html:
         't4l: {id:"t4l", brand:"TENET", name:"T4L"',
         't4:  {id:"t4", brand:"TENET", name:"T4", rivals:"", examN:0, img:"cars/t4l.jpg"},\n      t4l: {id:"t4l", brand:"TENET", name:"T4L"'
     )
-html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!="t7l"&&x.id!="t4")'.replace('!=','!=='))
+html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!=="t7l"&&x.id!=="t4")')
 html=html.replace(
     '<p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>',
     ''
@@ -160,6 +160,8 @@ html=html.replace(
     '{model:"Tiggo 9",vin:"EDEDD24B1SG002595",trim:"Ultra",year:"2025",color:"Чёрный",extra:"Новиков",pay:500,bonus:0}',
     '{model:"Tiggo 9",vin:"EDEDD24B1SG002595",trim:"Ultra",year:"2025",color:"Чёрный",extra:"",seller:"Новиков",sold:true,pay:500,bonus:0}'
 )
+html=html.replace('      {model:"T4",trim:"T4 2025",km:"−30 / 20",note:""},\n','')
+html=html.replace('      {model:"T4",trim:"T4 2025",bonus:"3%"},\n','')
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
