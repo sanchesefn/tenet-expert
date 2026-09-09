@@ -688,15 +688,12 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       return `<div class="banner"><div><p class="eyebrow">${escape(sub)}</p><b>${escape(title)}</b></div><div class="banner-name">${escape(word)}</div></div>`;
     }
     function login(){
-      return banner("Аттестация отдела продаж","TENET · CHERY · аргументаторы")+`
+      return banner("Аттестация отдела продаж","TENET · CHERY")+`
         <h1>Вход<span>по фамилии</span></h1>
         <p class="lead">Одна фамилия — одна попытка на модель. 90%+ сразу закрепляет в рейтинге. Ниже 90% — тренировка и пересдача по коду РОП, в рейтинге будет «было / стало».</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" /></label>
         <div style="margin-top:16px"><button class="btn ivory" id="doLogin">Войти</button></div>
-        <p id="loginErr" style="color:var(--primary);font-size:13px"></p>
-        <p class="eyebrow" style="margin-top:28px">Аргументаторы и тренинги</p>
-        <p class="lead">PDF можно открыть и скачать сразу, без аттестации. После входа те же файлы — на старте у выбранной модели и во вкладке «Материалы» справочника.</p>
-        ${allDocsHtml()}`;
+        <p id="loginErr" style="color:var(--primary);font-size:13px"></p>`;
     }
 
     function homeLeadText(){
@@ -719,11 +716,11 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
             ? `<div class="card ok"><h3>Аттестация сдана · ${e1.percent}%</h3><p>Эксперт. Закреплено в рейтинге. Пересдача не нужна.</p></div>`
             : `<div class="card ok"><h3>Аттестация №1 · ${e1?e1.percent+"%":""}</h3><p>Результат закреплён.${e2?" Стало "+e2.percent+"%.":" Пересдача — по коду РОП."}</p></div>`;
       const studyBlock = canStudy()
-        ? `<button class="card ok" data-go="study"><h3>Справочник</h3><p>${expert?"Можно открыть в любой момент.":"Модель и конкуренты."}</p></button>`
+        ? `<button class="card ok" data-go="study"><h3>Справочник</h3><p>${expert?"Аргументаторы PDF — вкладка «Материалы».":"Модель, конкуренты и аргументаторы PDF."}</p></button>`
           + (canPractice()
             ? `<button class="card ok" data-practice="all"><h3>Тренировка</h3><p>${expert?"По желанию, рейтинг от этого не меняется.":"Разбор. Можно пройти."}</p></button>`
             : `<div class="card bad"><h3>Тренировка</h3><p>Откроется кодом РОП вместе с пересдачей.</p></div>`)
-        : `<div class="card bad"><h3>Справочник и тренировка</h3><p>Закрыто. Сначала аттестация №1.</p></div>`;
+        : `<div class="card bad"><h3>Справочник и тренировка</h3><p>Закрыто до аттестации №1. Аргументаторы PDF откроются в справочнике после сдачи.</p></div>`;
       let retakeBlock="";
       if(hasExam1() && !expert){
         if(hasExam2()){
@@ -756,9 +753,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
               <p>${x.rivals}</p>
             </div>
           </button>`).join("")}</div>
-        <section class="actions">${homeActionsHtml()}</section>
-        <p class="eyebrow" style="margin-top:22px">Аргументаторы · ${escape(m.name)}</p>
-        ${docsCards()}`;
+        <section class="actions">${homeActionsHtml()}</section>`;
     }
     const STUDY = {
       t4l: {
@@ -927,7 +922,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       }
     };
     function docsList(){ return DOCS[model] || []; }
+    function docsAllowed(){ return Boolean(state.surname && canStudy()); }
     function docsCards(){
+      if(!docsAllowed()) return "";
       const list=docsList();
       if(!list.length) return `<div class="card"><p>Для этой модели файлов пока нет.</p></div>`;
       return `<div class="docs">${list.map(d=>`
@@ -944,6 +941,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         </div>`).join("")}</div>`;
     }
     function allDocsHtml(){
+      if(!docsAllowed()) return "";
       return Object.values(MODELS).map(m=>{
         const list=DOCS[m.id]||[];
         if(!list.length) return "";
@@ -959,6 +957,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       }).join("");
     }
     function docsStrip(){
+      if(!docsAllowed()) return "";
       const list=docsList();
       if(!list.length) return "";
       return `<p class="eyebrow" style="margin-top:18px">Аргументаторы и тренинги</p>
