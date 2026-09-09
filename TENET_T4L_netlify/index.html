@@ -207,10 +207,46 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .hub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px;}
 @media(min-width:640px){.hub-grid{grid-template-columns:1fr 1fr;}}
 @media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,1fr);}}
-.hub-card{min-height:156px;display:flex;flex-direction:column;align-items:flex-start;padding:18px;text-align:left;}
-.hub-mark{width:36px;height:36px;border-radius:10px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-bottom:auto;}
-.hub-card h3{margin:18px 0 6px;font-size:22px;letter-spacing:-.03em;}
+.hub-card{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  padding:0;
+  overflow:hidden;
+  min-height:0;
+  text-align:left;
+  background:#fffcf7;
+}
+.hub-card::before{
+  content:"";
+  display:block;
+  width:100%;
+  aspect-ratio:16/10;
+  background-color:#efeae0;
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:cover;
+  border-bottom:1px solid var(--border);
+}
+.hub-card[data-go="home"]::before{background-image:url("hub/attest.jpg?v=1");background-position:42% 46%;}
+.hub-card[data-go="terms"]::before{background-image:url("hub/terms.jpg?v=1");background-position:55% 42%;}
+.hub-card[data-go="calc"]::before{background-image:url("hub/calc.jpg?v=1");background-position:38% 48%;}
+.hub-card[data-go="stock"]::before{background-image:url("hub/stock.jpg?v=1");background-position:50% 62%;}
+.hub-card[data-go="docs"]::before{background-image:url("hub/docs.jpg?v=1");background-position:50% 50%;}
+.hub-mark{
+  position:absolute;
+  top:12px;left:12px;z-index:1;
+  width:36px;height:36px;border-radius:10px;
+  background:var(--primary);color:#fff;
+  display:grid;place-items:center;
+  font-weight:800;font-size:13px;
+  box-shadow:0 8px 20px rgba(17,17,20,.18);
+}
+.hub-card .txt{padding:14px 14px 16px;}
+.hub-card h3{margin:0 0 6px;font-size:22px;letter-spacing:-.03em;}
 .hub-card p{margin:0;max-width:none;}
+.hub-card:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(17,17,20,.08);}
 .who-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 0;}
 .sheet{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 18px;}
 .sheet th,.sheet td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
@@ -817,8 +853,10 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         <div class="hub-grid">${cards.map(([id,mark,title,lead])=>`
           <button class="card hub-card" data-go="${id}" type="button">
             <span class="hub-mark">${mark}</span>
-            <h3>${title}</h3>
-            <p>${lead}</p>
+            <div class="txt">
+              <h3>${title}</h3>
+              <p>${lead}</p>
+            </div>
           </button>`).join("")}</div>`;
     }
     function terms(){

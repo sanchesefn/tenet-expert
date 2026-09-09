@@ -115,9 +115,11 @@ jobs:
           Path("_site/index.html").write_text(html)
           Path("_site/pins.json").write_text(json.dumps(pins, ensure_ascii=False))
           PY
-          mkdir -p _site/cars _site/docs/prices
+          mkdir -p _site/cars _site/docs/prices _site/hub
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
           if [ -d TENET_T4L_netlify/cars ]; then cp -f TENET_T4L_netlify/cars/*.jpg _site/cars/ 2>/dev/null || true; fi
+          if [ -d hub ]; then cp -f hub/*.jpg _site/hub/ 2>/dev/null || true; fi
+          if [ -d TENET_T4L_netlify/hub ]; then cp -f TENET_T4L_netlify/hub/*.jpg _site/hub/ 2>/dev/null || true; fi
           if [ -d docs ]; then
             cp -f docs/*.pdf docs/*.html _site/docs/ 2>/dev/null || true
             if [ -d docs/prices ]; then cp -f docs/prices/* _site/docs/prices/ 2>/dev/null || true; fi
