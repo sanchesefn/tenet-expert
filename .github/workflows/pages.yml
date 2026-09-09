@@ -29,7 +29,7 @@ jobs:
             cat prepare_site_a.py prepare_site_b.py > prepare_site.py
           fi
           if [ -f terms-calc-data.js ] && [ -f terms-calc-ui-a.js ] && [ -f terms-calc-ui-b.js ]; then
-            cat terms-calc-data.js terms-calc-loan.js terms-calc-ui-a.js terms-calc-ui-b.js > terms-calc-fn.js
+            cat terms-calc-data.js terms-calc-loan.js terms-mpt.js terms-calc-ui-a.js terms-calc-ui-b.js > terms-calc-fn.js
           fi
           python3 prepare_site.py
           if [ -f patch_css.py ]; then python3 patch_css.py; fi
