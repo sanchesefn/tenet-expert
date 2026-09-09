@@ -154,9 +154,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .models .card[data-model="t4l"]::before,
 .model-row .card[data-model="t4l"]::before{background-image:url("cars/t4l.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d7p04gqto5r7ch3usvi0/original");}
 .models .card[data-model="t7"]::before,
-.model-row .card[data-model="t7"]::before{background-image:url("cars/t7.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d40v48qto5r56gs4r870/original");}
+.model-row .card[data-model="t7"]::before{background-image:url("cars/t7.jpg?v=3");background-position:40% 50%;}
 .models .card[data-model="t8"]::before,
-.model-row .card[data-model="t8"]::before{background-image:url("cars/t8.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d3efr4ato5r56gptjfn0/original");}
+.model-row .card[data-model="t8"]::before{background-image:url("cars/t8.jpg?v=3");background-position:52% 55%;}
 .models .card[data-model="t9"]::before,
 .model-row .card[data-model="t9"]::before{background-image:url("cars/t9.jpg"),url("https://img.perxis.ru/unsafe/960x600/filters:format(jpeg):quality(78)/chry/originals/d9avnv2to5r6hlpdspfg/original");}
 .models .card[data-model="a8"]::before,
