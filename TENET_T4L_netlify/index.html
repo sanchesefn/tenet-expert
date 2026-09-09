@@ -256,6 +256,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .st.in{background:var(--ok-bg);color:var(--pass);}
 .st.hold{background:#f7ead0;color:#8a5a12;}
 .st.way{background:#ece9e2;color:var(--muted);}
+.vin{font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.02em;white-space:nowrap;}
 .calc-grid{display:grid;gap:14px;margin-top:18px;}
 @media(min-width:720px){.calc-grid{grid-template-columns:1.05fr .95fr;}}
 .calc-out{font-size:clamp(32px,6vw,48px);font-weight:800;letter-spacing:-.04em;margin:4px 0 8px;}
@@ -585,23 +586,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       {name:"T7 Актив 4WD", rec:2990000, max:2860000, trade:130000, credit:0},
       {name:"T7 Прайм 4WD", rec:3190000, max:3040000, trade:150000, credit:0}
     ];
-    const STOCK = [
-      {id:"s1", model:"t4l", name:"T4L", trim:"Актив", color:"Белый", status:"in", note:"Готов к выдаче"},
-      {id:"s2", model:"t4l", name:"T4L", trim:"Прайм", color:"Чёрный", status:"in", note:"360°, демо"},
-      {id:"s3", model:"t7", name:"T7", trim:"Актив 2WD", color:"Морской синий", status:"in", note:"Витрина"},
-      {id:"s4", model:"t7", name:"T7", trim:"Прайм 2WD", color:"Искрящийся белый", status:"hold", note:"Бронь до вечера"},
-      {id:"s5", model:"t7", name:"T7", trim:"Актив 4WD", color:"Глубокий чёрный", status:"way", note:"Склад импортёра"},
-      {id:"s6", model:"t7", name:"T7", trim:"Прайм 4WD", color:"Огненно-красный", status:"in", note:"19″"},
-      {id:"s7", model:"t8", name:"T8", trim:"Актив 5 мест", color:"Серый", status:"in", note:"1.6 2WD"},
-      {id:"s8", model:"t8", name:"T8", trim:"Прайм 7 мест", color:"Зелёный", status:"way", note:"2.0 4WD"},
-      {id:"s9", model:"t8", name:"T8", trim:"Ультра 7 мест", color:"Чёрный", status:"hold", note:"Ждёт договор"},
-      {id:"s10", model:"t9", name:"Tiggo 9", trim:"Прайм", color:"Белый", status:"in", note:"7 мест 4WD"},
-      {id:"s11", model:"t9", name:"Tiggo 9", trim:"Ультра", color:"Чёрный", status:"way", note:"В пути"},
-      {id:"s12", model:"a8", name:"Arrizo 8", trim:"Актив", color:"Серый", status:"in", note:"1.6 150"},
-      {id:"s13", model:"a8", name:"Arrizo 8", trim:"Прайм", color:"Белый", status:"in", note:"360°"},
-      {id:"s14", model:"t4l", name:"T4L", trim:"Прайм", color:"Красный", status:"way", note:"Поставка неделя"}
-    ];
-    const ST_LABEL = {in:"В салоне", hold:"Бронь", way:"В пути"};
+    const STOCK_META = {updated:"09.09.2026", dealer:"ООО «ЭКСПЕРТ АВТО САМАРА»"};
+    const STOCK = [{"vin": "EDELB31B1TE103208", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B2TE104643", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B2TE106361", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B4TE104739", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B9TE073827", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 25.06.2026", "rrc": 2329000}, {"vin": "EDELB31B0TE106553", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B1TE106724", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B3TE099534", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 22.08.2026", "rrc": 2329000}, {"vin": "EDELB31B3TE106711", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B5TE106502", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B6TE106766", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B7TE099729", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Светло-серый", "status": "in", "note": "В салоне · с 22.08.2026", "rrc": 2329000}, {"vin": "EDELB31B5TE106449", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B9TE103098", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31BXTE106401", "model": "t4l", "name": "T4L", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2329000}, {"vin": "EDELB31B3TE093989", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 06.08.2026", "rrc": 2479000}, {"vin": "EDELB31B4TE106023", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDELB31B6TE095588", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 10.08.2026", "rrc": 2479000}, {"vin": "EDELB31B7TE106047", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDELB31B9TE105899", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDELB31B9TE105966", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDELB31BXTE095545", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 06.08.2026", "rrc": 2479000}, {"vin": "EDELB31BXTE104549", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDEEB31B8TE003261", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Светло-серый", "status": "in", "note": "В салоне · с 06.08.2026", "rrc": 2449000}, {"vin": "EDELB31B0TE096879", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Чёрный", "status": "in", "note": "В салоне · с 15.08.2026", "rrc": 2479000}, {"vin": "EDELB31B4TE096853", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Чёрный", "status": "in", "note": "В салоне · с 15.08.2026", "rrc": 2479000}, {"vin": "EDELB31B7TE105710", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDELB31B9TE105739", "model": "t4l", "name": "T4L", "trim": "Прайм", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2479000}, {"vin": "EDEFB32B2TE105383", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2785000}, {"vin": "EDEFB32B4TE105370", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2785000}, {"vin": "EDEFB32B8TE105355", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2785000}, {"vin": "EDEFB32BXTE100707", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2785000}, {"vin": "EDEFB32B2TE105500", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2785000}, {"vin": "EDXFB32B2TE041658", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 08.05.2026", "rrc": 2785000}, {"vin": "EDXFB32B4TE041659", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 08.05.2026", "rrc": 2785000}, {"vin": "EDXFB32B7TE062327", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "in", "note": "В салоне · с 04.06.2026", "rrc": 2785000}, {"vin": "EDXFD32B0TE033634", "model": "t7", "name": "T7", "trim": "Актив 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 13.07.2026", "rrc": 2990000}, {"vin": "EDXFD32B2TE042710", "model": "t7", "name": "T7", "trim": "Актив 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 10.08.2026", "rrc": 2990000}, {"vin": "EDXFD32B3TE070113", "model": "t7", "name": "T7", "trim": "Актив 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 10.08.2026", "rrc": 2990000}, {"vin": "EDXFD32B4TE070279", "model": "t7", "name": "T7", "trim": "Актив 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 13.08.2026", "rrc": 2990000}, {"vin": "EDXFD32B7TE039754", "model": "t7", "name": "T7", "trim": "Актив 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 13.05.2026", "rrc": 2990000}, {"vin": "EDEFB32B0TE106984", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B1TE106895", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B1TE106959", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B2TE106842", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B2TE106999", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 31.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B3TE099318", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 25.08.2026", "rrc": 2985000}, {"vin": "EDEFB32B8TE099203", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Белый", "status": "in", "note": "В салоне · с 22.08.2026", "rrc": 2985000}, {"vin": "EDXFB32B1TE087336", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Светло-серый", "status": "in", "note": "В салоне · с 07.09.2026", "rrc": 2985000}, {"vin": "EDXFB32B3TE091114", "model": "t7", "name": "T7", "trim": "Прайм", "color": "Чёрный", "status": "in", "note": "В салоне · с 07.09.2026", "rrc": 2985000}, {"vin": "EDEFD32B1TE101190", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 23.08.2026", "rrc": 3190000}, {"vin": "EDEFD32B5TE102522", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 23.08.2026", "rrc": 3190000}, {"vin": "EDEFD32B5TE102570", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 23.08.2026", "rrc": 3190000}, {"vin": "EDEFD32B5TE102360", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Светло-серый", "status": "in", "note": "В салоне · с 23.08.2026", "rrc": 3190000}, {"vin": "EDEFD32B5TE102228", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 23.08.2026", "rrc": 3190000}, {"vin": "EDXFD32B3TE092581", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 25.08.2026", "rrc": 3190000}, {"vin": "EDXFD32B4TE092587", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 25.08.2026", "rrc": 3190000}, {"vin": "EDXFD32B4TE092590", "model": "t7", "name": "T7", "trim": "Прайм 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 25.08.2026", "rrc": 3190000}, {"vin": "EDEFB32B2TE105108", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "way", "note": "Калуга · склад дистрибьютора", "rrc": 2785000}, {"vin": "EDEFB32B3TE112410", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "way", "note": "Калуга · склад дистрибьютора", "rrc": 2785000}, {"vin": "EDEFB32B5TE109881", "model": "t7", "name": "T7", "trim": "Актив", "color": "Белый", "status": "way", "note": "Едет к дилеру · Отгружен", "rrc": 2785000}, {"vin": "EDEFB32B5TE110013", "model": "t7", "name": "T7", "trim": "Актив", "color": "Голубой", "status": "way", "note": "Калуга · Подтвержден к отгрузке", "rrc": 2785000}, {"vin": "EDEFB32B2TE107327", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "way", "note": "Калуга · склад дистрибьютора", "rrc": 2785000}, {"vin": "EDEFB32BXTE107432", "model": "t7", "name": "T7", "trim": "Актив", "color": "Чёрный", "status": "way", "note": "Калуга · склад дистрибьютора", "rrc": 2785000}, {"vin": "EDXGB32B3TE076049", "model": "t8", "name": "T8", "trim": "Актив 5 мест 2WD", "color": "Белый", "status": "in", "note": "В салоне · с 13.07.2026", "rrc": 3099000}, {"vin": "EDXGD34B8TE095347", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 15.08.2026", "rrc": 3630000}, {"vin": "EDXGD34B1TE022143", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Светло-серый", "status": "in", "note": "В салоне · с 29.06.2026", "rrc": 3630000}, {"vin": "EDXGD34B5TE082040", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Светло-серый", "status": "in", "note": "В салоне · с 29.07.2026", "rrc": 3630000}, {"vin": "EDXGD34BXTE081949", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Светло-серый", "status": "in", "note": "В салоне · с 29.07.2026", "rrc": 3630000}, {"vin": "EDXGD34B0TE082608", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Тёмно-зелёный", "status": "in", "note": "В салоне · с 29.07.2026", "rrc": 3630000}, {"vin": "EDXGD34B8TE082601", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Тёмно-зелёный", "status": "in", "note": "В салоне · с 29.07.2026", "rrc": 3630000}, {"vin": "EDXGD34B9TE082641", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Тёмно-зелёный", "status": "in", "note": "В салоне · с 27.07.2026", "rrc": 3630000}, {"vin": "EDXGD34B5TE095631", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 25.08.2026", "rrc": 3630000}, {"vin": "EDXGD34B6TE031162", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 27.06.2026", "rrc": 3630000}, {"vin": "EDXGD34B8TE095641", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Чёрный", "status": "in", "note": "В салоне · с 06.09.2026", "rrc": 3630000}, {"vin": "EDXGD34B3TE031815", "model": "t8", "name": "T8", "trim": "Ультра 7 мест 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 12.06.2026", "rrc": 3885000}, {"vin": "EDXGD34B2TE057953", "model": "t8", "name": "T8", "trim": "Ультра 7 мест 4WD", "color": "Тёмно-зелёный", "status": "in", "note": "В салоне · с 25.07.2026", "rrc": 3885000}, {"vin": "EDXGB32B0TE110108", "model": "t8", "name": "T8", "trim": "Прайм 5 мест 2WD", "color": "Белый", "status": "way", "note": "Калуга · Подтвержден к отгрузке", "rrc": 3299000}, {"vin": "EDXGD34B2TE109064", "model": "t8", "name": "T8", "trim": "Прайм 7 мест 4WD", "color": "Тёмно-зелёный", "status": "way", "note": "Калуга · Подтвержден к отгрузке", "rrc": 3630000}, {"vin": "EDXGD34B4TE050793", "model": "t8", "name": "T8", "trim": "Ультра 7 мест 4WD", "color": "Светло-серый", "status": "way", "note": "Домодедово · Готов к отгрузке", "rrc": 3885000}, {"vin": "EDXGD34B7TE034443", "model": "t8", "name": "T8", "trim": "Ультра 7 мест 4WD", "color": "Чёрный", "status": "way", "note": "Домодедово · Готов к отгрузке", "rrc": 3885000}];
+    const ST_LABEL = {in:"В наличии", hold:"Бронь", way:"В пути"};
     const QBY = {t4l:null, t7:T7_Q, t8:T8_Q, t9:T9_Q, a8:A8_Q};
 
     QBY.t4l = T4L_Q;
@@ -620,6 +607,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     let syncOk = false;
     let qDeadline = 0;
     let stockFilter = "all";
+    let stockStatus = "all";
 
     function load(){
       try { return Object.assign({surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
@@ -842,7 +830,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         ["home","A","Аттестация","Тесты, рейтинг, справочник и аргументаторы"],
         ["terms","₽","Торговые условия","Прайс 01.09.2026, трейд-ин и кредит T7"],
         ["calc","%","Калькулятор","Ежемесячный платёж с выбранной комплектации"],
-        ["stock","S","Склад","Что в салоне, в брони и в пути"],
+        ["stock","S","Склад","В наличии и в пути — T4L, T7, T8"],
         ["docs","D","Документы","Прайсы, PDF и материалы моделей"]
       ];
       return banner("Кабинет отдела продаж","TENET · CHERY", state.display)+`
@@ -927,26 +915,65 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     }
     function stock(){
       if(needAuth()) return login();
-      const rows=STOCK.filter(x=>stockFilter==="all"||x.model===stockFilter);
+      const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"09.09.2026"};
+      const list=STOCK.filter(x=>{
+        if(stockFilter!=="all" && x.model!==stockFilter) return false;
+        if(stockStatus!=="all" && x.status!==stockStatus) return false;
+        return true;
+      });
       const nIn=STOCK.filter(x=>x.status==="in").length;
-      const nHold=STOCK.filter(x=>x.status==="hold").length;
       const nWay=STOCK.filter(x=>x.status==="way").length;
-      return banner("Склад","Салон · ориентир","TENET")+`
-        <p class="lead">В салоне ${nIn}, бронь ${nHold}, в пути ${nWay}. Фактический VIN и бронь — у РОП / склада. Здесь — чтобы быстро ответить клиенту.</p>
-        <div class="study-pick" style="margin-top:12px">
-          <button class="chip ${stockFilter==="all"?"on":""}" data-stock="all">Все</button>
-          ${Object.values(MODELS).map(m=>`<button class="chip ${stockFilter===m.id?"on":""}" data-stock="${m.id}">${m.name}</button>`).join("")}
-        </div>
-        <div style="overflow:auto"><table class="sheet">
-          <thead><tr><th>Авто</th><th>Цвет</th><th>Статус</th><th>Заметка</th></tr></thead>
+      const byModel={};
+      list.forEach(r=>{ (byModel[r.model]=byModel[r.model]||[]).push(r); });
+      const modelOrder=["t4l","t7","t8","t9","a8"];
+      function cnt(id){
+        const n=STOCK.filter(x=>x.model===id).length;
+        const w=STOCK.filter(x=>x.model===id && x.status==="way").length;
+        return w?`${n} · ${w} в пути`:String(n);
+      }
+      function block(rows){
+        if(!rows.length) return `<p class="empty">Нет машин</p>`;
+        return `<div style="overflow:auto"><table class="sheet">
+          <thead><tr><th>Авто</th><th>Цвет</th><th>VIN</th><th>Статус</th><th>Где</th></tr></thead>
           <tbody>${rows.map(r=>`<tr>
             <td><b>${escape(r.name)}</b><div style="color:var(--muted);font-size:12px">${escape(r.trim)}</div></td>
             <td>${escape(r.color)}</td>
-            <td><span class="st ${r.status}">${ST_LABEL[r.status]}</span></td>
+            <td class="vin">${escape(r.vin)}</td>
+            <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span></td>
             <td>${escape(r.note)}</td>
           </tr>`).join("")}</tbody>
-        </table></div>
-        <p class="lead">Не обещать цвет и срок, если статус «в пути».</p>`;
+        </table></div>`;
+      }
+      const body = list.length
+        ? modelOrder.filter(id=>byModel[id]).map(id=>{
+            const m=MODELS[id];
+            const rows=byModel[id];
+            const inn=rows.filter(x=>x.status==="in").length;
+            const way=rows.filter(x=>x.status==="way").length;
+            return `<div class="card" style="margin-top:12px;padding:14px">
+              <div class="eyebrow">${escape(m.brand)}</div>
+              <h3 style="margin:0 0 8px">${escape(m.name)} · ${inn} в наличии${way?` · ${way} в пути`:""}</h3>
+              ${block(rows)}
+            </div>`;
+          }).join("")
+        : `<div class="card" style="margin-top:12px"><p>По этому фильтру машин нет.</p></div>`;
+      return banner("Склад", `Logicstars · ${meta.updated}`, "TENET")+`
+        <p class="lead">Непроданные и отложенные из кабинета дилера. <b>В наличии</b> — уже у дилера. <b>В пути</b> — завод, Домодедово или едет. Снимок ${meta.updated}.</p>
+        <div class="study-pick" style="margin-top:12px">
+          <button class="chip ${stockFilter==="all"?"on":""}" data-stock="all">Все · ${STOCK.length}</button>
+          ${["t4l","t7","t8","t9","a8"].map(id=>{
+            const m=MODELS[id];
+            const n=STOCK.filter(x=>x.model===id).length;
+            return `<button class="chip ${stockFilter===id?"on":""}" data-stock="${id}">${m.name}${n?` · ${n}`:" · нет"}</button>`;
+          }).join("")}
+        </div>
+        <div class="study-pick">
+          <button class="chip ${stockStatus==="all"?"on":""}" data-stock-st="all">Все статусы</button>
+          <button class="chip ${stockStatus==="in"?"on":""}" data-stock-st="in">В наличии · ${nIn}</button>
+          <button class="chip ${stockStatus==="way"?"on":""}" data-stock-st="way">В пути · ${nWay}</button>
+        </div>
+        ${body}
+        <p class="lead">Не обещать срок, если машина в пути. Цвет клиенту — как в карточке, не «примерно синий».</p>`;
     }
     function docs(){
       if(needAuth()) return login();
@@ -1598,6 +1625,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         goSection(b.dataset.go);
       });
       document.querySelectorAll("[data-stock]").forEach(b=>b.onclick=()=>{ stockFilter=b.dataset.stock; render(); });
+      document.querySelectorAll("[data-stock-st]").forEach(b=>b.onclick=()=>{ stockStatus=b.dataset.stockSt; render(); });
       const cPreset=document.getElementById("cPreset");
       if(cPreset) cPreset.onchange=()=>{
         const p=Number(cPreset.value)||0;

@@ -263,6 +263,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .st.in{background:var(--ok-bg);color:var(--pass);}
 .st.hold{background:#f7ead0;color:#8a5a12;}
 .st.way{background:#ece9e2;color:var(--muted);}
+.vin{font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.02em;white-space:nowrap;}
 .calc-grid{display:grid;gap:14px;margin-top:18px;}
 @media(min-width:720px){.calc-grid{grid-template-columns:1.05fr .95fr;}}
 .calc-out{font-size:clamp(32px,6vw,48px);font-weight:800;letter-spacing:-.04em;margin:4px 0 8px;}
