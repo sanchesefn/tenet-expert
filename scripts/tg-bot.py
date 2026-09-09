@@ -11,6 +11,16 @@ MODELS = {
     "tiggo9": "Tiggo 9", "tiggo 9": "Tiggo 9", "arrizo8": "Arrizo 8", "arrizo 8": "Arrizo 8",
 }
 SKIP_TYPES = {"pass", "login"}
+STAFF = {
+    "ахмадуллин": "Ахмадуллин",
+    "демьянов": "Демьянов",
+    "коропец": "Коропец",
+    "лавров": "Лавров",
+    "сидоров": "Сидоров",
+    "спицын": "Спицын",
+    "тальков": "Тальков",
+}
+
 
 def req(url, data=None, timeout=20):
     body = None
@@ -22,11 +32,13 @@ def req(url, data=None, timeout=20):
     with urllib.request.urlopen(r, timeout=timeout) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
+
 def form_post(url, fields):
     body = urllib.parse.urlencode(fields).encode()
     r = urllib.request.Request(url, data=body, headers={"Content-Type": "application/x-www-form-urlencoded"})
     with urllib.request.urlopen(r, timeout=20) as resp:
         return json.loads(resp.read().decode("utf-8"))
+
 
 def pull():
     data = form_post(f"https://rentry.co/api/fetch/{CLOUD_ID}", {"edit_code": CLOUD_KEY})
@@ -35,19 +47,24 @@ def pull():
     parsed = json.loads(text or "[]")
     return parsed if isinstance(parsed, list) else []
 
+
 def push(lst):
     form_post(f"https://rentry.co/api/edit/{CLOUD_ID}", {"edit_code": CLOUD_KEY, "text": json.dumps(lst, ensure_ascii=False)})
+
 
 def tg(method, payload):
     return req(f"https://api.telegram.org/bot{TOKEN}/{method}", payload)
 
+
 def send(chat_id, text):
     tg("sendMessage", {"chat_id": chat_id, "text": text, "disable_web_page_preview": True})
+
 
 def allowed(chat_id):
     if not CHAT_ALLOW:
         return True
     return str(chat_id) in CHAT_ALLOW
+
 
 def model_id(raw):
     s = (raw or "").strip().lower().replace("ё", "е")
@@ -58,20 +75,65 @@ def model_id(raw):
     }
     return aliases.get(s)
 
+
 def make_code():
     alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
     return "РОП-" + "".join(random.choice(alphabet) for _ in range(4))
 
+
 def make_pin():
     return "".join(random.choice("23456789") for _ in range(4))
 
+
+def targets():
+    return CHAT_ALLOW
+
+
 def notify_new(lst):
     changed = False
-    targets = CHAT_ALLOW
-    if not targets:
+    chats = targets()
+    if not chats:
         return False
     for rec in lst:
         if not rec or rec.get("type") in SKIP_TYPES:
+            continue
+        if rec.get("type") == "pin_request":
+            if rec.get("tgSent"):
+                continue
+            name = rec.get("display") or rec.get("surname") or "?"
+            kind = rec.get("kind") or "login"
+            try:
+                if kind == "retake":
+                    mid = rec.get("model") or "t4l"
+                    text = (
+                        f"Запрос кода пересдачи\n"
+                        f"{name} · {MODELS.get(str(mid), mid)}\n"
+                        f"Выдать: код {name} {mid}"
+                    )
+                else:
+                    sn = " ".join((name or "").split()).lower()
+                    pin = next((x for x in lst if x and x.get("type")=="login" and x.get("surname")==sn and x.get("code")), None)
+                    if pin is None:
+                        pin = upsert_login(lst, name)
+                    text = (
+                        f"Запрос кода входа\n"
+                        f"{name}\n"
+                        f"Личный код: {pin['code']}\n\n"
+                        f"Менеджер вводит фамилию и этот код на сайте."
+                    )
+                ok_all = True
+                for chat in chats:
+                    try:
+                        send(chat, text)
+                    except Exception as e:
+                        ok_all = False
+                        print("send fail", e)
+                if ok_all:
+                    rec["tgSent"] = True
+                    rec["resolvedAt"] = datetime.now(timezone.utc).isoformat()
+                    changed = True
+            except Exception as e:
+                print("pin_request fail", e)
             continue
         if rec.get("status") != "done" or rec.get("tgSent"):
             continue
@@ -88,7 +150,7 @@ def notify_new(lst):
             f"Выдать код: код {name} {rec.get('model')}"
         )
         ok_all = True
-        for chat in targets:
+        for chat in chats:
             try:
                 send(chat, text)
             except Exception as e:
@@ -100,6 +162,7 @@ def notify_new(lst):
     if changed:
         push(lst)
     return changed
+
 
 def issue_code(lst, surname, mid):
     rec = {
@@ -114,6 +177,7 @@ def issue_code(lst, surname, mid):
     lst.append(rec)
     push(lst)
     return rec
+
 
 def upsert_login(lst, surname, pin=None):
     sn = " ".join((surname or "").split()).lower()
@@ -138,20 +202,25 @@ def upsert_login(lst, surname, pin=None):
     push(lst)
     return rec
 
+
+HELP = (
+    "Бот РОП TENET / CHERY\n\n"
+    "Личный вход:\n"
+    "пин Иванов\n"
+    "пин Иванов 4821\n"
+    "пины\n"
+    "спицын  ← фамилия из состава = выдать пин\n\n"
+    "Код на пересдачу:\n"
+    "код Иванов t4l\n\n"
+    "Модели: t4l t7 t8 t9 a8"
+)
+
+
 def handle_text(chat_id, text, lst):
     t = (text or "").strip()
     low = t.lower().replace("ё", "е")
     if low in ("/start", "старт", "/help", "помощь"):
-        send(chat_id, (
-            "Бот РОП TENET / CHERY\n\n"
-            "Личный вход:\n"
-            "пин Иванов\n"
-            "пин Иванов 4821\n"
-            "пины\n\n"
-            "Код на пересдачу:\n"
-            "код Иванов t4l\n\n"
-            "Модели: t4l t7 t8 t9 a8"
-        ))
+        send(chat_id, HELP)
         return lst
     if low in ("пины", "/пины"):
         pins = [x for x in lst if x and x.get("type") == "login"]
@@ -163,7 +232,7 @@ def handle_text(chat_id, text, lst):
         return lst
     if low.startswith("пин ") or low.startswith("/pin ") or low.startswith("/пин "):
         parts = t.split()
-        if parts[0].lower().replace("ё","е") in ("/pin", "/пин", "пин"):
+        if parts[0].lower().replace("ё", "е") in ("/pin", "/пин", "пин"):
             parts = parts[1:]
         if not parts:
             send(chat_id, "Формат: пин Фамилия\nили: пин Фамилия 4821")
@@ -206,7 +275,19 @@ def handle_text(chat_id, text, lst):
         lines = [f"{x.get('display') or x.get('surname')} {x.get('model')} №{x.get('exam') or 1} {x.get('percent')}%" for x in people[-20:]]
         send(chat_id, "Последние сдачи:\n" + "\n".join(lines))
         return lst
+    # bare staff surname → issue login pin
+    key = low.strip()
+    if key in STAFF:
+        rec = upsert_login(lst, STAFF[key])
+        send(chat_id, (
+            f"Вход для {rec['display']}:\n"
+            f"код {rec['code']}\n\n"
+            "Менеджер вводит фамилию и этот код на сайте."
+        ))
+        return pull()
+    send(chat_id, "Не понял команду.\n\n" + HELP)
     return lst
+
 
 def main():
     if not TOKEN:
@@ -222,7 +303,14 @@ def main():
         msg = upd.get("message") or upd.get("edited_message") or {}
         chat = (msg.get("chat") or {}).get("id")
         text = msg.get("text") or ""
-        if chat is None or not allowed(chat):
+        if chat is None:
+            continue
+        if not allowed(chat):
+            for rop in targets():
+                try:
+                    send(rop, f"Бот получил сообщение не из чата РОП ({chat}):\n{text[:200]}")
+                except Exception as e:
+                    print("forward fail", e)
             continue
         lst = handle_text(chat, text, lst)
     if last_id is not None:
@@ -230,6 +318,7 @@ def main():
             tg("getUpdates", {"offset": last_id + 1, "timeout": 0})
         except Exception:
             pass
+
 
 if __name__ == "__main__":
     main()

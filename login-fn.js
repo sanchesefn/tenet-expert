@@ -6,6 +6,7 @@
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" autocomplete="username" /></label>
         <label class="field"><span>Личный код</span><input id="loginPin" placeholder="4 цифры" inputmode="numeric" autocomplete="current-password" /></label>
         <button class="btn ivory login-btn" id="doLogin">Войти</button>
+        <button class="btn ghost login-btn" id="askPin" type="button">Запросить код у РОП</button>
         <p id="loginErr" class="login-err"></p>
       </section>`;
     }

@@ -51,6 +51,16 @@ jobs:
               b = html.find("    function homeLeadText(){")
               if a >= 0 and b > a:
                   html = html[:a] + extra + html[b:]
+          ask = Path("ask-pin-fn.js")
+          if ask.exists():
+              extra = ask.read_text()
+              if not extra.endswith("\n"):
+                  extra += "\n"
+              needle = '      const logout=document.getElementById("logout");'
+              if needle in html:
+                  html = html.replace(needle, extra + needle, 1)
+              else:
+                  print("askPin bind not found")
           old_login = '''const doLogin=document.getElementById("doLogin");\n      if(doLogin) doLogin.onclick=async()=>{\n        const v=(document.getElementById("surname").value||"").trim();\n        const err=document.getElementById("loginErr");\n        if(v.length<2){ err.textContent="Введите фамилию."; return; }\n        state.surname=norm(v); state.display=v.replace(/\\s+/g," "); save();\n        await refreshLocks();\n        if(userRun()){ resumeExam(userRun()); return; }\n        view="home"; render();\n      };'''
           new_login = '''const doLogin=document.getElementById("doLogin");\n      if(doLogin) doLogin.onclick=async()=>{\n        const v=(document.getElementById("surname").value||"").trim();\n        const pin=((document.getElementById("loginPin")||{}).value||"").trim();\n        const err=document.getElementById("loginErr");\n        if(v.length<2){ err.textContent="Введите фамилию."; return; }\n        if(!pin){ err.textContent="Введите личный код от РОП."; return; }\n        err.textContent="Проверяю код…";\n        await refreshLocks();\n        const rec=(remoteLocks||[]).find(x=>x && x.type==="login" && x.surname===norm(v));\n        if(!rec){ err.textContent="Код для этой фамилии ещё не выдан. Обратитесь к РОП."; return; }\n        if(String(rec.code||"").toUpperCase()!==pin.toUpperCase()){ err.textContent="Неверный код."; return; }\n        state.surname=norm(v); state.display=v.replace(/\\s+/g," "); state.authed=true; save();\n        if(userRun()){ resumeExam(userRun()); return; }\n        view="home"; render();\n      };'''
           if old_login in html:
