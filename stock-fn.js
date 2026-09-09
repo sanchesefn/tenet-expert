@@ -3,6 +3,39 @@
       if(/коричнев/i.test(t)) return "Brown";
       return t;
     }
+    function stockRrc(r){
+      if(r && r.rrc) return Number(r.rrc)||0;
+      let id="";
+      if(typeof kmIdFromCar==="function") id=kmIdFromCar(r)||"";
+      if(!id){
+        const t=String(r&&r.trim||"").toLowerCase();
+        const m=r&&r.model||"";
+        if(m==="t4") id="t4p";
+        else if(m==="t4l") id=t.includes("прайм")?"t4lp":"t4la";
+        else if(m==="t7"){
+          if(t.includes("4wd")&&t.includes("прайм")) id="t7p4";
+          else if(t.includes("4wd")) id="t7a4";
+          else if(t.includes("прайм")) id="t7p";
+          else id="t7a";
+        }else if(m==="t8"){
+          if(t.includes("ультра")) id="t8u4";
+          else if(t.includes("4wd")) id="t8p4";
+          else if(t.includes("прайм")) id="t8p";
+          else id="t8a";
+        }else if(m==="t9") id=t.includes("прайм")?"t9p":"t9u";
+        else if(m==="a8"){
+          if(t.includes("ультра")) id="a8u";
+          else if(t.includes("актив")) id="a8a";
+          else id="a8p";
+        }else if(m==="t7l") id="t7l";
+      }
+      if(typeof KM_MODELS!=="undefined"){
+        const line=(KM_MODELS.find(x=>x.id===id)||{});
+        if(line.rrc) return line.rrc;
+      }
+      const map={t4p:2449000,t4la:2329000,t4lp:2479000,t7a:2785000,t7p:2985000,t7a4:2990000,t7p4:3190000,t8a:3099000,t8p:3299000,t8p4:3630000,t8u4:3885000,t9p:4335000,t9u:4640000,a8a:2865000,a8p:3060000,a8u:3275000,t7l:2735000};
+      return map[id]||0;
+    }
     function stock(){
       if(needAuth()) return login();
       const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"09.09.2026"};
@@ -22,14 +55,16 @@
         const showSalon=rows.some(r=>salonLabel(r.salon));
         const showProd=rows.some(r=>r.prod);
         return `<div style="overflow:auto"><table class="sheet">
-          <thead><tr><th>Авто</th><th>Цвет</th>${showSalon?"<th>Салон</th>":""}${showProd?"<th>Производство</th>":""}<th>VIN</th><th>Статус</th><th>Где</th></tr></thead>
+          <thead><tr><th>Авто</th><th>Цвет</th>${showSalon?"<th>Салон</th>":""}${showProd?"<th>Производство</th>":""}<th>Цена</th><th>VIN</th><th>Статус</th><th>Где</th></tr></thead>
           <tbody>${rows.map(r=>{
             const salon=salonLabel(r.salon);
+            const price=stockRrc(r);
             return `<tr>
             <td><b>${escape(r.name)}</b><div style="color:var(--muted);font-size:12px">${escape(r.trim)}</div></td>
             <td>${escape(r.color)}</td>
             ${showSalon?`<td>${salon?`<b>${escape(salon)}</b>`:"—"}</td>`:""}
             ${showProd?`<td>${escape(r.prod||"—")}</td>`:""}
+            <td>${price?`<b>${rub(price)} ₽</b>`:"—"}</td>
             <td class="vin">${escape(r.vin)}</td>
             <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span>${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}</td>
             <td>${escape(r.note)}</td>
