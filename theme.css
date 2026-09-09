@@ -211,3 +211,27 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .doc-mini b{font-size:13px;}
 .doc-mini span{color:var(--muted);}
 .doc-mini a{font-weight:700;border-bottom:1px solid var(--border);}
+.hub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px;}
+@media(min-width:640px){.hub-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,1fr);}}
+.hub-card{min-height:156px;display:flex;flex-direction:column;align-items:flex-start;padding:18px;text-align:left;}
+.hub-mark{width:36px;height:36px;border-radius:10px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-bottom:auto;}
+.hub-card h3{margin:18px 0 6px;font-size:22px;letter-spacing:-.03em;}
+.hub-card p{margin:0;max-width:none;}
+.who-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 0;}
+.sheet{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 18px;}
+.sheet th,.sheet td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+.sheet th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.sheet .num{font-variant-numeric:tabular-nums;font-weight:800;text-align:right;white-space:nowrap;}
+.st{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:700;letter-spacing:.04em;}
+.st.in{background:var(--ok-bg);color:var(--pass);}
+.st.hold{background:#f7ead0;color:#8a5a12;}
+.st.way{background:#ece9e2;color:var(--muted);}
+.calc-grid{display:grid;gap:14px;margin-top:18px;}
+@media(min-width:720px){.calc-grid{grid-template-columns:1.05fr .95fr;}}
+.calc-out{font-size:clamp(32px,6vw,48px);font-weight:800;letter-spacing:-.04em;margin:4px 0 8px;}
+.calc-note{color:var(--muted);font-size:13px;line-height:1.45;margin:0;}
+.note-box{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.45;margin:12px 0 8px;}
+.brand{cursor:pointer;}
+select{width:100%;background:#fff;border:1px solid var(--border);color:var(--fg);border-radius:10px;padding:12px;font:15px Inter,sans-serif;}
+

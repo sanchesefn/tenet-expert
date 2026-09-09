@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <title>TENET / CHERY Аттестация</title>
+  <title>TENET / CHERY · Отдел продаж</title>
   <style>
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 :root {
@@ -92,6 +92,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .clock{font-variant-numeric:tabular-nums;font-size:28px;font-weight:800;letter-spacing:-.04em;}
 .clock.warn{color:var(--primary);}
 .chip{border:1px solid var(--border);background:var(--surface);color:var(--fg);border-radius:999px;padding:8px 12px;font-size:13px;font-weight:600;}
+.chip.on{background:var(--fg);color:#fff;border-color:var(--fg);}
+.study-pick{display:flex;gap:8px;overflow-x:auto;padding:2px 0 8px;-webkit-overflow-scrolling:touch;}
+.study-pick .chip{flex:0 0 auto;white-space:nowrap;}
 .rate-board{display:flex;gap:10px;overflow-x:auto;margin-top:16px;padding-bottom:8px;-webkit-overflow-scrolling:touch;}
 .rate-col{flex:1 0 196px;min-width:196px;border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:12px 12px 10px;box-shadow:var(--shadow);}
 .rate-col .eyebrow{margin-bottom:2px;}
@@ -201,13 +204,35 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .doc-mini b{font-size:13px;}
 .doc-mini span{color:var(--muted);}
 .doc-mini a{font-weight:700;border-bottom:1px solid var(--border);}
+.hub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px;}
+@media(min-width:640px){.hub-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,1fr);}}
+.hub-card{min-height:156px;display:flex;flex-direction:column;align-items:flex-start;padding:18px;text-align:left;}
+.hub-mark{width:36px;height:36px;border-radius:10px;background:var(--primary);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-bottom:auto;}
+.hub-card h3{margin:18px 0 6px;font-size:22px;letter-spacing:-.03em;}
+.hub-card p{margin:0;max-width:none;}
+.who-line{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0 0;}
+.sheet{width:100%;border-collapse:collapse;font-size:14px;margin:8px 0 18px;}
+.sheet th,.sheet td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--border);vertical-align:top;}
+.sheet th{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600;}
+.sheet .num{font-variant-numeric:tabular-nums;font-weight:800;text-align:right;white-space:nowrap;}
+.st{display:inline-block;border-radius:999px;padding:3px 8px;font-size:11px;font-weight:700;letter-spacing:.04em;}
+.st.in{background:var(--ok-bg);color:var(--pass);}
+.st.hold{background:#f7ead0;color:#8a5a12;}
+.st.way{background:#ece9e2;color:var(--muted);}
+.calc-grid{display:grid;gap:14px;margin-top:18px;}
+@media(min-width:720px){.calc-grid{grid-template-columns:1.05fr .95fr;}}
+.calc-out{font-size:clamp(32px,6vw,48px);font-weight:800;letter-spacing:-.04em;margin:4px 0 8px;}
+.calc-note{color:var(--muted);font-size:13px;line-height:1.45;margin:0;}
+.note-box{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px 14px;font-size:13px;color:var(--muted);line-height:1.45;margin:12px 0 8px;}
+.brand{cursor:pointer;}
 
 </style>
 </head>
 <body>
   <div class="wrap">
     <header class="top">
-      <div class="brand" id="brandLine"><span class="mark">A</span> <span id="brandText">АТТЕСТАЦИЯ</span></div>
+      <div class="brand" id="brandLine" data-go="hub"><span class="mark">T</span> <span id="brandText">ОТДЕЛ ПРОДАЖ</span></div>
       <nav class="desk" id="navDesk"></nav>
     </header>
     <main id="app"><p style="padding:24px">Загрузка…</p></main>
@@ -499,6 +524,48 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       t9:  {id:"t9", brand:"CHERY", name:"Tiggo 9", rivals:"Monjaro, J8, Uni-K, GS8, Tank 300, T2, K50", examN:40, img:"cars/t9.jpg"},
       a8:  {id:"a8", brand:"CHERY", name:"Arrizo 8", rivals:"Preface, UNI-V", examN:39, img:"cars/a8.jpg"}
     };
+    const PRICE_ROWS = [
+      {model:"t4l", brand:"TENET", name:"T4L Актив 2WD", motor:"1.5 147 DCT6", price:2329000},
+      {model:"t4l", brand:"TENET", name:"T4L Прайм 2WD", motor:"1.5 147 DCT6", price:2479000},
+      {model:"t7", brand:"TENET", name:"T7 Актив 2WD", motor:"1.6 150 DCT7", price:2785000},
+      {model:"t7", brand:"TENET", name:"T7 Прайм 2WD", motor:"1.6 150 DCT7", price:2985000},
+      {model:"t7", brand:"TENET", name:"T7 Актив 4WD", motor:"1.6 150 DCT7", price:2990000},
+      {model:"t7", brand:"TENET", name:"T7 Прайм 4WD", motor:"1.6 150 DCT7", price:3190000},
+      {model:"t8", brand:"TENET", name:"T8 Актив 5 мест 2WD", motor:"1.6 186 DCT", price:3449000},
+      {model:"t8", brand:"TENET", name:"T8 Прайм 5 мест 2WD", motor:"1.6 186 DCT", price:3629000},
+      {model:"t8", brand:"TENET", name:"T8 Ультра 5 мест 2WD", motor:"1.6 186 DCT", price:3799000},
+      {model:"t8", brand:"TENET", name:"T8 Прайм 7 мест 4WD", motor:"2.0 197 DCT", price:4099000},
+      {model:"t8", brand:"TENET", name:"T8 Ультра 7 мест 4WD", motor:"2.0 197 DCT", price:4299000},
+      {model:"t9", brand:"CHERY", name:"Tiggo 9 Прайм", motor:"2.0 197 4WD", price:4335000},
+      {model:"t9", brand:"CHERY", name:"Tiggo 9 Ультра", motor:"2.0 197 4WD", price:4624000},
+      {model:"t9", brand:"CHERY", name:"Tiggo 9 Ультра Чёрный", motor:"2.0 197 4WD", price:4724000},
+      {model:"a8", brand:"CHERY", name:"Arrizo 8 Актив", motor:"1.6 150 DCT7", price:2865000},
+      {model:"a8", brand:"CHERY", name:"Arrizo 8 Прайм", motor:"1.6 150 DCT7", price:3060000},
+      {model:"a8", brand:"CHERY", name:"Arrizo 8 Ультра Черный", motor:"1.6 150 DCT7", price:3275000}
+    ];
+    const T7_DEAL = [
+      {name:"T7 Актив 2WD", rec:2785000, max:2605000, trade:180000, credit:0},
+      {name:"T7 Прайм 2WD", rec:2985000, max:2735000, trade:200000, credit:50000},
+      {name:"T7 Актив 4WD", rec:2990000, max:2860000, trade:130000, credit:0},
+      {name:"T7 Прайм 4WD", rec:3190000, max:3040000, trade:150000, credit:0}
+    ];
+    const STOCK = [
+      {id:"s1", model:"t4l", name:"T4L", trim:"Актив", color:"Белый", status:"in", note:"Готов к выдаче"},
+      {id:"s2", model:"t4l", name:"T4L", trim:"Прайм", color:"Чёрный", status:"in", note:"360°, демо"},
+      {id:"s3", model:"t7", name:"T7", trim:"Актив 2WD", color:"Морской синий", status:"in", note:"Витрина"},
+      {id:"s4", model:"t7", name:"T7", trim:"Прайм 2WD", color:"Искрящийся белый", status:"hold", note:"Бронь до вечера"},
+      {id:"s5", model:"t7", name:"T7", trim:"Актив 4WD", color:"Глубокий чёрный", status:"way", note:"Склад импортёра"},
+      {id:"s6", model:"t7", name:"T7", trim:"Прайм 4WD", color:"Огненно-красный", status:"in", note:"19″"},
+      {id:"s7", model:"t8", name:"T8", trim:"Актив 5 мест", color:"Серый", status:"in", note:"1.6 2WD"},
+      {id:"s8", model:"t8", name:"T8", trim:"Прайм 7 мест", color:"Зелёный", status:"way", note:"2.0 4WD"},
+      {id:"s9", model:"t8", name:"T8", trim:"Ультра 7 мест", color:"Чёрный", status:"hold", note:"Ждёт договор"},
+      {id:"s10", model:"t9", name:"Tiggo 9", trim:"Прайм", color:"Белый", status:"in", note:"7 мест 4WD"},
+      {id:"s11", model:"t9", name:"Tiggo 9", trim:"Ультра", color:"Чёрный", status:"way", note:"В пути"},
+      {id:"s12", model:"a8", name:"Arrizo 8", trim:"Актив", color:"Серый", status:"in", note:"1.6 150"},
+      {id:"s13", model:"a8", name:"Arrizo 8", trim:"Прайм", color:"Белый", status:"in", note:"360°"},
+      {id:"s14", model:"t4l", name:"T4L", trim:"Прайм", color:"Красный", status:"way", note:"Поставка неделя"}
+    ];
+    const ST_LABEL = {in:"В салоне", hold:"Бронь", way:"В пути"};
     const QBY = {t4l:null, t7:T7_Q, t8:T8_Q, t9:T9_Q, a8:A8_Q};
 
     QBY.t4l = T4L_Q;
@@ -507,7 +574,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     state.seenStudy = state.seenStudy || {};
     state.seenTrain = state.seenTrain || {};
     state.runs = state.runs || {};
-    let view = (state.surname && state.authed) ? "home" : "login";
+    let view = (state.surname && state.authed) ? (state.section || "hub") : "login";
     let rateModel = state.model || "t4l";
     let model = state.model || "t4l";
     let paper = [], idx = 0, selected = [], locked = false, done = false, closing = false;
@@ -516,6 +583,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     let remoteLocks = [];
     let syncOk = false;
     let qDeadline = 0;
+    let stockFilter = "all";
 
     function load(){
       try { return Object.assign({surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
@@ -677,20 +745,32 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       return pool.slice(0, Math.min(PRACTICE_N, pool.length)).map(withOpts);
     }
     function nav(active){
-      const items=[["home","Старт"],["rate","Рейтинг"],["study","Справочник"],["quiz","Тест"]];
+      const attest=["home","study","quiz","play","rate","hist"].includes(active);
+      let items=[];
+      if(active==="login") items=[];
+      else if(active==="hub") items=[];
+      else if(attest) items=[["hub","Кабинет"],["home","Аттестация"],["rate","Рейтинг"],["study","Справочник"],["quiz","Тест"]];
+      else items=[["hub","Кабинет"],["home","Аттестация"]];
       const html=items.map(([id,l])=>`<button class="${id===active?"on":""}" data-go="${id}">${l}</button>`).join("");
       const d=document.getElementById("navDesk");
       const b=document.getElementById("navBot");
       if(d) d.innerHTML=html;
       if(b) b.innerHTML=html;
       const bt=document.getElementById("brandText");
-      if(bt) bt.textContent = "АТТЕСТАЦИЯ";
+      if(bt) bt.textContent = "ОТДЕЛ ПРОДАЖ";
       const mark=document.querySelector(".mark");
-      if(mark) mark.textContent = "A";
+      if(mark) mark.textContent = "T";
+    }
+    function goSection(id){
+      const attest=["home","study","quiz","play","rate","hist"];
+      view=id;
+      state.section = id==="hub" ? "hub" : (attest.includes(id) ? "attest" : id);
+      save();
+      render();
     }
     function render(){
       try{
-        if(state.surname && !done){
+        if(state.authed && state.surname && !done){
           const run=userRun();
           if(run && view!=="login"){
             if(!paper.length || mode!=="exam"){ resumeExam(run); return; }
@@ -699,8 +779,8 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         }
         if(!MODELS[model]) model="t4l";
         nav(view==="play"?"quiz":view);
-        const map={login,home,study,quiz:brief,play,rate,hist:rate};
-        const fn=map[view]||home;
+        const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,terms,calc,stock,docs};
+        const fn=map[view]||hub;
         const root=document.getElementById("app");
         if(root) root.innerHTML=fn();
         bind();
@@ -715,6 +795,142 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function banner(title, sub, brand){
       const word = brand || ((title||"").split(" ")[0]) || "TENET";
       return `<div class="banner"><div><p class="eyebrow">${escape(sub)}</p><b>${escape(title)}</b></div><div class="banner-name">${escape(word)}</div></div>`;
+    }
+    function needAuth(){ return !state.surname || !state.authed; }
+    function hub(){
+      if(needAuth()) return login();
+      const hour=new Date().getHours();
+      const hi=hour<12?"Доброе утро":hour<18?"Добрый день":"Добрый вечер";
+      const examHint=hasExam1()?(expertLocked()?"Аттестация закреплена экспертом.":"Аттестация №1 сдана."):"Аттестация №1 ещё впереди.";
+      const cards=[
+        ["home","A","Аттестация","Тесты, рейтинг, справочник и аргументаторы"],
+        ["terms","₽","Торговые условия","Прайс 01.09.2026, трейд-ин и кредит T7"],
+        ["calc","%","Калькулятор","Ежемесячный платёж с выбранной комплектации"],
+        ["stock","S","Склад","Что в салоне, в брони и в пути"],
+        ["docs","D","Документы","Прайсы, PDF и материалы моделей"]
+      ];
+      return banner("Кабинет отдела продаж","TENET · CHERY", state.display)+`
+        <p class="lead">${hi}, <b>${escape(state.display)}</b>. ${examHint} Разделы ниже — рабочее пространство салона.</p>
+        <div class="who-line">
+          <button class="btn ghost" id="logout">Выйти</button>
+        </div>
+        <div class="hub-grid">${cards.map(([id,mark,title,lead])=>`
+          <button class="card hub-card" data-go="${id}" type="button">
+            <span class="hub-mark">${mark}</span>
+            <h3>${title}</h3>
+            <p>${lead}</p>
+          </button>`).join("")}</div>`;
+    }
+    function terms(){
+      if(needAuth()) return login();
+      return banner("Торговые условия","Прайс актуален 01.09.2026","TENET")+`
+        <p class="lead">Клиенту называть рекомендованную цену. Максимум с выгодами, трейд-ин и кредит — только после расчёта РОП. Не оферта.</p>
+        <div class="note-box">Скидки импортёра не обещать, если их нет в прайсе. «Под ключ» — после банка / трейд-ин / РОП.</div>
+        <h2>Рекомендованные цены</h2>
+        <div style="overflow:auto"><table class="sheet">
+          <thead><tr><th>Модель</th><th>Агрегат</th><th>Цена</th></tr></thead>
+          <tbody>${PRICE_ROWS.map(r=>`<tr><td><b>${escape(r.name)}</b><div style="color:var(--muted);font-size:12px">${r.brand}</div></td><td>${escape(r.motor)}</td><td class="num">${rub(r.price)} ₽</td></tr>`).join("")}</tbody>
+        </table></div>
+        <h2>T7 · выгоды из лифлета</h2>
+        <div style="overflow:auto"><table class="sheet">
+          <thead><tr><th>Версия</th><th>Рекомендуемая</th><th>Макс. с выгодами</th><th>Трейд-ин</th><th>Кредит</th></tr></thead>
+          <tbody>${T7_DEAL.map(r=>`<tr>
+            <td><b>${escape(r.name)}</b></td>
+            <td class="num">${rub(r.rec)}</td>
+            <td class="num">${rub(r.max)}</td>
+            <td class="num">${rub(r.trade)}</td>
+            <td class="num">${r.credit?rub(r.credit):"—"}</td>
+          </tr>`).join("")}</tbody>
+        </table></div>
+        <p class="lead">Доплата за 4WD на T7 — 205 000 ₽. Мотор T7 везде 1.6T 150. 1.5 — это T4L.</p>
+        <div class="who-line">
+          <button class="btn ivory" data-go="calc">В калькулятор</button>
+          <button class="btn ghost" data-go="docs">Документы</button>
+        </div>`;
+    }
+    function calcPay(price, down, months, rate){
+      const S=Math.max(0, (Number(price)||0)-(Number(down)||0));
+      const n=Math.max(1, Number(months)||12);
+      const i=(Number(rate)||0)/100/12;
+      if(i<=0) return S/n;
+      const k=Math.pow(1+i,n);
+      return S*i*k/(k-1);
+    }
+    function calc(){
+      if(needAuth()) return login();
+      const price=Number((document.getElementById("cPrice")||{}).value)||PRICE_ROWS[0].price;
+      const down=Number((document.getElementById("cDown")||{}).value)||Math.round(price*0.2);
+      const months=Number((document.getElementById("cMonths")||{}).value)||60;
+      const rate=Number((document.getElementById("cRate")||{}).value)||18.9;
+      const pay=calcPay(price, down, months, rate);
+      const credit=Math.max(0,price-down);
+      const over=pay*months-credit;
+      return banner("Калькулятор","Ориентир платежа, не одобрение банка","TENET")+`
+        <p class="lead">Цифра для разговора. Одобрение, ставка и график — только банк. Не обещать этот платёж в договоре.</p>
+        <div class="calc-grid">
+          <div class="card">
+            <label class="field" style="max-width:none;margin-top:0"><span>Комплектация</span>
+              <select id="cPreset" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;font:15px Inter,sans-serif">
+                ${PRICE_ROWS.map(r=>`<option value="${r.price}" ${r.price===price?"selected":""}>${r.name} · ${rub(r.price)} ₽</option>`).join("")}
+              </select>
+            </label>
+            <label class="field" style="max-width:none"><span>Цена, ₽</span><input id="cPrice" inputmode="numeric" value="${price}" /></label>
+            <label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>
+            <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
+            <label class="field" style="max-width:none"><span>Ставка, % годовых</span><input id="cRate" inputmode="decimal" value="${rate}" /></label>
+          </div>
+          <div class="card">
+            <p class="eyebrow">Платёж в месяц</p>
+            <div class="calc-out">${rub(Math.round(pay))} ₽</div>
+            <p class="calc-note">Кредит ${rub(credit)} ₽ · переплата ~${rub(Math.round(over))} ₽ · ${months} мес.</p>
+            <div class="note-box">Не путать с «максимальной ценой с выгодами». Выгоды считаются отдельно, до кредита.</div>
+          </div>
+        </div>`;
+    }
+    function stock(){
+      if(needAuth()) return login();
+      const rows=STOCK.filter(x=>stockFilter==="all"||x.model===stockFilter);
+      const nIn=STOCK.filter(x=>x.status==="in").length;
+      const nHold=STOCK.filter(x=>x.status==="hold").length;
+      const nWay=STOCK.filter(x=>x.status==="way").length;
+      return banner("Склад","Салон · ориентир","TENET")+`
+        <p class="lead">В салоне ${nIn}, бронь ${nHold}, в пути ${nWay}. Фактический VIN и бронь — у РОП / склада. Здесь — чтобы быстро ответить клиенту.</p>
+        <div class="study-pick" style="margin-top:12px">
+          <button class="chip ${stockFilter==="all"?"on":""}" data-stock="all">Все</button>
+          ${Object.values(MODELS).map(m=>`<button class="chip ${stockFilter===m.id?"on":""}" data-stock="${m.id}">${m.name}</button>`).join("")}
+        </div>
+        <div style="overflow:auto"><table class="sheet">
+          <thead><tr><th>Авто</th><th>Цвет</th><th>Статус</th><th>Заметка</th></tr></thead>
+          <tbody>${rows.map(r=>`<tr>
+            <td><b>${escape(r.name)}</b><div style="color:var(--muted);font-size:12px">${escape(r.trim)}</div></td>
+            <td>${escape(r.color)}</td>
+            <td><span class="st ${r.status}">${ST_LABEL[r.status]}</span></td>
+            <td>${escape(r.note)}</td>
+          </tr>`).join("")}</tbody>
+        </table></div>
+        <p class="lead">Не обещать цвет и срок, если статус «в пути».</p>`;
+    }
+    function docs(){
+      if(needAuth()) return login();
+      const unlocked=canStudy();
+      return banner("Документы","Прайсы и материалы","TENET")+`
+        <p class="lead">${unlocked?"Аргументаторы открыты после аттестации.":"Прайсы доступны сразу. Аргументаторы PDF — после аттестации №1."}</p>
+        ${Object.values(MODELS).map(m=>{
+          const list=DOCS[m.id]||[];
+          return `<div class="card" style="margin-top:12px">
+            <div class="eyebrow">${escape(m.brand)}</div>
+            <h3 style="margin:4px 0 8px">${escape(m.name)}</h3>
+            ${list.map(d=>{
+              const isArg=/аргумент|тренинг|материал/i.test(d.kind||"");
+              const locked=isArg && !unlocked;
+              return `<div class="doc-mini">
+                <b>${escape(d.title)}</b>
+                <span>${escape(d.kind)} · ${escape(d.pages)}</span>
+                ${locked?`<span>После аттестации №1</span>`:`<a href="${d.file}" target="_blank" rel="noopener">Открыть</a><a href="${d.file}" download>Скачать</a>`}
+              </div>`;
+            }).join("")}
+          </div>`;
+        }).join("")}`;
     }
     function login(){
       return banner("Аттестация отдела продаж","TENET · CHERY")+`
@@ -1341,7 +1557,21 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     function bind(){
       document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{
         if(inExam() || (userRun() && !done)){ view="play"; if(!paper.length) resumeExam(userRun()); else render(); return; }
-        view=b.dataset.go; render();
+        goSection(b.dataset.go);
+      });
+      document.querySelectorAll("[data-stock]").forEach(b=>b.onclick=()=>{ stockFilter=b.dataset.stock; render(); });
+      const cPreset=document.getElementById("cPreset");
+      if(cPreset) cPreset.onchange=()=>{
+        const p=Number(cPreset.value)||0;
+        const price=document.getElementById("cPrice");
+        const down=document.getElementById("cDown");
+        if(price) price.value=String(p);
+        if(down) down.value=String(Math.round(p*0.2));
+        view="calc"; render();
+      };
+      ["cPrice","cDown","cMonths","cRate"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el) el.addEventListener("change", ()=>{ view="calc"; render(); });
       });
       document.querySelectorAll("[data-model]").forEach(b=>b.onclick=()=>{
         if(inExam() || (userRun() && !done)){ view="play"; if(!paper.length) resumeExam(userRun()); else render(); return; }
@@ -1363,7 +1593,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
           state.surname=sn; state.display=v.replace(/\s+/g," "); state.authed=true; save();
           refreshLocks().catch(()=>{});
           if(userRun()){ resumeExam(userRun()); return; }
-          view="home"; render();
+          view="hub"; state.section="hub"; render();
           return;
         }
         await refreshLocks();
@@ -1384,7 +1614,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         }
         state.surname=sn; state.display=v.replace(/\s+/g," "); state.authed=true; save();
         if(userRun()){ resumeExam(userRun()); return; }
-        view="home"; render();
+        view="hub"; state.section="hub"; render();
       };
       ["surname","loginPin"].forEach(id=>{
         const el=document.getElementById(id);
@@ -1447,10 +1677,10 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     });
     window.addEventListener("pagehide", ()=>{ persistRun(true); });
     refreshLocks().then(()=>{
-      if(state.surname && userRun() && !done){ resumeExam(userRun()); return; }
-      if(view==="home"||view==="rate") render();
+      if(state.authed && state.surname && userRun() && !done){ resumeExam(userRun()); return; }
+      if(view==="home"||view==="rate"||view==="hub") render();
     }).catch(()=>{});
-    if(state.surname && userRun() && !done && !paper.length) resumeExam(userRun());
+    if(state.authed && state.surname && userRun() && !done && !paper.length) resumeExam(userRun());
   </script>
 </body>
 </html>

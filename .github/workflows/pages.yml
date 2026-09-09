@@ -35,7 +35,7 @@ jobs:
               html = Path("TENET_T4L_netlify/index.html").read_text()
           html = html.replace(
               'let view = state.surname ? "home" : "login";',
-              'let view = (state.surname && state.authed) ? "home" : "login";'
+              'let view = (state.surname && state.authed) ? (state.section || "hub") : "login";'
           )
           html = html.replace(
               'if(state.surname && userRun() && !done)',
