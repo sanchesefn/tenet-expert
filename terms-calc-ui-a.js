@@ -134,8 +134,9 @@
         const prio=PRIO_VINS.has(c.vin);
         const on=kmVin===c.vin;
         const st=c.status==="in"?"в наличии":"в пути";
-        return `<button type="button" class="stock-car${prio?" prio":""}${on?" on":""}" data-km-vin="${escape(c.vin)}">
+        return `<button type="button" class="stock-car${prio?" prio":""}${c.mpt?" mpt":""}${on?" on":""}" data-km-vin="${escape(c.vin)}">
           <b>${escape(c.color||"—")} · ${escape(c.trim||"")}${prio?" · приоритет":""}</b>
+          ${c.mpt?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}
           <span class="vin">${escape(c.vin)}</span>
           <span class="stock-meta">${st}${c.invoice?" · спец инвойс":""}${c.mpt?" · МПТ":""}${c.note?" · "+escape(c.note):""}</span>
         </button>`;
@@ -145,5 +146,33 @@
         <p class="lead" style="max-width:none;margin:0 0 10px">Только эта комплектация. В наличии ${inn} · в пути ${way}.</p>
         ${block("В наличии", cars.filter(c=>c.status==="in"))}
         ${block("В пути", cars.filter(c=>c.status==="way"))}
+      </div>`;
+    }
+    function kmPrioRecs(cur, carPrice, downPct, months, extras){
+      const list=typeof STOCK!=="undefined"?STOCK:[];
+      const refPay=typeof calcPay==="function"?calcPay(carPrice+extras, Math.round(carPrice*downPct/100), months, 10):0;
+      const rows=list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin).map(c=>{
+        const id=kmIdFromCar(c);
+        const mm=KM_MODELS.find(x=>x.id===id);
+        const price=mm?mm.rrc:carPrice;
+        const group=typeof kmRateGroup==="function"?kmRateGroup(mm||cur):"t4l_t7";
+        const look=typeof kmBankRate==="function"?kmBankRate("sber", group, months, downPct):{rate:10, term:months};
+        const down=Math.round(price*Math.max(0,downPct)/100);
+        const pay=calcPay(price+extras, down, look.term||months, look.rate);
+        return {c, mm, price, pay, d:Math.abs(price-carPrice)+Math.abs(pay-refPay)};
+      }).sort((a,b)=>a.d-b.d).slice(0,4);
+      if(!rows.length) return "";
+      return `<div class="card rec-box">
+        <p class="eyebrow">Рекомендуем рассмотреть</p>
+        <p class="lead" style="max-width:none;margin:0 0 10px">Приоритетные авто рядом по цене и платежу.</p>
+        ${rows.map(r=>{
+          const st=r.c.status==="in"?"в наличии":"в пути";
+          return `<button type="button" class="stock-car prio rec${r.c.mpt?" mpt":""}" data-km-vin="${escape(r.c.vin)}">
+            <b>${escape((r.mm&&r.mm.name)||r.c.name)} · ${escape(r.c.color||"—")}</b>
+            ${r.c.mpt?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}
+            <span class="vin">${escape(r.c.vin)} · ${escape(r.c.trim||"")} · ${st}</span>
+            <span class="stock-meta">РРЦ ${rub(r.price)} · платёж ~${rub(Math.round(r.pay))} ₽ · приоритет</span>
+          </button>`;
+        }).join("")}
       </div>`;
     }
