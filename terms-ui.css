@@ -8,3 +8,9 @@
 .km-line .stock-h{margin:10px 0 6px}
 .km-right{display:flex;flex-direction:column;gap:14px}
 .stock-side{max-height:520px;overflow:auto}
+.down-mode{display:flex;gap:8px;margin:10px 0 6px}
+.down-mode .chip{min-height:40px;padding:8px 12px}
+.bank-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;padding:10px 0;border-bottom:1px solid var(--border)}
+.bank-row:last-child{border-bottom:0}
+.bank-row b{font-size:14px}
+.bank-row .pay{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
