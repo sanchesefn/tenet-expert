@@ -6,6 +6,9 @@ if m:
     stock=json.loads(m.group(1))
     for x in stock:
         x["mpt"]=x.get("vin") in MPT_VINS
+        salon=str(x.get("salon") or "")
+        if "коричнево" in salon.lower().replace("ё","е"):
+            x["salon"]="Brown"
     if not any(x.get("vin")=="EDEDB21B7SD723791" for x in stock):
         stock.append({"vin":"EDEDB21B7SD723791","model":"t7l","name":"Tiggo 7 L","trim":"Актив","color":"Серебристый","status":"in","note":"В салоне · с 06.08.2026","invoice":False,"salon":"","prod":"","rrc":None,"mpt":False})
     html=html[:m.start(1)]+json.dumps(stock, ensure_ascii=False)+html[m.end(1):]
@@ -56,6 +59,21 @@ if tc.exists():
         print("terms-calc spliced", len(extra))
     else:
         print("terms/stock anchors not found", a, b)
+
+sf = Path("stock-fn.js")
+if sf.exists():
+    extra = sf.read_text()
+    if not extra.endswith("\n"):
+        extra += "\n"
+    a = html.find("    function salonLabel(")
+    if a < 0:
+        a = html.find("    function stock(){")
+    b = html.find("    function docs(){")
+    if a >= 0 and b > a:
+        html = html[:a] + extra + html[b:]
+        print("stock fn spliced", len(extra))
+    else:
+        print("stock/docs anchors not found", a, b)
 
 BIND_IDS = '["kmRrc","kmInv","kmUseTi","kmUseLoan","kmUseCr","kmSpec","kmUseDcTi","kmUseDcCr","kmDcTi","kmDcCr","kmDo","kmPack","kmCasco","cDown","cDownPct","cDownMode","cMonths"]'
 NEW_BIND = '''      document.querySelectorAll("[data-calc-mode]").forEach(b=>b.onclick=()=>{ calcMode=b.dataset.calcMode; view="calc"; render(); });
