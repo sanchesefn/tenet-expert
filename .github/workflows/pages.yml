@@ -90,9 +90,10 @@ jobs:
                   html = html[:a] + "<style>\n" + css + "\n</style>" + html[b:]
           Path("_site/index.html").write_text(html)
           PY
-          mkdir -p _site/cars
+          mkdir -p _site/cars _site/docs
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
           if [ -d TENET_T4L_netlify/cars ]; then cp -f TENET_T4L_netlify/cars/*.jpg _site/cars/ 2>/dev/null || true; fi
+          if [ -d docs ]; then cp -f docs/*.pdf _site/docs/ 2>/dev/null || true; fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

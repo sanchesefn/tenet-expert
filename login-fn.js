@@ -8,5 +8,8 @@
         <button class="btn ivory login-btn" id="doLogin">Войти</button>
         <button class="btn ghost login-btn" id="askPin" type="button">Запросить код у РОП</button>
         <p id="loginErr" class="login-err"></p>
-      </section>`;
+      </section>
+      <p class="eyebrow" style="margin-top:28px">Аргументаторы и тренинги</p>
+      <p class="lead" style="max-width:none">PDF можно открыть и скачать сразу. После входа те же файлы — на старте у выбранной модели и во вкладке «Материалы».</p>
+      ${typeof allDocsHtml==="function"?allDocsHtml():""}`;
     }
