@@ -61,8 +61,11 @@ def replace_obj(html, qid, new):
         return html
     j = html.find("},", i)
     if j < 0:
-        return html
-    return html[:i] + new + html[j+2:]
+        j = html.find("}", i)
+        if j < 0:
+            return html
+        return html[:i] + new.rstrip().rstrip(",") + "}," + html[j+1:]
+    return html[:i] + new.rstrip().rstrip(",") + "}," + html[j+2:]
 def main():
     p = Path("_site/index.html")
     if not p.exists():
@@ -82,6 +85,12 @@ def main():
         if html != before:
             n += 1
             print("replaced", qid)
+    import re
+    html2, k = re.subn(r'"\}\s+\{id:"', '"},\n      {id:"', html)
+    if k:
+        html = html2
+        n += k
+        print("fixed missing commas", k)
     for qid in DELETE_IDS:
         before = html
         html = strip_obj(html, qid)
