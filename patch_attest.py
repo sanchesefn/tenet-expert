@@ -1,5 +1,8 @@
 from pathlib import Path
 DELETE_IDS = ["terms","child","store80","t7s4","t8s4","t9p5","t9s3","t9obj","a8p5","a8s4","a8arg"]
+REPLACE_IDS = {
+"drive3":'{id:"drive3",cat:"tech",type:"single",p:"Сколько режимов движения у T4L?",o:[["a","Только Normal"],["b","Два: Eco и Sport"],["c","Шесть, как у T7 4WD"],["d","Только Sport"]],c:["b"],x:"У T4L два режима — Eco и Sport, без Normal."},'
+}
 SWAPS = [
     ('["a","340 л"]', '["a","340–1150 л"]'),
     ('["c","337 л"]', '["c","337–1133 л"]'),
@@ -49,6 +52,16 @@ def strip_obj(html, qid):
     if j < 0:
         return html
     return html[:i] + html[j+2:]
+def replace_obj(html, qid, new):
+    token = '{id:"%s"' % qid
+    i = html.find(token)
+    if i < 0:
+        print("missing replace", qid)
+        return html
+    j = html.find("},", i)
+    if j < 0:
+        return html
+    return html[:i] + new + html[j+2:]
 def main():
     p = Path("_site/index.html")
     if not p.exists():
@@ -62,6 +75,12 @@ def main():
             n += 1
         else:
             print("MISS", old[:60])
+    for qid, new in REPLACE_IDS.items():
+        before = html
+        html = replace_obj(html, qid, new)
+        if html != before:
+            n += 1
+            print("replaced", qid)
     for qid in DELETE_IDS:
         before = html
         html = strip_obj(html, qid)
