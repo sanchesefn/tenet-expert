@@ -81,6 +81,11 @@ if "let kmVin" not in html:
         'let kmShown = "";',
         'let kmShown = "";\n    let kmVin = "";'
     )
+if "let mptDay" not in html:
+    html=html.replace(
+        'let kmVin = "";',
+        'let kmVin = "";\n    let mptMonth = 3;\n    let mptDay = "";'
+    )
 if 'if(model==="t7l")' not in html:
     html=html.replace(
         'let stockStatus = "all";',
@@ -151,6 +156,12 @@ if 'querySelectorAll("[data-km-id]")' not in html:
         print("calc bind not found")
 else:
     print("calc bind already in html")
+if 'querySelectorAll("[data-mpt-day]")' not in html:
+    html=html.replace(
+        'document.querySelectorAll("[data-km-id]")',
+        'document.querySelectorAll("[data-mpt-day]").forEach(b=>b.onclick=()=>{ mptDay=b.dataset.mptDay||""; view="terms"; render(); });\n      document.querySelectorAll("[data-mpt-month]").forEach(b=>b.onclick=()=>{ mptMonth=Number(b.dataset.mptMonth)||3; view="terms"; render(); });\n      document.querySelectorAll("[data-km-id]")',
+        1
+    )
 
 html=html.replace(
     '{model:"T4",vin:"EDEED31B1SE053704",trim:"Prime 4WD",year:"2025",color:"Белый",extra:"Сидоров",pay:500,bonus:1000}',
@@ -162,6 +173,30 @@ html=html.replace(
 )
 html=html.replace('      {model:"T4",trim:"T4 2025",km:"−30 / 20",note:""},\n','')
 html=html.replace('      {model:"T4",trim:"T4 2025",bonus:"3%"},\n','')
+html=html.replace(
+    '`<div class="terms-cards">`+TERMS_MPT.map(g=>`<article class="term-card"><b>${escape(g.line)}</b>`+g.rows.map(r=>`<small>${escape(r[0])} · <b>${escape(r[1])}</b></small>`).join("")+`</article>`).join("")+`</div>`+',
+    '`<p class="lead">По дате производства T7. Зелёный — МПТ, песочный — субсидия бренда. Нажмите день.</p>`+mptCal()+'
+)
+html=html.replace(
+    "      persistRun(true);\n      next(); closing=false;",
+    "      if(idx+1>=paper.length){ finish(); return; }\n      persistRun(true);\n      next(); closing=false;"
+)
+html=html.replace(
+    "answers[idx]={id:q.id,ok:false,cat:q.cat,p:q.p,x:q.x};",
+    "answers[idx]={id:q.id,ok:false,cat:q.cat,p:q.p,x:q.x,pick:(selected||[]).map(id=>((q.o||[]).find(p=>p[0]===id)||[id,\"не выбран\"])[1])};"
+)
+html=html.replace(
+    "answers[idx]={id:q.id,ok:!!ok,cat:q.cat,p:q.p,x:q.x};",
+    "answers[idx]={id:q.id,ok:!!ok,cat:q.cat,p:q.p,x:q.x,pick:(selected||[]).map(id=>((q.o||[]).find(p=>p[0]===id)||[id,id])[1])};"
+)
+html=html.replace(
+    "missed=rows.filter(r=>!r.ok).map(r=>({id:r.id,p:r.p,x:r.x}));",
+    "missed=rows.filter(r=>!r.ok).map(r=>({id:r.id,p:r.p,x:r.x,pick:r.pick||[]}));"
+)
+html=html.replace(
+    "missed.map(x=>`<div class=\"card\" style=\"margin:8px 0\"><b>${escape(x.p)}</b><p>${escape(x.x)}</p></div>`).join(\"\")",
+    "missed.map(x=>`<div class=\"card\" style=\"margin:8px 0\"><b>${escape(x.p)}</b><p style=\"margin:8px 0 0\"><span class=\"eyebrow\">Ответ</span><br>${escape((x.pick&&x.pick.length?x.pick.join(\"; \"):\"не выбран\"))}</p><p>${escape(x.x)}</p></div>`).join(\"\")"
+)
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
