@@ -1,7 +1,8 @@
 from pathlib import Path
 DELETE_IDS = ["terms","child","store80","t7s4","t8s4","t9p5","t9s3","t9obj","a8p5","a8s4","a8arg"]
 REPLACE_IDS = {
-"drive3":'{id:"drive3",cat:"tech",type:"single",p:"Сколько режимов движения у T4L?",o:[["a","Только Normal"],["b","Два: Eco и Sport"],["c","Шесть, как у T7 4WD"],["d","Только Sport"]],c:["b"],x:"У T4L два режима — Eco и Sport, без Normal."},'
+"drive3":'{id:"drive3",cat:"tech",type:"single",p:"Сколько режимов движения у T4L?",o:[["a","Только Normal"],["b","Два: Eco и Sport"],["c","Шесть, как у T7 4WD"],["d","Только Sport"]],c:["b"],x:"У T4L два режима — Eco и Sport, без Normal."}',
+"matrix":'{id:"matrix",cat:"rival",type:"single",p:"У кого из квартета конкурентов самый маленький багажник в 5 местах?",o:[["a","Haval Jolion"],["b","Belgee X50+"],["c","Changan CS35PLUS"],["d","Jaecoo J6"]],c:["b"],x:"X50+ — 330 л, самый маленький. Дальше Jolion 337, CS35PLUS 403, T4L 475, J6 480. Со сложенным рядом у T4L 1500 л."}',
 }
 SWAPS = [
     ('["a","340 л"]', '["a","340–1150 л"]'),
