@@ -197,6 +197,53 @@ html=html.replace(
     "missed.map(x=>`<div class=\"card\" style=\"margin:8px 0\"><b>${escape(x.p)}</b><p>${escape(x.x)}</p></div>`).join(\"\")",
     "missed.map(x=>`<div class=\"card\" style=\"margin:8px 0\"><b>${escape(x.p)}</b><p style=\"margin:8px 0 0\"><span class=\"eyebrow\">Ответ</span><br>${escape((x.pick&&x.pick.length?x.pick.join(\"; \"):\"не выбран\"))}</p><p>${escape(x.x)}</p></div>`).join(\"\")"
 )
+if "let reviewExamN" not in html:
+    html=html.replace(
+        'let stockStatus = "all";',
+        'let stockStatus = "all";\n    let reviewExamN = 1;'
+    )
+html=html.replace(
+    "percent:pct,at:item.date,attempts:(prev.attempts||0)+1,status:\"done\"};",
+    "percent:pct,ok:correct,n:paper.length,missed:missed.map(r=>({id:r.id,p:r.p,x:r.x,pick:r.pick||[]})),at:item.date,attempts:(prev.attempts||0)+1,status:\"done\"};"
+)
+html=html.replace(
+    "if(body.status===\"running\" && rec.run) body.run = rec.run;",
+    "if(body.status===\"running\" && rec.run) body.run = rec.run;\n      if(Array.isArray(rec.missed)) body.missed=rec.missed;\n      if(rec.ok!=null) body.ok=rec.ok;\n      if(rec.n!=null) body.n=rec.n;"
+)
+html=html.replace(
+    "login,hub,home,study,quiz:brief,play,rate,hist:rate,terms,calc,stock,docs",
+    "login,hub,home,study,quiz:brief,play,rate,hist:rate,review,terms,calc,stock,docs"
+)
+if "function review(){" not in html:
+    html=html.replace(
+        "function home(){",
+        "function review(){\n"
+        "      if(!state.surname) return login();\n"
+        "      const rec=examRec(reviewExamN||1);\n"
+        "      const miss=(rec&&rec.missed)||[];\n"
+        "      const title=Number(reviewExamN)===2?\"Разбор пересдачи\":\"Разбор первой попытки\";\n"
+        "      const mname=((MODELS[(rec&&rec.model)||model]||{}).name)||((rec&&rec.model)||model);\n"
+        "      return banner(title, rec?((rec.percent!=null?rec.percent+\"% · \":\"\")+mname):\"\", \"TENET\")+`\n"
+        "        <p class=\"lead\">${rec?escape(rec.display||state.display)+(rec.ok!=null&&rec.n?\" · \"+rec.ok+\" из \"+rec.n:\"\")+(rec.at?\" · \"+String(rec.at).slice(0,10):\"\"):\"Нет сохранённой попытки.\"}</p>\n"
+        "        ${miss.length?miss.map(x=>`<div class=\"card\" style=\"margin:8px 0\"><b>${escape(x.p||\"\")}</b><p style=\"margin:8px 0 0\"><span class=\"eyebrow\">Ответ</span><br>${escape((x.pick&&x.pick.length?x.pick.join(\"; \"):\"не выбран\"))}</p><p>${escape(x.x||\"\")}</p></div>`).join(\"\"):`<div class=\"card\"><p>Разбор этой попытки не сохранился. Новые прохождения после обновления сайта будут открываться здесь даже после закрытия вкладки.</p></div>`}\n"
+        "        <div style=\"margin-top:16px\"><button class=\"btn ghost\" data-go=\"home\">К модели</button></div>`;\n"
+        "    }\n"
+        "    function home(){"
+    )
+html=html.replace(
+    ': `<div class="card ok"><h3>Аттестация №1 · ${e1?e1.percent+"%":""}</h3><p>Результат закреплён.${e2?" Стало "+e2.percent+"%.":" Пересдача — по коду РОП."}</p></div>`;',
+    ': `<div class="card ok"><h3>Аттестация №1 · ${e1?e1.percent+"%":""}</h3><p>Результат закреплён.${e2?" Стало "+e2.percent+"%.":" Пересдача — по коду РОП."}</p></div>`+`<button class="card ok" data-review="1"><h3>Разбор первой попытки</h3><p>Ошибки и ваши ответы. Доступен после обновления страницы.</p></button>`;'
+)
+html=html.replace(
+    '? `<div class="card ok"><h3>Аттестация сдана · ${e1.percent}%</h3><p>Эксперт. Закреплено в рейтинге. Пересдача не нужна.</p></div>`',
+    '? `<div class="card ok"><h3>Аттестация сдана · ${e1.percent}%</h3><p>Эксперт. Закреплено в рейтинге. Пересдача не нужна.</p></div>`+`<button class="card ok" data-review="1"><h3>Разбор первой попытки</h3><p>Ошибки и ваши ответы.</p></button>`'
+)
+if 'querySelectorAll("[data-review]")' not in html:
+    html=html.replace(
+        'document.querySelectorAll("[data-go]")',
+        'document.querySelectorAll("[data-review]").forEach(b=>b.onclick=()=>{ reviewExamN=Number(b.dataset.review)||1; view="review"; render(); });\n      document.querySelectorAll("[data-go]")',
+        1
+    )
 
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
