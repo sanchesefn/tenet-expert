@@ -59,13 +59,14 @@ def replace_obj(html, qid, new):
     if i < 0:
         print("missing replace", qid)
         return html
+    body = new.rstrip().rstrip(",").rstrip("}") + "}"
     j = html.find("},", i)
     if j < 0:
         j = html.find("}", i)
         if j < 0:
             return html
-        return html[:i] + new.rstrip().rstrip(",") + "}," + html[j+1:]
-    return html[:i] + new.rstrip().rstrip(",") + "}," + html[j+2:]
+        return html[:i] + body + "," + html[j+1:]
+    return html[:i] + body + "," + html[j+2:]
 def main():
     p = Path("_site/index.html")
     if not p.exists():
@@ -85,6 +86,8 @@ def main():
         if html != before:
             n += 1
             print("replaced", qid)
+    html = html.replace('."}}",', '."},')
+    html = html.replace('."}}\n', '."},\n')
     import re
     html2, k = re.subn(r'"\}\s+\{id:"', '"},\n      {id:"', html)
     if k:
