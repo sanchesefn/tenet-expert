@@ -21,9 +21,13 @@ for c in cars:
     seen.add(vin)
     uniq.append(c)
 
+if len(uniq) < 40:
+    print("skip stock inject, only", len(uniq), "cars")
+    raise SystemExit(0)
+
 html_path = Path("_site/index.html")
-if not html_path.exists() or not uniq:
-    print("skip stock inject", html_path.exists(), len(uniq))
+if not html_path.exists():
+    print("no _site/index.html")
     raise SystemExit(0)
 
 html = html_path.read_text()
