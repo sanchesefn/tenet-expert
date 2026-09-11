@@ -31,6 +31,23 @@ jobs:
               curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/839cacdd1f03b1b6c04c34e811fb9d52558c3f2c/prepare_site_b.py -o prepare_site_b.py
             fi
           fi
+          if [ -f terms-calc-data.js ]; then
+            bytes=$(wc -c < terms-calc-data.js)
+            if [ "$bytes" -lt 5000 ]; then
+              curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/3c546270ea6f075d4c1c84d7e4f4032a8faced33/terms-calc-data.js -o terms-calc-data.js
+            fi
+            python3 - << 'PY'
+          from pathlib import Path
+          p = Path("terms-calc-data.js")
+          t = p.read_text()
+          t = t.replace(
+              "      tbank:[12,24,36,48,60,72,84,96]\n    ];\n    const KM_BANK_RATES",
+              "      tbank:[12,24,36,48,60,72,84,96]\n    };\n    const KM_BANK_RATES",
+          )
+          p.write_text(t)
+          print("terms-calc-data bytes", p.stat().st_size)
+          PY
+          fi
           if [ -f prepare_site_a.py ] && [ -f prepare_site_b.py ]; then
             cat prepare_site_a.py prepare_site_b.py > prepare_site.py
           fi
