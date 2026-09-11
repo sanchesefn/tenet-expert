@@ -192,37 +192,76 @@ COPY_NOTE = (
 )
 
 
+FINISH = """async function finish(){
+      stopTick(); done=true; closing=false;
+      const pct=tally();
+      const item={id:Date.now().toString(36),name:state.display,model,mode,percent:pct,ok:correct,n:paper.length,date:new Date().toISOString()};
+      state.history=[item,...state.history].slice(0,50);
+      if(mode==="exam"){
+        const n=examSession||1;
+        const prev=examRec(n)||{attempts:0};
+        if(n===2) delete state.unlock[lockKey(state.surname, model, 2)];
+        const rec={surname:norm(state.surname),display:state.display,model,exam:n,percent:pct,ok:correct,n:paper.length,missed:missed.map(r=>({id:r.id,p:r.p,x:r.x,pick:r.pick||[]})),at:item.date,attempts:(prev.attempts||0)+1,status:"done"};
+        const sn=norm(state.surname);
+        if(state.runs && state.runs[sn]) state.runs[sn].status="done";
+        state.lastCode=packResult(rec); save();
+        upsertLock(rec).then(()=>{ syncOk=true; render(); }).catch(()=>{ syncOk=false; render(); });
+      }
+      save(); render();
+    }"""
+
+UPSERT = """async function upsertLock(rec){
+      const body = {
+        surname:rec.surname, display:rec.display, model:rec.model, exam:rec.exam||1,
+        percent:rec.percent, at:rec.at, attempts:rec.attempts||1,
+        status: rec.status || "done"
+      };
+      if(rec.ok!=null) body.ok=rec.ok;
+      if(rec.n!=null) body.n=rec.n;
+      if(body.status==="done"){ if(body.tgSent==null) body.tgSent=false; delete body.run; }
+      state.locks[lockKey(rec.display, rec.model, rec.exam||1)] = rec;
+      state.locks[lockKey(rec.surname, rec.model, rec.exam||1)] = rec;
+      save();
+      if(body.status!=="done") return Promise.resolve(true);
+      const job = cloudChain.then(()=>writeCloud(body), ()=>writeCloud(body));
+      cloudChain = job.catch(()=>{});
+      return job;
+    }"""
+
+
 def patch(text: str) -> str:
-    if "function pullRelay(" in text:
-        return text
-    if "const RELAY =" not in text:
-        text = text.replace(
-            "    let cloudChain = Promise.resolve();",
-            '    let cloudChain = Promise.resolve();\n    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";',
-            1,
+    if "function pullRelay(" not in text:
+        if "const RELAY =" not in text:
+            text = text.replace(
+                "    let cloudChain = Promise.resolve();",
+                '    let cloudChain = Promise.resolve();\n    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";',
+                1,
+            )
+        text = replace_fn(text, "function persistRun(syncCloud)", PERSIST)
+        text = replace_fn(text, "async function pingRelay(body)", PING)
+        text = replace_fn(text, "async function writeCloud(body)", WRITE)
+        text = replace_fn(text, "async function flushLocalDone()", FLUSH)
+        if "async function pullRelay(" not in text:
+            text = text.replace("    async function pullList(){", PULLRELAY + "\n    async function pullList(){", 1)
+        text = replace_fn(text, "async function pullList()", PULLLIST)
+        note_old = (
+            '<p>${correct} из ${paper.length} · ${escape(state.display)}'
+            '${mode==="exam"&&examSession===2&&examRec(1)?" · было "+examRec(1).percent+"%":""}</p>'
         )
-    text = replace_fn(text, "function persistRun(syncCloud)", PERSIST)
-    text = replace_fn(text, "async function pingRelay(body)", PING)
-    text = replace_fn(text, "async function writeCloud(body)", WRITE)
-    text = replace_fn(text, "async function flushLocalDone()", FLUSH)
-    if "async function pullRelay(" not in text:
-        text = text.replace("    async function pullList(){", PULLRELAY + "\n    async function pullList(){", 1)
-    text = replace_fn(text, "async function pullList()", PULLLIST)
-    note_old = (
-        '<p>${correct} из ${paper.length} · ${escape(state.display)}'
-        '${mode==="exam"&&examSession===2&&examRec(1)?" · было "+examRec(1).percent+"%":""}</p>'
-    )
-    if "copyCode" not in text and note_old in text:
-        text = text.replace(note_old, note_old + "\n          " + COPY_NOTE, 1)
-    if 'id="pasteCode"' not in text:
-        for cand in ("<h1>Рейтинг</h1>", "<h1>Рейтинг аттестаций</h1>", "Рейтинг</h1>"):
-            if cand in text:
-                text = text.replace(cand, cand + PASTE_CARD, 1)
-                break
-    if "getElementById(\"copyCode\")" not in text and "function bind(){" in text:
-        text = text.replace("function bind(){", BIND_EXTRA, 1)
-    if 'http-equiv="Cache-Control"' not in text and "<head>" in text:
-        text = text.replace("<head>", '<head>\n<meta http-equiv="Cache-Control" content="no-store">', 1)
+        if "copyCode" not in text and note_old in text:
+            text = text.replace(note_old, note_old + "\n          " + COPY_NOTE, 1)
+        if 'id="pasteCode"' not in text:
+            for cand in ("<h1>Рейтинг</h1>", "<h1>Рейтинг аттестаций</h1>", "Рейтинг</h1>"):
+                if cand in text:
+                    text = text.replace(cand, cand + PASTE_CARD, 1)
+                    break
+        if "getElementById(\"copyCode\")" not in text and "function bind(){" in text:
+            text = text.replace("function bind(){", BIND_EXTRA, 1)
+        if 'http-equiv="Cache-Control"' not in text and "<head>" in text:
+            text = text.replace("<head>", '<head>\n<meta http-equiv="Cache-Control" content="no-store">', 1)
+    if "upsertLock(rec).then" not in text:
+        text = replace_fn(text, "async function finish()", FINISH)
+        text = replace_fn(text, "async function upsertLock(rec)", UPSERT)
     return text
 
 
