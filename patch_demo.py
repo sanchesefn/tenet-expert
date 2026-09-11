@@ -29,14 +29,27 @@ if not html_path.exists():
     html_path = Path("TENET_T4L_netlify/index.html")
 if html_path.exists():
     html = html_path.read_text()
+    broken = """    const KM_BANK_MONTHS = {
+      sber:[12,24,36,48,60,72,84,96,108,120],
+      sovcom:[12,24,36,48,60,72,84],
+      alfa:[12,24,36,48,60,72,84,96],
+      tbank:[12,24,36,48,60,72,84,96]
+    ];"""
+    fixed = broken[:-2] + "}"
+    if broken in html:
+        html = html.replace(broken, fixed)
+        print("fixed KM_BANK_MONTHS closer")
+    elif "const KM_BANK_MONTHS = {" in html and re.search(r"const KM_BANK_MONTHS = \{[^}]+\];", html):
+        html = re.sub(r"(const KM_BANK_MONTHS = \{[^}]+)\];", r"\1};", html, count=1)
+        print("fixed KM_BANK_MONTHS closer via regex")
     m = re.search(r"const STOCK = (\[.*?\]);", html, re.S)
     if m:
         stock = json.loads(m.group(1))
         n = apply(stock)
         html = html[:m.start(1)] + json.dumps(stock, ensure_ascii=False) + html[m.end(1):]
-        html_path.write_text(html)
         print("html demo applied", n, "of", len(stock), html_path)
     else:
         print("STOCK not found in", html_path)
+    html_path.write_text(html)
 else:
     print("no html to patch")
