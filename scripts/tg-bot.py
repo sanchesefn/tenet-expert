@@ -363,11 +363,62 @@ def handle_text(chat_id, text, lst):
     return lst
 
 
+def pull_relay():
+    url = "https://ntfy.sh/tenet-expert-o6nq7rki/json?poll=1&since=2d"
+    recs = []
+    try:
+        with urllib.request.urlopen(url, timeout=20) as resp:
+            raw = resp.read().decode("utf-8", "replace")
+    except Exception as e:
+        print("relay pull fail", e)
+        return recs
+    for line in raw.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            msg = json.loads(line)
+        except Exception:
+            continue
+        if msg.get("event") != "message":
+            continue
+        try:
+            rec = json.loads(msg.get("message") or "")
+        except Exception:
+            continue
+        if not isinstance(rec, dict):
+            continue
+        if rec.get("surname") in (None, "probe"):
+            continue
+        if rec.get("status") != "done" or not rec.get("model"):
+            continue
+        recs.append({
+            "surname": " ".join(str(rec.get("surname") or "").split()).lower(),
+            "display": rec.get("display") or rec.get("surname"),
+            "model": rec.get("model"),
+            "exam": int(rec.get("exam") or 1),
+            "percent": rec.get("percent"),
+            "at": rec.get("at") or datetime.now(timezone.utc).isoformat(),
+            "attempts": rec.get("attempts") or 1,
+            "status": "done",
+            "ok": rec.get("ok"),
+            "n": rec.get("n"),
+        })
+    print("relay recs", len(recs), [(x.get("display"), x.get("model"), x.get("percent")) for x in recs])
+    return recs
+
+
+
 def main():
     if not TOKEN:
         print("no TG_BOT_TOKEN")
         return
     lst = pull()
+    relay = pull_relay()
+    if relay:
+        lst = merge_lists(lst, relay)
+        lst = push(lst)
+        print("relay merged", len(relay))
     notify_new(lst)
     lst = pull()
     data = tg("getUpdates", {"timeout": 0})
