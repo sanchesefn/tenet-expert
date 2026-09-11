@@ -1,5 +1,6 @@
     function salonLabel(s){
       const t=String(s||"");
+      if(/korichnev/i.test(t)) return "Brown";
       if(/коричнев/i.test(t)) return "Brown";
       return t;
     }
@@ -38,7 +39,7 @@
     }
     function stock(){
       if(needAuth()) return login();
-      const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"09.09.2026"};
+      const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"11.09.2026"};
       const list=STOCK.filter(x=>{
         if(stockFilter!=="all" && x.model!==stockFilter) return false;
         if(stockStatus!=="all" && x.status!==stockStatus) return false;
@@ -66,7 +67,7 @@
             ${showProd?`<td>${escape(r.prod||"—")}</td>`:""}
             <td>${price?`<b>${rub(price)} ₽</b>`:"—"}</td>
             <td class="vin">${escape(r.vin)}</td>
-            <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span>${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}</td>
+            <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span>${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}${r.demo?` <span class="st demo">ДЕМО</span>`:""}</td>
             <td>${escape(r.note)}</td>
           </tr>`;
           }).join("")}</tbody>
@@ -89,8 +90,8 @@
             </div>`;
           }).join("")
         : `<div class="card" style="margin-top:12px"><p>По этому фильтру машин нет.</p></div>`;
-      return banner("Склад", `Logicstars · ${meta.updated}`, "TENET")+`
-        <p class="lead">Непроданные и отложенные из Logicstars, TENET и CHERY. <b>В наличии</b> — у дилера. <b>В пути</b> — завод или Домодедово. У T7 — салон Brown, дата производства и зелёная плашка МПТ. Снимок ${meta.updated}.</p>
+      return banner("Склад", `Лogicstars · ${meta.updated}`, "TENET")+`
+        <p class="lead">Непроданные и отложенные из Logicstars, TENET и CHERY. <b>В наличии</b> — у дилера. <b>В пути</b> — завод или Домодедово. Оранжевая плашка <b>ДЕМО</b> — демо-авто. Снимок ${meta.updated}.</p>
         <div class="study-pick" style="margin-top:12px">
           <button class="chip ${stockFilter==="all"?"on":""}" data-stock="all">Все · ${STOCK.length}</button>
           ${["t4","t4l","t7","t8","t9","t7l","a8"].map(id=>{
