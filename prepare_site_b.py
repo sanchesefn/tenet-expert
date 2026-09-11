@@ -1,4 +1,4 @@
-DEMO_VINS={"EDEDD24B7SD172087","EDXFD32B0TE048800","EDELB31B3TE061866","EDEFB32B3TE114786","EDEFB32B7TE114869"}
+DEMO_VINS={"EDXGD34B2TE109064","EDXGB32B0TE110108"}
 MPT_VINS={"EDXFB32B2TE041658","EDXFB32B4TE041659","EDXFB32B7TE062327","EDXFD32B3TE070113","EDXFB32B3TE091114","EDXFB32B1TE087336","EDXFD32B4TE092590","EDXFD32B4TE092587"}
 sj=Path("stock.json")
 m=re.search(r"const STOCK = (\[.*?\]);\s*\n\s*const ST_LABEL", html, re.S)
@@ -16,7 +16,7 @@ if m:
         stock=json.loads(m.group(1))
     for x in stock:
         x["mpt"]=x.get("vin") in MPT_VINS
-        x["demo"]=bool(x.get("demo")) or x.get("vin") in DEMO_VINS
+        x["demo"]=x.get("vin") in DEMO_VINS
         salon=str(x.get("salon") or "")
         if "коричнев" in salon.lower().replace("ё","е"):
             x["salon"]="Brown"

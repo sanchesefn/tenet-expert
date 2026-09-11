@@ -21,6 +21,9 @@ for c in cars:
     seen.add(vin)
     uniq.append(c)
 
+DEMO_VINS={"EDXGD34B2TE109064","EDXGB32B0TE110108"}
+for c in uniq:
+    c["demo"] = c.get("vin") in DEMO_VINS
 if len(uniq) < 40:
     print("skip stock inject, only", len(uniq), "cars")
     raise SystemExit(0)
