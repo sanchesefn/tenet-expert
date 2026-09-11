@@ -25,6 +25,12 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
+          if [ -f prepare_site_b.py ]; then
+            bytes=$(wc -c < prepare_site_b.py)
+            if [ "$bytes" -lt 5000 ]; then
+              curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/839cacdd1f03b1b6c04c34e811fb9d52558c3f2c/prepare_site_b.py -o prepare_site_b.py
+            fi
+          fi
           if [ -f prepare_site_a.py ] && [ -f prepare_site_b.py ]; then
             cat prepare_site_a.py prepare_site_b.py > prepare_site.py
           fi
@@ -36,6 +42,7 @@ jobs:
           if [ -f patch_fleet.py ]; then python3 patch_fleet.py; fi
           if [ -f patch_attest.py ]; then python3 patch_attest.py; fi
           if [ -f patch_css.py ]; then python3 patch_css.py; fi
+          if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py; fi
           mkdir -p _site/cars _site/docs/prices _site/hub
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
           if [ -d TENET_T4L_netlify/cars ]; then cp -f TENET_T4L_netlify/cars/*.jpg _site/cars/ 2>/dev/null || true; fi
