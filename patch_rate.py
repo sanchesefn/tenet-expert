@@ -24,37 +24,3 @@ FEED = LEAD + """
           return Object.values(map).sort((a,b)=>String(b.at||\"\").localeCompare(String(a.at||\"\"))).map(r=>`<div class=\"row\"><span><b>${escape(r.display||r.surname)}</b> · ${names[r.model]||r.model}${Number(r.exam||1)===2?\" · пересдача\":\"\"}</span><b>${r.percent}%</b></div>`).join(\"\") || `<p class=\"empty\">Пока нет сдач</p>`;
         })()}</div>
 """
-
-
-def patch(text: str) -> str:
-    if \"rate-feed\" in text:
-        return text
-    if CSS_OLD in text:
-        text = text.replace(CSS_OLD, CSS_NEW, 1)
-    if LEAD in text:
-        text = text.replace(LEAD, FEED, 1)
-    if 'view==\"rate\") refreshLocks' not in text:
-        text = text.replace(
-            'window.addEventListener(\"pagehide\"',
-            'setInterval(()=>{ if(view===\"rate\") refreshLocks().then(()=>render()); }, 20000);\\n    window.addEventListener(\"pagehide\"',
-            1,
-        )
-    return text
-
-
-def main():
-    n = 0
-    for path in (Path(\"_site/index.html\"), Path(\"TENET_T4L_netlify/index.html\")):
-        if not path.exists():
-            continue
-        src = path.read_text()
-        out = patch(src)
-        if out != src:
-            path.write_text(out)
-            print(\"rate patched\", path)
-            n += 1
-    print(\"rate changed\", n)
-
-
-if __name__ == \"__main__\":
-    main()
