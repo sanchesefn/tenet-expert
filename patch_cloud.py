@@ -1,49 +1,26 @@
 #!/usr/bin/env python3
-"""Serialize rating cloud writes and stop overlapping upserts from dropping exams."""
+"""Serialize rating cloud writes so exam results are not overwritten."""
 from pathlib import Path
 
-OLD_UPSERT = '''    async function upsertLock(rec){
+NEW_UPSERT = r'''async function upsertLock(rec){
       const body = {
         surname:rec.surname, display:rec.display, model:rec.model, exam:rec.exam||1,
         percent:rec.percent, at:rec.at, attempts:rec.attempts||1,
         status: rec.status || "done"
       };
       if(body.status==="running" && rec.run) body.run = rec.run;
+      if(Array.isArray(rec.missed)) body.missed=rec.missed;
+      if(rec.ok!=null) body.ok=rec.ok;
+      if(rec.n!=null) body.n=rec.n;
+      if(body.status==="done"){ if(body.tgSent==null) body.tgSent=false; delete body.run; }
       state.locks[lockKey(rec.display, rec.model, rec.exam||1)] = rec;
       state.locks[lockKey(rec.surname, rec.model, rec.exam||1)] = rec;
       save();
-      for(let i=0;i<3;i++){
-        try{
-          const list = await pullList();
-          const idx = list.findIndex(x => x && x.surname===body.surname && x.model===body.model && Number(x.exam||1)===Number(body.exam));
-          if(idx>=0){
-            const prev = list[idx] || {};
-            if(prev.status==="done" && body.status==="running"){
-              remoteLocks = list;
-              syncOk = true;
-              return;
-            }
-            list[idx] = Object.assign({}, prev, body);
-            if(body.status==="done") delete list[idx].run;
-          } else list.push(body);
-          const r = await withTimeout(fetch("https://rentry.co/api/edit/"+CLOUD_ID, {
-            method:"POST",
-            headers:{"Content-Type":"application/x-www-form-urlencoded"},
-            body: cloudForm({edit_code: CLOUD_KEY, text: JSON.stringify(list)})
-          }), 10000);
-          if(!r.ok) throw new Error("edit");
-          const out = await r.json().catch(()=>({status:"200"}));
-          if(String(out.status)!=="200") throw new Error("edit status");
-          remoteLocks = list;
-          syncOk = true;
-          return;
-        }catch(e){
-          if(i===2){ syncOk = false; }
-        }
-      }
-    }'''
-
-NEW_UPSERT = r'''    function recKey(x){
+      const job = cloudChain.then(()=>writeCloud(body), ()=>writeCloud(body));
+      cloudChain = job.catch(()=>{});
+      return job;
+    }
+    function recKey(x){
       if(!x) return "";
       if(x.type==="login") return "login|"+norm(x.surname);
       if(x.type==="pass") return "pass|"+norm(x.surname)+"|"+(x.model||"")+"|"+String(x.code||"").toUpperCase();
@@ -55,8 +32,8 @@ NEW_UPSERT = r'''    function recKey(x){
       if(!a) return b;
       if(!b) return a;
       const ad=a.status!=="running", bd=b.status!=="running";
-      if(ad && !bd) return Object.assign({}, a, {status:"done", tgSent:a.tgSent||false});
-      if(bd && !ad) return Object.assign({}, b, {status:"done", tgSent:b.tgSent||false});
+      if(ad && !bd) return Object.assign({}, a, {status:"done"});
+      if(bd && !ad) return Object.assign({}, b, {status:"done"});
       const ap=Number(a.percent||0), bp=Number(b.percent||0);
       let win, lose;
       if(bp>ap){ win=b; lose=a; }
@@ -82,21 +59,6 @@ NEW_UPSERT = r'''    function recKey(x){
     }
     function sleep(ms){ return new Promise(r=>setTimeout(r, ms)); }
     let cloudChain = Promise.resolve();
-    async function upsertLock(rec){
-      const body = {
-        surname:rec.surname, display:rec.display, model:rec.model, exam:rec.exam||1,
-        percent:rec.percent, at:rec.at, attempts:rec.attempts||1,
-        status: rec.status || "done"
-      };
-      if(body.status==="running" && rec.run) body.run = rec.run;
-      if(body.status==="done"){ body.tgSent = false; delete body.run; }
-      state.locks[lockKey(rec.display, rec.model, rec.exam||1)] = rec;
-      state.locks[lockKey(rec.surname, rec.model, rec.exam||1)] = rec;
-      save();
-      const job = cloudChain.then(()=>writeCloud(body), ()=>writeCloud(body));
-      cloudChain = job.catch(()=>{});
-      return job;
-    }
     async function writeCloud(body){
       for(let i=0;i<5;i++){
         try{
@@ -134,17 +96,7 @@ NEW_UPSERT = r'''    function recKey(x){
       }
     }'''
 
-OLD_REFRESH = '''    async function refreshLocks(){
-      try {
-        remoteLocks = await pullList();
-        syncOk = true;
-      } catch(e) {
-        syncOk = false;
-        remoteLocks = remoteLocks || [];
-      }
-    }'''
-
-NEW_REFRESH = '''    async function refreshLocks(){
+NEW_REFRESH = '''async function refreshLocks(){
       try {
         remoteLocks = await pullList();
         syncOk = true;
@@ -155,58 +107,66 @@ NEW_REFRESH = '''    async function refreshLocks(){
       }
     }'''
 
-OLD_EXAMREC = '''    function remoteExam(n){
-      return remoteLocks.find(x => x.surname===norm(state.surname) && x.model===model && Number(x.exam||1)===n);
-    }
-    function examRec(n){ return remoteExam(n) || localExam(n); }'''
-
-NEW_EXAMREC = '''    function remoteExam(n){
+NEW_REMOTE = '''function remoteExam(n){
       const rows=(remoteLocks||[]).filter(x => x && !x.type && x.surname===norm(state.surname) && x.model===model && Number(x.exam||1)===n);
       return rows.find(x => recDone(x)) || rows[0];
-    }
-    function examRec(n){
+    }'''
+
+NEW_EXAMREC = '''function examRec(n){
       const loc=localExam(n), rem=remoteExam(n);
       if(recDone(loc) && (!recDone(rem) || Number(loc.percent||0)>=Number(rem.percent||0))) return loc;
       return rem || loc;
     }'''
 
-OLD_USERRUN = '''      const rem=(remoteLocks||[]).find(x=>x && x.surname===sn && x.status==="running");
-      if(!rem) return null;'''
 
-NEW_USERRUN = '''      const rem=(remoteLocks||[]).find(x=>x && !x.type && x.surname===sn && x.status==="running");
-      if(!rem) return null;
-      const localDone=state.locks[lockKey(rem.surname, rem.model, rem.exam||1)];
-      if(recDone(localDone)) return null;'''
+def extract_fn(src, start_token):
+    i = src.find(start_token)
+    if i < 0:
+        return None, -1, -1
+    b = src.find("{", i)
+    depth = 0
+    for j in range(b, len(src)):
+        ch = src[j]
+        if ch == "{":
+            depth += 1
+        elif ch == "}":
+            depth -= 1
+            if depth == 0:
+                return src[i : j + 1], i, j + 1
+    return None, i, -1
 
-REPLACES = [
-    ("if(answers[idx]==null) answers[idx]={id:q.id,ok:!!ok,cat:q.cat,p:q.p,x:q.x};\n      persistRun(true);\n      next();",
-     "if(answers[idx]==null) answers[idx]={id:q.id,ok:!!ok,cat:q.cat,p:q.p,x:q.x};\n      persistRun(false);\n      next();"),
-    ("if(idx+1>=paper.length){ finish(); return; }\n      idx++; selected=[]; locked=false;\n      qDeadline = Date.now() + QSEC*1000;\n      left = QSEC;\n      persistRun(true);",
-     "if(idx+1>=paper.length){ finish(); return; }\n      idx++; selected=[]; locked=false;\n      qDeadline = Date.now() + QSEC*1000;\n      left = QSEC;\n      persistRun(false);"),
-    ("function next(){ if(idx+1>=paper.length) finish(); else { idx++; selected=[]; locked=false; qDeadline=Date.now()+QSEC*1000; left=QSEC; persistRun(true); render(); } }",
-     "function next(){ if(idx+1>=paper.length) finish(); else { idx++; selected=[]; locked=false; qDeadline=Date.now()+QSEC*1000; left=QSEC; persistRun(false); render(); } }"),
-    ("await upsertLock(rec);\n        if(state.runs) delete state.runs[sn];",
-     "const saved=await upsertLock(rec);\n        if(!saved){ await sleep(1500); await upsertLock(rec); }\n        if(state.runs) delete state.runs[sn];"),
-]
+
+def replace_fn(src, start_token, new_fn):
+    body, i, end = extract_fn(src, start_token)
+    if body is None:
+        raise SystemExit("not found: " + start_token)
+    return src[:i] + new_fn + src[end:]
 
 
 def patch(text: str) -> str:
-    if OLD_UPSERT not in text:
-        raise SystemExit("upsertLock block not found")
-    text = text.replace(OLD_UPSERT, NEW_UPSERT, 1)
-    if OLD_REFRESH not in text:
-        raise SystemExit("refreshLocks not found")
-    text = text.replace(OLD_REFRESH, NEW_REFRESH, 1)
-    if OLD_EXAMREC not in text:
-        raise SystemExit("examRec not found")
-    text = text.replace(OLD_EXAMREC, NEW_EXAMREC, 1)
-    if OLD_USERRUN not in text:
-        raise SystemExit("userRun not found")
-    text = text.replace(OLD_USERRUN, NEW_USERRUN, 1)
-    for a, b in REPLACES:
-        if a not in text:
-            raise SystemExit("replace missing: " + a[:60])
-        text = text.replace(a, b)
+    if "function mergeCloud(" in text:
+        return text
+    text = replace_fn(text, "async function upsertLock(rec)", NEW_UPSERT)
+    text = replace_fn(text, "async function refreshLocks()", NEW_REFRESH)
+    text = replace_fn(text, "function remoteExam(n)", NEW_REMOTE)
+    text = replace_fn(text, "function examRec(n)", NEW_EXAMREC)
+    old_rem = 'const rem=(remoteLocks||[]).find(x=>x && x.surname===sn && x.status==="running");\n      if(!rem) return null;'
+    new_rem = 'const rem=(remoteLocks||[]).find(x=>x && !x.type && x.surname===sn && x.status==="running");\n      if(!rem) return null;\n      const localDone=state.locks[lockKey(rem.surname, rem.model, rem.exam||1)];\n      if(recDone(localDone)) return null;'
+    if old_rem not in text:
+        raise SystemExit("userRun rem line not found")
+    text = text.replace(old_rem, new_rem, 1)
+    text = text.replace(
+        "        await upsertLock(rec);\n        if(state.runs) delete state.runs[sn];",
+        "        const saved=await upsertLock(rec);\n        if(!saved){ await sleep(1500); await upsertLock(rec); }\n        if(state.runs) delete state.runs[sn];",
+        1,
+    )
+    # do not cloud-write on every question
+    text = text.replace("left = QSEC;\n      persistRun(true);", "left = QSEC;\n      persistRun(false);")
+    text = text.replace("persistRun(true);\n      next(); closing=", "persistRun(false);\n      next(); closing=")
+    text = text.replace(
+        "left=QSEC; persistRun(true); render(); } }",
+        "left=QSEC; persistRun(false); render(); } }",
+    )
     return text
 
 
@@ -216,14 +176,15 @@ def main():
         if not path.exists():
             continue
         src = path.read_text()
-        if "function mergeCloud(" in src:
+        out = patch(src)
+        if out != src:
+            path.write_text(out)
+            print("patched", path, "bytes", path.stat().st_size)
+            n += 1
+        else:
             print(path, "already patched")
-            continue
-        path.write_text(patch(src))
-        print("patched", path, "bytes", path.stat().st_size)
-        n += 1
     if n == 0:
-        print("no html files patched (ok if already applied)")
+        print("no html files changed")
 
 
 if __name__ == "__main__":
