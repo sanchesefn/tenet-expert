@@ -364,7 +364,7 @@ def handle_text(chat_id, text, lst):
 
 
 def pull_relay():
-    url = "https://ntfy.sh/tenet-expert-o6nq7rki/json?poll=1&since=2d"
+    url = "https://ntfy.sh/tenet-expert-o6nq7rki/json?poll=1&since=48h"
     recs = []
     try:
         with urllib.request.urlopen(url, timeout=20) as resp:
