@@ -8,6 +8,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: telegram
+  cancel-in-progress: false
+
 jobs:
   bot:
     runs-on: ubuntu-latest
