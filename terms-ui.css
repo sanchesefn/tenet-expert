@@ -48,3 +48,6 @@
 .mpt-info small{display:block;color:var(--muted);margin-top:4px}
 .mpt-keys{margin-top:10px}
 .mpt-keys small{display:block;color:var(--muted);font-size:12px;line-height:1.4;margin-top:4px}
+.st.demo{background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
+.stock-car.demo{border-color:#ef6c00;background:#fff8f1}
+.demo-tag{color:#e65100}
