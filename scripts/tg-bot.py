@@ -49,8 +49,78 @@ def pull():
     return parsed if isinstance(parsed, list) else []
 
 
+def rec_key(x):
+    if not x:
+        return None
+    t = x.get("type")
+    if t == "login":
+        return ("login", x.get("surname"))
+    if t == "pass":
+        return ("pass", x.get("surname"), x.get("model"), str(x.get("code") or "").upper())
+    if t == "pin_request":
+        return ("pin", x.get("kind") or "login", x.get("surname"), x.get("model"), x.get("at"))
+    return ("exam", x.get("surname"), x.get("model"), int(x.get("exam") or 1))
+
+
+def better(a, b):
+    if not a:
+        return b
+    if not b:
+        return a
+    if a.get("type") or b.get("type"):
+        out = dict(a)
+        out.update(b)
+        if a.get("tgSent") or b.get("tgSent"):
+            out["tgSent"] = True
+        return out
+    ad = a.get("status") != "running"
+    bd = b.get("status") != "running"
+    if ad and not bd:
+        out = dict(a)
+        out["status"] = "done"
+        out.pop("run", None)
+        if a.get("tgSent") or b.get("tgSent"):
+            out["tgSent"] = True
+        return out
+    if bd and not ad:
+        out = dict(b)
+        out["status"] = "done"
+        out.pop("run", None)
+        if a.get("tgSent") or b.get("tgSent"):
+            out["tgSent"] = True
+        return out
+    ap, bp = a.get("percent") or 0, b.get("percent") or 0
+    win, lose = (b, a) if bp > ap else (a, b) if ap > bp else ((b, a) if str(b.get("at") or "") >= str(a.get("at") or "") else (a, b))
+    out = dict(lose)
+    out.update(win)
+    if ad or bd:
+        out["status"] = "done"
+        out.pop("run", None)
+    if a.get("tgSent") or b.get("tgSent"):
+        out["tgSent"] = True
+    return out
+
+
+def merge_lists(old, new):
+    order = []
+    store = {}
+    for x in (old or []) + (new or []):
+        k = rec_key(x)
+        if k is None:
+            continue
+        if k not in store:
+            order.append(k)
+            store[k] = x
+        else:
+            store[k] = better(store[k], x)
+    return [store[k] for k in order]
+
+
 def push(lst):
-    form_post(f"https://rentry.co/api/edit/{CLOUD_ID}", {"edit_code": CLOUD_KEY, "text": json.dumps(lst, ensure_ascii=False)})
+    fresh = pull()
+    merged = merge_lists(fresh, lst)
+    form_post(f"https://rentry.co/api/edit/{CLOUD_ID}", {"edit_code": CLOUD_KEY, "text": json.dumps(merged, ensure_ascii=False)})
+    return merged
 
 
 def tg(method, payload):
@@ -95,6 +165,8 @@ def notify_new(lst):
     chats = targets()
     if not chats:
         return False
+    pending = [x for x in lst if x and not x.get("type") and x.get("status") == "done" and not x.get("tgSent")]
+    print("pending results", len(pending), [(x.get("display"), x.get("model"), x.get("percent")) for x in pending])
     for rec in lst:
         if not rec or rec.get("type") in SKIP_TYPES:
             continue
@@ -113,7 +185,7 @@ def notify_new(lst):
                     )
                 else:
                     sn = " ".join((name or "").split()).lower()
-                    pin = next((x for x in lst if x and x.get("type")=="login" and x.get("surname")==sn and x.get("code")), None)
+                    pin = next((x for x in lst if x and x.get("type") == "login" and x.get("surname") == sn and x.get("code")), None)
                     if pin is None:
                         pin = upsert_login(lst, name)
                     text = (
@@ -176,8 +248,7 @@ def issue_code(lst, surname, mid):
         "at": datetime.now(timezone.utc).isoformat(),
     }
     lst.append(rec)
-    push(lst)
-    return rec
+    return push(lst) or lst
 
 
 def upsert_login(lst, surname, pin=None):
@@ -261,10 +332,13 @@ def handle_text(chat_id, text, lst):
         if not mid:
             send(chat_id, "Не понял модель. Используйте t4l, t7, t8, t9 или a8.")
             return lst
-        rec = issue_code(lst, " ".join(parts[1:-1]), mid)
+        recs = issue_code(lst, " ".join(parts[1:-1]), mid)
+        rec = next((x for x in recs if x and x.get("type") == "pass" and x.get("surname") == " ".join(parts[1:-1]).lower() and x.get("model") == mid), None)
+        if rec is None:
+            rec = recs[-1] if recs else {"display": " ".join(parts[1:-1]), "code": "?"}
         send(chat_id, (
-            f"Код для {rec['display']} / {MODELS.get(mid, mid)}:\n"
-            f"{rec['code']}\n\n"
+            f"Код для {rec.get('display')} / {MODELS.get(mid, mid)}:\n"
+            f"{rec.get('code')}\n\n"
             "Менеджер вводит его в поле «Код РОП» на сайте. Один раз."
         ))
         return pull()
@@ -276,7 +350,6 @@ def handle_text(chat_id, text, lst):
         lines = [f"{x.get('display') or x.get('surname')} {x.get('model')} №{x.get('exam') or 1} {x.get('percent')}%" for x in people[-20:]]
         send(chat_id, "Последние сдачи:\n" + "\n".join(lines))
         return lst
-    # bare staff surname → issue login pin
     key = low.strip()
     if key in STAFF:
         rec = upsert_login(lst, STAFF[key])
