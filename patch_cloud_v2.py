@@ -197,18 +197,59 @@ FINISH = """async function finish(){
       const pct=tally();
       const item={id:Date.now().toString(36),name:state.display,model,mode,percent:pct,ok:correct,n:paper.length,date:new Date().toISOString()};
       state.history=[item,...state.history].slice(0,50);
-      if(mode==="exam"){
-        const n=examSession||1;
-        const prev=examRec(n)||{attempts:0};
-        if(n===2) delete state.unlock[lockKey(state.surname, model, 2)];
-        const rec={surname:norm(state.surname),display:state.display,model,exam:n,percent:pct,ok:correct,n:paper.length,missed:missed.map(r=>({id:r.id,p:r.p,x:r.x,pick:r.pick||[]})),at:item.date,attempts:(prev.attempts||0)+1,status:"done"};
-        const sn=norm(state.surname);
-        if(state.runs && state.runs[sn]) state.runs[sn].status="done";
-        state.lastCode=packResult(rec); save();
-        upsertLock(rec).then(()=>{ syncOk=true; render(); }).catch(()=>{ syncOk=false; render(); });
-      }
-      save(); render();
+      save();
+      if(mode!=="exam"){ render(); return; }
+      const n=examSession||1;
+      const prev=examRec(n)||{attempts:0};
+      if(n===2) delete state.unlock[lockKey(state.surname, model, 2)];
+      const rec={surname:norm(state.surname),display:state.display,model,exam:n,percent:pct,ok:correct,n:paper.length,missed:missed.map(r=>({id:r.id,p:r.p,x:r.x,pick:r.pick||[]})),at:item.date,attempts:(prev.attempts||0)+1,status:"done"};
+      const sn=norm(state.surname);
+      if(state.runs && state.runs[sn]) state.runs[sn].status="done";
+      state.lastCode=packResult(rec); save();
+      savingCloud=true; cloudVerified=false; syncOk=false;
+      render();
+      cloudVerified = await confirmCloud(rec);
+      savingCloud=false; syncOk=cloudVerified;
+      render();
     }"""
+
+CONFIRM = """async function confirmCloud(rec){
+      for(let i=0;i<4;i++){
+        try{
+          await upsertLock(rec);
+          const list=await pullList();
+          const got=(list||[]).find(x=>x && recKey(x)===recKey(rec));
+          if(got && got.status!=="running" && Number(got.percent||0)>=Number(rec.percent||0)){
+            remoteLocks=mergeCloud(remoteLocks||[], [got]);
+            return true;
+          }
+        }catch(e){}
+        await sleep(700);
+      }
+      return false;
+    }"""
+
+BANNER = """${mode==="exam"?`<div class="card" style="margin:14px 0;padding:16px;border:2px solid ${cloudVerified?"#1b7f3a":"#b42318"}"><p style="margin:0;font-size:20px;font-weight:800;color:${cloudVerified?"#1b7f3a":"#b42318"}">${cloudVerified?"Результат в рейтинге. Можно закрывать.":"Не закрывайте и не обновляйте страницу"}</p><p style="margin:8px 0 0">${savingCloud?"Выгружаем в облако и проверяем, что запись дошла…":(cloudVerified?"Проверка прошла успешно.":"Автосохранение не подтвердилось. Нажмите «Повторить отправку» или скопируйте код.")}</p>${!savingCloud && !cloudVerified && state.lastCode?`<button class="btn ghost" id="copyCode" style="margin-top:8px">Скопировать код результата</button>`:""}</div>`:""}"""
+
+OLD_STATUS_A = (
+    '${mode==="exam"?`<p style="margin-top:10px;font-size:14px;color:${syncOk?"#1b7f3a":"#b42318"}">${syncOk?"Результат отправлен в общий рейтинг и Telegram.":"Отправляю в рейтинг… не закрывайте страницу."}</p>'
+    '${state.lastCode?`<p class="eyebrow" style="margin-top:10px">Если у РОП не появилось — скопируйте код и перешлите</p><button class="btn ghost" id="copyCode">Скопировать код результата</button>`:""}`:""}'
+)
+OLD_STATUS_B = (
+    '${mode==="exam"?`<p style="margin-top:10px;font-size:14px;color:${syncOk?"#1b7f3a":"#b42318"}">${syncOk?"Результат отправлен в общий рейтинг и Telegram.":"Отправляю в рейтинг… не закрывайте страницу."}</p>`:""}'
+)
+
+OLD_BTNS = """          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn ivory" data-go="rate">Рейтинг</button>
+            ${mode==="exam"&&canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
+            <button class="btn ghost" data-go="home">Модели</button>
+          </div>"""
+
+NEW_BTNS = """          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            ${mode!=="exam"?`<button class="btn ivory" data-go="rate">Рейтинг</button><button class="btn ghost" data-go="home">Модели</button>`:(savingCloud?`<button class="btn ghost" disabled>Отправка…</button>`:(cloudVerified?`<button class="btn ivory" data-go="rate" style="font-size:18px;padding:12px 22px">Готово</button>`:`<button class="btn ghost" id="retryCloud">Повторить отправку</button>`))}
+            ${mode==="exam"&&cloudVerified&&canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
+            ${mode==="exam"&&cloudVerified?`<button class="btn ghost" data-go="home">Модели</button>`:""}
+          </div>"""
 
 UPSERT = """async function upsertLock(rec){
       const body = {
@@ -259,9 +300,36 @@ def patch(text: str) -> str:
             text = text.replace("function bind(){", BIND_EXTRA, 1)
         if 'http-equiv="Cache-Control"' not in text and "<head>" in text:
             text = text.replace("<head>", '<head>\n<meta http-equiv="Cache-Control" content="no-store">', 1)
-    if "upsertLock(rec).then" not in text:
+    if "function confirmCloud(" not in text:
+        text = text.replace(
+            "locked = false, done = false, closing = false;",
+            "locked = false, done = false, closing = false, savingCloud = false, cloudVerified = false;",
+            1,
+        )
+        if "async function confirmCloud(" not in text:
+            text = text.replace("    async function finish(){", CONFIRM + "\n    async function finish(){", 1)
         text = replace_fn(text, "async function finish()", FINISH)
-        text = replace_fn(text, "async function upsertLock(rec)", UPSERT)
+        if OLD_STATUS_A in text:
+            text = text.replace(OLD_STATUS_A, BANNER, 1)
+        text = text.replace(OLD_STATUS_B, "", 1)
+        if "id=\"retryCloud\"" not in text and OLD_BTNS in text:
+            text = text.replace(OLD_BTNS, NEW_BTNS, 1)
+        text = text.replace(
+            "done=false; closing=false; answers=[];",
+            "done=false; closing=false; savingCloud=false; cloudVerified=false; answers=[];",
+        )
+        if 'getElementById("retryCloud")' not in text:
+            text = text.replace(
+                'const copyBtn=document.getElementById("copyCode");',
+                'const retryCloud=document.getElementById("retryCloud");\n      if(retryCloud) retryCloud.onclick=()=>finish();\n      const copyBtn=document.getElementById("copyCode");',
+                1,
+            )
+        if "beforeunload" not in text:
+            text = text.replace(
+                'window.addEventListener("pagehide"',
+                'window.addEventListener("beforeunload", e=>{ if(savingCloud){ e.preventDefault(); e.returnValue="Не закрывайте страницу"; } });\n    window.addEventListener("pagehide"',
+                1,
+            )
     return text
 
 
