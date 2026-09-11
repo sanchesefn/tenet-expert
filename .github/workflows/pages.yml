@@ -62,7 +62,8 @@ jobs:
           if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py; fi
           if [ -f patch_cloud.py ]; then python3 patch_cloud.py; fi
-          if [ -f patch_cloud_v2.py ]; then python3 patch_cloud_v2.py; fi
+          curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/6d9ce5112b96a0fcf7765654f8ff7c061b71da08/patch_cloud_v2.py -o patch_cloud_v2.py
+          python3 patch_cloud_v2.py
           mkdir -p _site/cars _site/docs/prices _site/hub
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
           if [ -d TENET_T4L_netlify/cars ]; then cp -f TENET_T4L_netlify/cars/*.jpg _site/cars/ 2>/dev/null || true; fi
