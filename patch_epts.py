@@ -61,7 +61,7 @@ def patch_html(html: str) -> str:
         elif "    function docs(){" in html:
             html = html.replace("    function docs(){", js + "    function docs(){", 1)
             print("epts fn before docs")
-    if "function bind()" in html and "eptsBind()" not in html:
+    if "typeof eptsBind" not in html:
         key = 'if(uhi) uhi.onclick=()=>tryUnlock((document.getElementById("pin")||{}).value);'
         if key in html:
             html = html.replace(key, key + '\n      if(typeof eptsBind==="function") eptsBind();', 1)
