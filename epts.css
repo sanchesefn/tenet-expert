@@ -1,0 +1,28 @@
+.hub-card[data-go="epts"]::before{background-image:url("hub/epts.jpg?v=1");background-position:48% 46%;}
+.epts-steps{display:grid;gap:10px;margin-top:22px;}
+.epts-step{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:16px 16px 18px;box-shadow:var(--shadow);text-align:left;}
+.epts-step.is-wait{opacity:.55;}
+.epts-step.is-done{border-color:#9ad4b4;background:var(--ok-bg);}
+.epts-step.is-on{border-color:#161618;}
+.epts-n{width:28px;height:28px;border-radius:8px;background:var(--fg);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;flex:0 0 auto;}
+.epts-step.is-wait .epts-n{background:#d9d4c8;color:var(--muted);}
+.epts-step.is-done .epts-n{background:var(--pass);}
+.epts-head{display:flex;gap:12px;align-items:center;}
+.epts-head h3{margin:0;font-size:18px;letter-spacing:-.03em;}
+.epts-head p{margin:2px 0 0;color:var(--muted);font-size:13px;line-height:1.4;}
+.epts-body{margin-top:14px;}
+.epts-vin{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase;font-size:16px;}
+.epts-found{margin-top:12px;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;}
+.epts-found b{display:block;font-size:16px;margin:0 0 4px;}
+.epts-found span{color:var(--muted);font-size:13px;}
+.epts-sheet-wrap{margin-top:12px;border:1px solid var(--border);border-radius:12px;overflow:visible;background:#cfc8ba;padding:14px;}
+.epts-sheet-wrap iframe,.epts-sheet-wrap img{width:100%;max-width:760px;height:auto;margin:0 auto;border:0;background:#fff;display:block;box-shadow:0 10px 30px rgba(17,17,20,.14);}
+.epts-meta{display:grid;gap:8px;margin:12px 0;}
+@media(min-width:720px){.epts-meta{grid-template-columns:1fr 1fr 1fr;}}
+.epts-meta .card{margin:0;padding:12px 14px;}
+.epts-meta h4{margin:0 0 4px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+.epts-meta b{font-size:20px;letter-spacing:-.03em;}
+.epts-mail{display:grid;gap:8px;margin-top:8px;}
+.epts-mail code{font-size:13px;background:#fff;border:1px solid var(--border);border-radius:8px;padding:8px 10px;display:block;word-break:break-all;}
+.epts-warn{border:1px solid #f0b4b8;background:var(--bad-bg);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-top:12px;color:var(--fg);}
+.epts-ok{border:1px solid #9ad4b4;background:var(--ok-bg);border-radius:12px;padding:12px 14px;font-size:13px;line-height:1.45;margin-top:12px;}
