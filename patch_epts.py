@@ -5,6 +5,52 @@ import shutil
 ROOT = Path(".")
 SITE = Path("_site")
 
+OLD_PLACE = '''      const payTop=y;
+      eptsWrap(ctx, body2, maxW).forEach(ln=>{ ctx.fillText(ln, L, y); y+=36; });
+      if(eptsStamp){
+        const sw=360, sh=sw*(eptsStamp.height/eptsStamp.width);
+        ctx.save();
+        ctx.globalAlpha=0.93;
+        ctx.drawImage(eptsStamp, L+70, payTop+8, sw, sh);
+        ctx.restore();
+        y=Math.max(y, payTop+8+sh-40);
+      }
+      if(eptsSign){
+        const nw=200, nh=nw*(eptsSign.height/eptsSign.width);
+        ctx.save();
+        ctx.translate(L+175, payTop+118);
+        ctx.rotate(-8*Math.PI/180);
+        ctx.drawImage(eptsSign, 0, 0, nw, nh);
+        ctx.restore();
+      }
+      y+=28;
+      ctx.fillText("Леонтьев А. А. __________", L, y); y+=64;
+      y+=28;'''
+
+NEW_PLACE = '''      eptsWrap(ctx, body2, maxW).forEach(ln=>{ ctx.fillText(ln, L, y); y+=36; });
+      y+=70;
+      const signY=y;
+      ctx.fillText("Леонтьев А. А. __________", L, signY);
+      if(eptsStamp){
+        const sw=250, sh=sw*(eptsStamp.height/eptsStamp.width);
+        ctx.save();
+        ctx.globalAlpha=0.95;
+        ctx.drawImage(eptsStamp, L+290, signY-78, sw, sh);
+        ctx.restore();
+        y=Math.max(signY+56, signY-78+sh+8);
+      } else {
+        y=signY+64;
+      }
+      if(eptsSign){
+        const nw=176, nh=nw*(eptsSign.height/eptsSign.width);
+        ctx.save();
+        ctx.translate(L+248, signY-18);
+        ctx.rotate(-7*Math.PI/180);
+        ctx.drawImage(eptsSign, 0, 0, nw, nh);
+        ctx.restore();
+      }
+      y+=28;'''
+
 def copy_if(rel):
     src = ROOT / rel
     if not src.exists():
@@ -66,6 +112,9 @@ def patch_html(html: str) -> str:
         if key in html:
             html = html.replace(key, key + '\n      if(typeof eptsBind==="function") eptsBind();', 1)
             print("bind")
+    if OLD_PLACE in html:
+        html = html.replace(OLD_PLACE, NEW_PLACE, 1)
+        print("epts stamp place")
     return html
 
 def main():
