@@ -1,4 +1,4 @@
-    const TERMS_DATE = "11.09.2026";
+    const TERMS_DATE = "12.09.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
