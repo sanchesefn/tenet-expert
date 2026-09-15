@@ -1,4 +1,6 @@
-.hub-card[data-go="epts"]::before{background-image:url("hub/epts.jpg?v=1");background-position:48% 46%;}
+.hub-card[data-go="epts"]::before{background-image:url("hub/epts.jpg?v=2");background-position:50% 50%;}
+.hub-card[data-go="gibdd"]::before{background-image:url("hub/gibdd.jpg?v=2");background-position:50% 50%;}
+.hub-card[data-go="duty"]::before{background-image:url("hub/duty.jpg?v=2");background-position:50% 50%;}
 .epts-steps{display:grid;gap:10px;margin-top:22px;}
 .epts-step{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius);padding:16px 16px 18px;box-shadow:var(--shadow);text-align:left;}
 .epts-step.is-wait{opacity:.55;}
