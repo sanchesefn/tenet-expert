@@ -35,6 +35,13 @@
       });
       return out;
     }
+    const DUTY_CARS=[
+      {id:"t4l",title:"TENET T4L"},
+      {id:"t8",title:"TENET T8"},
+      {id:"a8",title:"Arrizo 8"},
+      {id:"t7",title:"TENET T7"},
+      {id:"t9",title:"Tiggo 9"}
+    ];
     function dutyCount(d){
       let tot=0, on=0;
       DUTY_CARS.forEach(car=>{
@@ -45,15 +52,16 @@
       ["dc_light","dc_avito","dc_music","dc_price_avito","dc_price_hold","dc_desk","dc_trash","dm_body","dm_mats","dm_trunk","dm_dust","dm_wheel","dm_bat"].forEach(k=>{ tot++; if(d[k]) on++; });
       return {on, tot};
     }
-    const DUTY_CARS=[
-      {id:"t4l",title:"TENET T4L"},
-      {id:"t8",title:"TENET T8"},
-      {id:"a8",title:"Arrizo 8"},
-      {id:"t7",title:"TENET T7"},
-      {id:"t9",title:"Tiggo 9"}
-    ];
+    function dutyPaintProg(){
+      const p=dutyCount(dutyRead());
+      const pct=p.tot?Math.round(p.on*100/p.tot):0;
+      const bar=document.querySelector(".cl-prog i");
+      const lab=document.querySelector(".cl-prog span");
+      if(bar) bar.style.width=pct+"%";
+      if(lab) lab.textContent=pct+"%";
+    }
     function dutyItem(k, label, on){
-      return `<label class="cl-item"><input type="checkbox" data-duty="${k}" ${on?"checked":""} /><span>${label}</span></label>`;
+      return `<label class="cl-item"><input type="checkbox" data-duty="${k}" ${on?"checked":""} /><span class="cl-mark">✓</span><span>${label}</span></label>`;
     }
     function duty(){
       if(needAuth()) return login();
@@ -132,6 +140,13 @@
       const y=m[3].length===2?("20"+m[3]):m[3];
       return ("0"+m[1]).slice(-2)+"."+("0"+m[2]).slice(-2)+"."+y;
     }
+    function gibddMaskDob(el){
+      const raw=String(el.value||"").replace(/\D/g,"").slice(0,8);
+      let out=raw.slice(0,2);
+      if(raw.length>2) out+="."+raw.slice(2,4);
+      if(raw.length>4) out+="."+raw.slice(4,8);
+      el.value=out;
+    }
     function gibddLoad(){
       try{ return JSON.parse(localStorage.getItem("tenet-gibdd-v1")||"{}"); }catch(e){ return {}; }
     }
@@ -140,40 +155,57 @@
       try{ localStorage.setItem("tenet-gibdd-v1", JSON.stringify(o)); }catch(e){}
       return o;
     }
+    function gibddLinks(form){
+      const vin=String((form&&form.vin)||"").replace(/\s+/g,"").toUpperCase();
+      const fio=String((form&&form.fio)||"").trim();
+      const dob=gibddDob((form&&form.dob)||"");
+      const nm=gibddSplitFio(fio);
+      const fssp="https://fssp.gov.ru/iss/ip?is%5Blast_name%5D="+encodeURIComponent(nm.last)+
+        "&is%5Bfirst_name%5D="+encodeURIComponent(nm.first)+
+        "&is%5Bpatronymic%5D="+encodeURIComponent(nm.mid)+
+        "&is%5Bdate%5D="+encodeURIComponent(dob)+
+        "&is%5Bregion_id%5D%5B0%5D=-1";
+      const zalog="https://www.reestr-zalogov.ru/search/index?vin="+encodeURIComponent(vin);
+      const bankrot="https://fedresurs.ru/bankrupts?searchString="+encodeURIComponent(fio);
+      const bankrotOld="https://bankrot.fedresurs.ru/Debtors.search.aspx?Name="+encodeURIComponent(fio);
+      return {vin,fio,dob,nm,fssp,zalog,bankrot,bankrotOld};
+    }
+    function gibddCopy(text){
+      const t=String(text||"");
+      try{ navigator.clipboard.writeText(t); }catch(e){
+        const a=document.createElement("textarea"); a.value=t; document.body.appendChild(a); a.select(); try{ document.execCommand("copy"); }catch(x){} a.remove();
+      }
+    }
+    function gibddOpen(kind){
+      const L=gibddLinks(gibddSaveForm());
+      if(kind==="zalog"){ gibddCopy(L.vin); window.open(L.zalog,"_blank","noopener"); }
+      if(kind==="fssp"){ gibddCopy([L.nm.last,L.nm.first,L.nm.mid,L.dob].filter(Boolean).join(" ")); window.open(L.fssp,"_blank","noopener"); }
+      if(kind==="bankrot"){ gibddCopy(L.fio); window.open(L.bankrot,"_blank","noopener"); window.open(L.bankrotOld,"_blank","noopener"); }
+    }
     async function gibddFetch(url){
       const ctrl=typeof AbortController==="function"?new AbortController():null;
-      const t=setTimeout(()=>{ try{ if(ctrl) ctrl.abort(); }catch(e){} }, 12000);
+      const t=setTimeout(()=>{ try{ if(ctrl) ctrl.abort(); }catch(e){} }, 8000);
       try{
         const r=await fetch(url,{signal:ctrl?ctrl.signal:undefined, cache:"no-store"});
         const text=await r.text();
-        return {ok:r.ok, status:r.status, text:text.slice(0,20000)};
+        return {ok:r.ok, status:r.status, text:text.slice(0,12000)};
       }catch(e){
         return {ok:false, status:0, text:String(e&&e.message||e)};
       }finally{ clearTimeout(t); }
-    }
-    async function gibddViaProxy(url){
-      const enc=encodeURIComponent(url);
-      const tries=["https://api.allorigins.win/raw?url="+enc, "https://corsproxy.io/?"+enc];
-      for(const u of tries){
-        const r=await gibddFetch(u);
-        if(r.ok && r.text && !/^error/i.test(r.text)) return r;
-      }
-      return {ok:false, status:0, text:"нет доступа без капчи"};
     }
     function gibddParseZalog(text, vin){
       const t=String(text||"");
       if(/ничего не найдено|не найдено уведомлен/i.test(t)) return {hit:false, n:0, detail:"Записей по VIN нет"};
       const recs=t.match(/20\d{2}-\d{3}-\d+/g)||[];
       if(recs.length) return {hit:true, n:recs.length, detail:"Найдены уведомления: "+recs.slice(0,6).join(", ")};
-      if(vin && t.toUpperCase().includes(String(vin).toUpperCase()) && /залог/i.test(t)) return {hit:true, n:1, detail:"VIN упомянут в реестре"};
-      return {hit:null, n:0, detail:"Сайт не отдал таблицу (капча или CORS). Откройте реестр."};
+      return {hit:null, n:0, detail:"Нужна капча на сайте. VIN скопирован."};
     }
     function gibddParseFssp(text){
       const t=String(text||"");
-      if(/Ничего не найдено|не найдено исполнительн/i.test(t)) return {hit:false, n:0, detail:"Исполнительных производств не найдено"};
+      if(/Ничего не найдено|не найдено исполнительн/i.test(t)) return {hit:false, n:0, detail:"ИП не найдено"};
       const ips=t.match(/\d+\/\d+\/\d+-?И?П?/g)||[];
       if(ips.length) return {hit:true, n:ips.length, detail:"Найдены ИП: "+ips.slice(0,8).join(", ")};
-      return {hit:null, n:0, detail:"ФССП требует капчу. Откройте банк данных, регион — Все."};
+      return {hit:null, n:0, detail:"ФССП просит капчу. Регион — Все. ФИО и дата в ссылке."};
     }
     function gibddParseBankrot(text, fio){
       const t=String(text||"");
@@ -189,7 +221,7 @@
         if(name && t.toLowerCase().includes(name.toLowerCase()) && /банкрот/i.test(t)) recs=1;
       }
       if(recs) return {hit:true, n:recs, detail:"Найдено записей: "+recs};
-      return {hit:null, n:0, detail:"Автопроверка не подтвердила результат. Откройте Федресурс."};
+      return {hit:null, n:0, detail:"Откройте Федресурс — ФИО в поиске."};
     }
     function gibddVerdict(z,f,b){
       const bad=[];
@@ -197,55 +229,46 @@
       if(f&&f.hit) bad.push("ФССП");
       if(b&&b.hit) bad.push("банкротство");
       if(bad.length) return {ok:false, text:"Риск: "+bad.join(", ")};
-      if([z,f,b].some(x=>x && x.hit===null)) return {ok:null, text:"Часть проверок требует подтверждения на сайте"};
+      if([z,f,b].some(x=>x && x.hit===null)) return {ok:null, text:"Откройте реестры и пройдите капчу"};
       return {ok:true, text:"По автопроверке записей нет"};
     }
     async function gibddRun(){
       try{
         const form=gibddSaveForm();
-        const vin=String(form.vin||"").replace(/\s+/g,"").toUpperCase();
-        const fio=String(form.fio||"").trim();
-        const dob=gibddDob(form.dob);
-        const nm=gibddSplitFio(fio);
+        const L=gibddLinks(form);
         const box=document.getElementById("gOut");
-        if(!vin || !nm.last || !nm.first || !dob){
-          if(box) box.innerHTML=`<div class="note-box">Нужны VIN, ФИО (фамилия и имя) и дата рождения.</div>`;
+        if(!L.vin || !L.nm.last || !L.nm.first || !L.dob){
+          if(box) box.innerHTML=`<div class="note-box">Нужны VIN, фамилия, имя и дата рождения в формате ДД.ММ.ГГГГ.</div>`;
           return;
         }
-        if(box) box.innerHTML=`<div class="note-box">Проверяю ${escape(vin)} · ${escape(fio)} · ${escape(dob)} …</div>`;
-        const zalogUrl="https://www.reestr-zalogov.ru/search/index";
-        const fsspUrl="https://fssp.gov.ru/iss/ip";
-        const brUrl="https://fedresurs.ru/backend/persons?limit=15&offset=0&searchString="+encodeURIComponent(fio);
-        const brAlt="https://bankrot.fedresurs.ru/Debtors.search.aspx";
+        if(box) box.innerHTML=`<div class="note-box">Собираю сводку и ссылки с заполненными полями…</div>`;
         const [zRaw, fRaw, bRaw]=await Promise.all([
-          gibddViaProxy(zalogUrl+"?vin="+encodeURIComponent(vin)),
-          gibddViaProxy(fsspUrl),
-          gibddFetch(brUrl)
+          gibddFetch(L.zalog),
+          gibddFetch(L.fssp),
+          gibddFetch("https://fedresurs.ru/backend/persons?limit=15&offset=0&searchString="+encodeURIComponent(L.fio))
         ]);
-        const z=gibddParseZalog(zRaw.text, vin);
+        const z=gibddParseZalog(zRaw.text, L.vin);
         const f=gibddParseFssp(fRaw.text);
-        let b=gibddParseBankrot(bRaw.text, fio);
-        if(b.hit===null){
-          const b2=await gibddViaProxy(brAlt+"?Name="+encodeURIComponent(fio));
-          b=gibddParseBankrot(b2.text, fio);
-        }
+        const b=gibddParseBankrot(bRaw.text, L.fio);
         const v=gibddVerdict(z,f,b);
-        const pack={at:new Date().toISOString(), vin, fio, dob, z, f, b, v};
+        const pack={at:new Date().toISOString(), vin:L.vin, fio:L.fio, dob:L.dob, z, f, b, v, links:L};
         window.__gibddLast=pack;
         try{ localStorage.setItem("tenet-gibdd-last", JSON.stringify(pack)); }catch(e){}
-        const row=(title, rec, href)=>`<div class="bank-row"><span><b>${title}</b><br/><small>${escape(rec.detail||"")}</small></span><span class="pay">${rec.hit===true?"Есть":rec.hit===false?"Нет":"Проверьте"}</span></div><p class="calc-note"><a href="${href}" target="_blank" rel="noopener">открыть реестр</a></p>`;
+        const row=(title, rec, kind)=>`<div class="bank-row"><span><b>${title}</b><br/><small>${escape(rec.detail||"")}</small></span><span class="pay">${rec.hit===true?"Есть":rec.hit===false?"Нет":"Сайт"}</span></div>
+          <p class="calc-note"><button type="button" class="btn ghost" data-gopen="${kind}">Открыть и подставить данные</button></p>`;
         if(box) box.innerHTML=`<div class="card dc-result ${v.ok===true?"ok":v.ok===false?"bad":""}">
-          <p class="eyebrow">Сводка проверки</p>
+          <p class="eyebrow">Сводка</p>
           <div class="calc-out" style="font-size:22px">${escape(v.text)}</div>
-          <p class="calc-note">${escape(vin)} · ${escape(fio)} · ${escape(dob)}</p>
-          ${row("Реестр залогов · VIN", z, zalogUrl)}
-          ${row("ФССП · все регионы", f, fsspUrl)}
-          ${row("Реестр банкротов · ФИО", b, brAlt)}
-          <div class="who-line" style="margin-top:10px"><button type="button" class="btn ivory" id="gPdf">Сохранить PDF</button></div>
+          <p class="calc-note">${escape(L.vin)} · ${escape(L.fio)} · ${escape(L.dob)}</p>
+          ${row("Реестр залогов · VIN", z, "zalog")}
+          ${row("ФССП · все регионы", f, "fssp")}
+          ${row("Реестр банкротов · ФИО", b, "bankrot")}
+          <p class="calc-note">Сайты с другого домена не дают вставить значения скриптом. Открываем с параметрами в ссылке и копируем значение в буфер. Капчу всё равно нужно ввести руками.</p>
+          <div class="who-line" style="margin-top:10px"><button type="button" class="btn ivory" id="gPdf">PDF</button></div>
         </div>`;
       }catch(err){
         const box=document.getElementById("gOut");
-        if(box) box.innerHTML=`<div class="note-box">Ошибка проверки: ${escape(String(err&&err.message||err))}</div>`;
+        if(box) box.innerHTML=`<div class="note-box">${escape(String(err&&err.message||err))}</div>`;
       }
     }
     function gibddPdf(pack){
@@ -271,12 +294,12 @@
       if(needAuth()) return login();
       const g=gibddLoad();
       return banner("Проверки ГИБДД","Залог · ФССП · банкроты","TENET")+`
-        <p class="lead">VIN — залоги. ФИО и дата рождения — ФССП, все регионы. Банкроты — только ФИО.</p>
+        <p class="lead">Дата — ДД.ММ.ГГГГ. «Открыть» передаёт VIN / ФИО / дату в ссылку реестра.</p>
         <div class="card">
           <div class="cl-bar">
             <label class="field" style="max-width:none"><span>VIN</span><input id="gVin" value="${escape(g.vin||"")}" placeholder="X7L…" /></label>
             <label class="field" style="max-width:none"><span>ФИО</span><input id="gFio" value="${escape(g.fio||"")}" placeholder="Иванов Иван Иванович" /></label>
-            <label class="field" style="width:180px"><span>Дата рождения</span><input id="gDob" value="${escape(g.dob||"")}" placeholder="01.01.1990" /></label>
+            <label class="field" style="width:180px"><span>Дата рождения</span><input id="gDob" inputmode="numeric" maxlength="10" value="${escape(g.dob||"")}" placeholder="ДД.ММ.ГГГГ" /></label>
           </div>
           <div class="who-line"><button type="button" class="btn ivory" id="gRun">Проверить</button></div>
         </div>
@@ -284,14 +307,20 @@
     }
     function dutyBind(){
       if(view==="duty"){
-        const persist=()=>dutySave(dutyRead());
+        const persist=()=>{ dutySave(dutyRead()); dutyPaintProg(); };
         document.querySelectorAll("[data-duty]").forEach(el=>{
           el.addEventListener("change", persist);
           el.addEventListener("input", persist);
         });
+        dutyPaintProg();
       }
       if(view==="gibdd"){
-        ["gVin","gFio","gDob"].forEach(id=>{
+        const dob=document.getElementById("gDob");
+        if(dob){
+          dob.addEventListener("input", ()=>{ gibddMaskDob(dob); gibddSaveForm(); });
+          dob.addEventListener("blur", ()=>{ dob.value=gibddDob(dob.value); gibddSaveForm(); });
+        }
+        ["gVin","gFio"].forEach(id=>{
           const el=document.getElementById(id);
           if(el) el.addEventListener("change", gibddSaveForm);
         });
@@ -300,11 +329,13 @@
     if(!window.__dutyClick){
       window.__dutyClick=true;
       document.addEventListener("click", function(ev){
+        const open=ev.target && ev.target.closest ? ev.target.closest("[data-gopen]") : null;
+        if(open){ ev.preventDefault(); gibddOpen(open.getAttribute("data-gopen")); return; }
         const t=ev.target && ev.target.closest ? ev.target.closest("#gRun,#gPdf,#gPdfLast,#dutySave,#dutyPrint,#dutyClear") : ev.target;
         if(!t || !t.id) return;
         if(t.id==="gRun"){ ev.preventDefault(); gibddRun(); }
         if(t.id==="gPdf" || t.id==="gPdfLast"){ ev.preventDefault(); gibddPdf(window.__gibddLast); }
-        if(t.id==="dutySave"){ ev.preventDefault(); dutySave(dutyRead()); t.textContent="Ок"; setTimeout(()=>t.textContent="Сохранить",900); }
+        if(t.id==="dutySave"){ ev.preventDefault(); dutySave(dutyRead()); dutyPaintProg(); t.textContent="Ок"; setTimeout(()=>t.textContent="Сохранить",900); }
         if(t.id==="dutyPrint"){ ev.preventDefault(); dutySave(dutyRead()); window.print(); }
         if(t.id==="dutyClear"){ ev.preventDefault(); localStorage.removeItem("tenet-duty-v1"); if(typeof render==="function") render(); }
       });
