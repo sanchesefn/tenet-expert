@@ -1,1 +1,21 @@
-${file:/workspace/stock.json}
+{
+  "updated": "15.09.2026",
+  "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
+  "cars": [
+    {
+      "vin": "EDXGD34B7TE034443",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Ультра 7 мест 4WD",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Домодедово · заявка",
+      "invoice": false,
+      "salon": "Brown",
+      "prod": "",
+      "rrc": 3885000,
+      "mpt": false,
+      "demo": false
+    }
+  ]
+}
