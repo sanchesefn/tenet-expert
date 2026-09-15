@@ -27,6 +27,32 @@
     function fleetOf(id){
       return FLEET_BFS[id] || FLEET_BFS.t9u;
     }
+    function fleetCreditBox(price){
+      const downMode=(typeof kmStr==="function"?kmStr("cDownMode","pct"):"pct");
+      const months=typeof kmVal==="function"?kmVal("cMonths", 60):60;
+      let downPct=typeof kmVal==="function"?kmVal("cDownPct", 20):20;
+      let down=typeof kmVal==="function"?kmVal("cDown", Math.round(price*0.2)):Math.round(price*0.2);
+      if(downMode==="pct") down=Math.round(price*Math.max(0,downPct)/100);
+      else downPct=price>0?Math.round(down*1000/price)/10:0;
+      down=Math.max(0,Math.min(price,down));
+      const pay=typeof calcPay==="function"?calcPay(price, down, months, 19.2):0;
+      return `<div class="note-box" style="margin-top:12px">
+        <p class="eyebrow" style="margin:0 0 6px">Кредит 19,2% · МПТ + Совкомбанк лизинг</p>
+        <p class="calc-note">Доп. расчёт к лизингу. Цена ${rub(Math.round(price))} ₽.</p>
+        <p class="eyebrow" style="margin-top:8px">Первый взнос</p>
+        <div class="down-mode">
+          <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
+          <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
+        </div>
+        <input type="hidden" id="cDownMode" value="${downMode==="sum"?"sum":"pct"}" />
+        ${downMode==="sum"
+          ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
+          :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
+        <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены</p>
+        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
+        <div class="bank-row"><span><b>Платёж 19,2%</b><br/><small>${months} мес. · ПВ ${downPct}%</small></span><span class="pay">${rub(Math.round(pay))} ₽</span></div>
+      </div>`;
+    }
     function calcFleet(m){
       const f=fleetOf(m.id);
       const useFleet=kmVal("kmFleetDisc", false);
@@ -57,6 +83,7 @@
               <div class="calc-out">${rub(Math.round(price))} ₽</div>
               <p class="calc-note">${steps.length?steps.join(" → "):"Базовая цена без скидок."}${useFleet?" · AP без тюнинга "+rub(f.tidy):""}</p>
             </div>
+            ${useMpt?fleetCreditBox(price):""}
           </div>
           <div class="km-right">
             <div class="card">

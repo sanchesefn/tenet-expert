@@ -20,8 +20,10 @@ CSS = """
 .cl-car{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:10px}
 .cl-car h3{margin:0 0 8px;font-size:14px}
 .cl-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}
-.cl-item input{appearance:none;width:18px;height:18px;border:1.5px solid #cbbba3;border-radius:5px;background:#fff;flex:none}
-.cl-item input:checked{background:#2e7d32;border-color:#2e7d32;box-shadow:inset 0 0 0 3px #fff}
+.cl-item input{appearance:none;-webkit-appearance:none;width:18px;height:18px;border:1.5px solid #8d7f6a;border-radius:4px;background:#fff;flex:none;position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+.cl-mark{width:18px;height:18px;margin-left:-26px;pointer-events:none;display:inline-flex;align-items:center;justify-content:center;font:800 14px/1 Inter,Arial,sans-serif;color:transparent}
+.cl-item input:checked{background:#e8f5e9;border-color:#1b5e20}
+.cl-item input:checked + .cl-mark{color:#145a1f}
 .cl-nums{display:flex;gap:6px;margin-top:6px}
 .cl-nums label{flex:1;font-size:10px;color:#7a7166}
 .cl-nums input,.cl-car select{width:100%;min-height:30px;border:1px solid #eadfcf;border-radius:8px;padding:4px 6px}
@@ -30,7 +32,12 @@ CSS = """
 .cl-box b{display:block;margin-bottom:6px;font-size:12px}
 .cl-chips{display:flex;flex-wrap:wrap;gap:6px}
 .cl-chips label{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border:1px solid #eadfcf;border-radius:999px;font-size:12px;background:#fbf7f0}
-@media print{header,nav,.who-line,.hub-grid,.cl-bar .btn{display:none!important}}
+@media print{
+  header,nav,.who-line,.hub-grid,.cl-bar .btn{display:none!important}
+  .cl-item input{appearance:none!important;border:1.4px solid #000!important;background:#fff!important}
+  .cl-item input:checked + .cl-mark{color:#000!important}
+  .cl-mark{color:#000}
+}
 """
 
 def patch(html: str) -> str:
@@ -42,7 +49,7 @@ def patch(html: str) -> str:
         elif "    function login(){" in html:
             html = html.replace("    function login(){", js + "    function login(){", 1)
             print("duty fn insert")
-    if ".cl-cars{" not in html:
+    if ".cl-mark{" not in html:
         html = html.replace("</style>", CSS + "\n</style>", 1)
         print("duty css")
     if '["duty","Ч"' not in html:
@@ -60,7 +67,7 @@ def patch(html: str) -> str:
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС"};',
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД"};',
     )
-    if "dutyBind" not in html.split("function login")[0] and 'if(typeof dutyBind==="function") dutyBind();' not in html:
+    if 'if(typeof dutyBind==="function") dutyBind();' not in html:
         html = html.replace(
             'if(typeof eptsBind==="function") eptsBind();',
             'if(typeof eptsBind==="function") eptsBind();\n      if(typeof dutyBind==="function") dutyBind();',
@@ -70,14 +77,6 @@ def patch(html: str) -> str:
         '${r.demo?` <span class="st demo">ДЕМО</span>`:""}',
         '${r.demo?` <span class="st demo">ДЕМО</span>`:""}${(typeof stockHasSovcom==="function"&&stockHasSovcom(r))?` <span class="st lease">Совкомбанк лизинг</span>`:""}',
     )
-    html = html.replace(
-        '<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>',
-        '${useMpt?`<div class="bank-row"><span>МПТ −10%</span><span class="pay">−10%</span></div>`:`<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>`}',
-    )
-    old_bank = "        const look=typeof kmBankRate===\"function\"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};\n        const term=look.term||months;"
-    new_bank = "        const look=typeof kmBankRate===\"function\"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};\n        const kmCar=(typeof STOCK!==\"undefined\"?STOCK:[]).find(x=>x.vin===kmVin);\n        if(typeof stockMptSovcom===\"function\" && stockMptSovcom(kmCar)){ look.rate=19.2; }\n        const term=look.term||months;"
-    if old_bank in html:
-        html = html.replace(old_bank, new_bank, 1)
     html = html.replace(
         '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt"',
         '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt","cDownMode","cDown","cDownPct","cMonths"',
