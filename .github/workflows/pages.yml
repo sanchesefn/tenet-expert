@@ -74,9 +74,8 @@ jobs:
           mkdir -p _site/cars _site/docs/prices _site/hub _site/epts
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
           if [ -d TENET_T4L_netlify/cars ]; then cp -f TENET_T4L_netlify/cars/*.jpg _site/cars/ 2>/dev/null || true; fi
-          if [ -d hub ]; then cp -f hub/*.jpg _site/hub/ 2>/dev/null || true; fi
-          if [ -d TENET_T4L_netlify/hub ]; then cp -f TENET_T4L_netlify/hub/*.jpg _site/hub/ 2>/dev/null || true; fi
-          if [ -f hub_fetch_previews.py ]; then python3 hub_fetch_previews.py || true; fi
+          if [ -d hub ]; then cp -f hub/*.jpg hub/*.svg _site/hub/ 2>/dev/null || true; fi
+          if [ -d TENET_T4L_netlify/hub ]; then cp -f TENET_T4L_netlify/hub/*.jpg TENET_T4L_netlify/hub/*.svg _site/hub/ 2>/dev/null || true; fi
           if [ -d epts ]; then cp -f epts/* _site/epts/ 2>/dev/null || true; fi
           if [ -d docs ]; then
             cp -f docs/*.pdf docs/*.html _site/docs/ 2>/dev/null || true

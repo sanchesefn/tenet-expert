@@ -4,9 +4,9 @@ import re
 
 SITE = Path("_site/index.html")
 RULES = {
-    "epts": '.hub-card[data-go="epts"]::before{background-image:url("hub/epts.jpg?v=3");background-position:50% 55%;background-size:cover;}',
-    "gibdd": '.hub-card[data-go="gibdd"]::before{background-image:url("hub/gibdd.jpg?v=3");background-position:50% 50%;background-size:cover;}',
-    "duty": '.hub-card[data-go="duty"]::before{background-image:url("hub/duty.jpg?v=3");background-position:50% 50%;background-size:cover;}',
+    "epts": '.hub-card[data-go="epts"]::before{background-image:url("hub/epts.svg?v=4");background-position:50% 55%;background-size:cover;}',
+    "gibdd": '.hub-card[data-go="gibdd"]::before{background-image:url("hub/gibdd.svg?v=4");background-position:50% 48%;background-size:cover;}',
+    "duty": '.hub-card[data-go="duty"]::before{background-image:url("hub/duty.svg?v=4");background-position:50% 50%;background-size:cover;}',
 }
 
 def main():
