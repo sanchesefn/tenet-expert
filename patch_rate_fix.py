@@ -62,7 +62,8 @@ def patch(text: str) -> str:
             '    const CLOUD_KEY = "4fmBrr2H";\n' + seed_js(),
             1,
         )
-    text = text.replace("since=48h", "since=3d")
+    text = text.replace("since=48h", "since=72h")
+    text = text.replace("since=3d", "since=72h")
     text = text.replace(
         "const k=norm(r.surname||r.display);",
         "const k=staffKey(r.surname||r.display);",
