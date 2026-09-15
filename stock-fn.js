@@ -67,7 +67,7 @@
             ${showProd?`<td>${escape(r.prod||"—")}</td>`:""}
             <td>${price?`<b>${rub(price)} ₽</b>`:"—"}</td>
             <td class="vin">${escape(r.vin)}</td>
-            <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span>${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}${r.demo?` <span class="st demo">ДЕМО</span>`:""}</td>
+            <td><span class="st ${r.status}">${ST_LABEL[r.status]||r.status}</span>${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}${(r.corp|| (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(r.vin)))?` <span class="st corp">Корпоративный · лизинг</span>`:""}${r.demo?` <span class="st demo">ДЕМО</span>`:""}</td>
             <td>${escape(r.note)}</td>
           </tr>`;
           }).join("")}</tbody>
