@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#dfe5ea"/>
+  <rect x="0" y="360" width="800" height="140" fill="#8f959b"/>
+  <rect x="0" y="360" width="800" height="8" fill="#b7bcc1"/>
+  <g transform="translate(90,210)">
+    <path d="M70 110h470l40-70c8-14 22-24 38-26l52-6v102h-600z" fill="#f4f6f8" stroke="#1d2430" stroke-width="6"/>
+    <path d="M160 40h250l70 70H90z" fill="#dbe3ea" stroke="#1d2430" stroke-width="6"/>
+    <rect x="200" y="8" width="160" height="22" rx="6" fill="#1f4f9a"/>
+    <rect x="200" y="8" width="80" height="22" rx="6" fill="#c81e2b"/>
+    <rect x="40" y="118" width="520" height="22" fill="#1f4f9a"/>
+    <text x="430" y="112" font-family="Inter,Arial" font-size="28" font-weight="800" fill="#1f4f9a">ДПС</text>
+    <circle cx="160" cy="140" r="38" fill="#222" stroke="#f4f6f8" stroke-width="8"/>
+    <circle cx="500" cy="140" r="38" fill="#222" stroke="#f4f6f8" stroke-width="8"/>
+  </g>
+</svg>
