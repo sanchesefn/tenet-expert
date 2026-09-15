@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import json
 
 OLD_BEST = "        const rows=all.filter(r=>Number(r.exam||1)===examNo && (r.model||\"t4l\")===modelId && r.status!==\"running\");"
 NEW_BEST = "        const rows=all.filter(r=>r && !r.type && r.percent!=null && Number(r.exam||1)===examNo && (r.model||\"t4l\")===modelId && r.status!==\"running\");"
@@ -47,24 +48,48 @@ def patch(text: str) -> str:
         text = text.replace(OLD_SPLIT, NEW_SPLIT, 1)
     if "pct.span2" not in text:
         text = text.replace(OLD_CSS, NEW_CSS, 1)
+    text = text.replace('\"спицын\": \"6669\"', '\"спицын\": \"3759\"')
+    text = text.replace('\"спицын\":\"6669\"', '\"спицын\":\"3759\"')
+    text = text.replace(\"const sn=norm(v);\", \"const sn=staffKey(v)||norm(v);\")
     return text
+
+
+def write_pins():
+    for folder in (Path(\"_site\"), Path(\".\")):
+        p = folder / \"pins.json\"
+        if not p.exists() and folder.name != \"_site\":
+            continue
+        if folder.name == \"_site\":
+            folder.mkdir(exist_ok=True)
+        data = {}
+        if p.exists():
+            try:
+                data = json.loads(p.read_text(encoding=\"utf-8\"))
+            except Exception:
+                data = {}
+        if not isinstance(data, dict):
+            data = {}
+        data[\"спицын\"] = \"3759\"
+        p.write_text(json.dumps(data, ensure_ascii=False), encoding=\"utf-8\")
+        print(\"pins.json updated\", p)
 
 
 def main():
     n = 0
-    for path in (Path("_site/index.html"), Path("TENET_T4L_netlify/index.html")):
+    for path in (Path(\"_site/index.html\"), Path(\"TENET_T4L_netlify/index.html\")):
         if not path.exists():
             continue
-        src = path.read_text(encoding="utf-8")
+        src = path.read_text(encoding=\"utf-8\")
         out = patch(src)
         if out != src:
-            path.write_text(out, encoding="utf-8")
-            print("rate-ui patched", path)
+            path.write_text(out, encoding=\"utf-8\")
+            print(\"rate-ui patched\", path)
             n += 1
         else:
-            print(path, "rate-ui unchanged")
-    print("rate-ui changed", n)
+            print(path, \"rate-ui unchanged\")
+    write_pins()
+    print(\"rate-ui changed\", n)
 
 
-if __name__ == "__main__":
+if __name__ == \"__main__\":
     main()
