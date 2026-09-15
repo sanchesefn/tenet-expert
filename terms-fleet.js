@@ -39,6 +39,7 @@
       if(useTi){ price=Math.max(0, price-FLEET_TI); steps.push("трейд-ин −"+rub(FLEET_TI)); }
       if(useMpt){ price=Math.round(price*0.9); steps.push("МПТ −10%"); }
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===kmVin);
+      const mptCut=Math.round((useFleet?f.tidy:f.rrc)*(useTi?0.9:1)*0.1);
       return banner("Калькулятор","Флит · BFS Совкомбанк лизинг","TENET")+`
         <p class="lead">Корпоративный VIN. Стандартный кредит запрещён. Считаем BFS Совкомбанк лизинг.</p>
         ${kmChipGroups(m.id)}
@@ -63,8 +64,10 @@
               <div class="bank-row"><span>РРЦ</span><span class="pay">${rub(f.rrc)} ₽</span></div>
               <div class="bank-row"><span>Макс. выгода AN</span><span class="pay">${rub(f.an)} ₽</span></div>
               <div class="bank-row"><span>Цена AP без тюнинга</span><span class="pay">${rub(f.tidy)} ₽</span></div>
-              <div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>
-              <p class="calc-note">Порядок: флит скидка → трейд-ин → МПТ −10%.</p>
+              ${useMpt
+                ? `<div class="bank-row"><span>МПТ −10%</span><span class="pay">${rub(mptCut)} ₽</span></div>`
+                : `<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>`}
+              <p class="calc-note">${useMpt?"На цену действует МПТ −10%, не субсидия бренда.":"Порядок: флит скидка → трейд-ин → МПТ −10%."}</p>
             </div>
             ${kmSideList(m)}
           </div>
