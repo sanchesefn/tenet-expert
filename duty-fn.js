@@ -35,72 +35,88 @@
       });
       return out;
     }
+    function dutyCount(d){
+      let tot=0, on=0;
+      DUTY_CARS.forEach(car=>{
+        ["_wash","_mats","_err","_dust","_trunk"].forEach(s=>{ tot++; if(d[car.id+s]) on++; });
+        tot++; if((d[car.id+"_body"]||"ok")!=="no") on++;
+        tot+=2; if(d[car.id+"_km"]) on++; if(d[car.id+"_fuel"]) on++;
+      });
+      ["dc_light","dc_avito","dc_music","dc_price_avito","dc_price_hold","dc_desk","dc_trash","dm_body","dm_mats","dm_trunk","dm_dust","dm_wheel","dm_bat"].forEach(k=>{ tot++; if(d[k]) on++; });
+      return {on, tot};
+    }
     const DUTY_CARS=[
-      {id:"t4l",title:"T4L"},
-      {id:"t8",title:"T8"},
-      {id:"a8",title:"A8"},
-      {id:"t7",title:"T7"},
-      {id:"t9",title:"T9"}
+      {id:"t4l",title:"TENET T4L"},
+      {id:"t8",title:"TENET T8"},
+      {id:"a8",title:"Arrizo 8"},
+      {id:"t7",title:"TENET T7"},
+      {id:"t9",title:"Tiggo 9"}
     ];
+    function dutyItem(k, label, on){
+      return `<label class="cl-item"><input type="checkbox" data-duty="${k}" ${on?"checked":""} /><span>${label}</span></label>`;
+    }
     function duty(){
       if(needAuth()) return login();
       const d=dutyLoad();
       if(!d.date) d.date=dutyToday();
-      if(!d.manager && state && state.display) d.manager=state.display;
-      const bodySel=(id)=>{
-        const v=d[id+"_body"]||"ok";
-        return `<select data-duty="${id}_body" class="duty-mini">
-          <option value="ok" ${v==="ok"?"selected":""}>да</option>
-          <option value="pm" ${v==="pm"?"selected":""}>±</option>
-          <option value="no" ${v==="no"?"selected":""}>нет</option>
-        </select>`;
-      };
-      const box=(k)=>`<input type="checkbox" data-duty="${k}" ${d[k]?"checked":""} />`;
-      const inp=(k,w)=>`<input data-duty="${k}" class="duty-mini" style="width:${w||56}px" value="${escape(d[k]||"")}" />`;
-      const rows=DUTY_CARS.map(car=>`<tr>
-        <td><b>${car.title}</b></td>
-        <td>${box(car.id+"_wash")}</td>
-        <td>${bodySel(car.id)}</td>
-        <td>${box(car.id+"_mats")}</td>
-        <td>${box(car.id+"_err")}</td>
-        <td>${inp(car.id+"_km",64)}</td>
-        <td>${inp(car.id+"_fuel",48)}</td>
-        <td>${box(car.id+"_dust")}</td>
-        <td>${box(car.id+"_trunk")}</td>
-      </tr>`).join("");
-      return banner("Чек-лист дежурного",d.date||"","TENET")+`
-        <div class="duty-sheet duty-compact">
-          <div class="duty-top">
-            <label>Менеджер <input data-duty="manager" value="${escape(d.manager||"")}" /></label>
-            <label>Дата <input data-duty="date" value="${escape(d.date||"")}" style="width:88px" /></label>
-            <label>Подпись <input data-duty="sign" value="${escape(d.sign||d.manager||"")}" /></label>
+      const who=(typeof state!=="undefined" && state && state.display)?state.display:"";
+      if(!d.manager && who) d.manager=who;
+      const prog=dutyCount(d);
+      const pct=prog.tot?Math.round(prog.on*100/prog.tot):0;
+      const cards=DUTY_CARS.map(car=>{
+        const body=d[car.id+"_body"]||"ok";
+        return `<article class="cl-car">
+          <h3>${car.title}</h3>
+          ${dutyItem(car.id+"_wash","Омывающая", d[car.id+"_wash"])}
+          ${dutyItem(car.id+"_mats","Коврики и пороги", d[car.id+"_mats"])}
+          ${dutyItem(car.id+"_err","Нет ошибок", d[car.id+"_err"])}
+          ${dutyItem(car.id+"_dust","Нет пыли", d[car.id+"_dust"])}
+          ${dutyItem(car.id+"_trunk","Багажник", d[car.id+"_trunk"])}
+          <label class="cl-item" style="display:block">Кузов
+            <select data-duty="${car.id}_body">
+              <option value="ok" ${body==="ok"?"selected":""}>чистый</option>
+              <option value="pm" ${body==="pm"?"selected":""}>±</option>
+              <option value="no" ${body==="no"?"selected":""}>грязный</option>
+            </select>
+          </label>
+          <div class="cl-nums">
+            <label>Пробег<input data-duty="${car.id}_km" inputmode="numeric" value="${escape(d[car.id+"_km"]||"")}" /></label>
+            <label>Топливо %<input data-duty="${car.id}_fuel" inputmode="numeric" value="${escape(d[car.id+"_fuel"]||"")}" /></label>
+          </div>
+        </article>`;
+      }).join("");
+      return banner("Чек-лист дежурного", prog.on+" из "+prog.tot,"TENET")+`
+        <div class="cl">
+          <div class="cl-bar">
+            <input data-duty="manager" placeholder="Менеджер" value="${escape(d.manager||"")}" />
+            <input data-duty="date" value="${escape(d.date||"")}" style="width:96px" />
+            <input data-duty="sign" placeholder="Подпись" value="${escape(d.sign||d.manager||"")}" />
+            <div class="cl-prog"><i style="width:${pct}%"></i><span>${pct}%</span></div>
             <button type="button" class="btn ivory" id="dutySave">Сохранить</button>
             <button type="button" class="btn ghost" id="dutyPrint">Печать</button>
             <button type="button" class="btn ghost" id="dutyClear">Сброс</button>
           </div>
-          <table class="sheet duty-table">
-            <thead><tr><th>Авто</th><th>Омыв</th><th>Кузов</th><th>Коврики</th><th>Ошибки</th><th>Пробег</th><th>Топливо</th><th>Пыль</th><th>Багажник</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-          <div class="duty-line">
-            <b>ДЦ</b>
-            <label>${box("dc_light")} свет</label>
-            <label>${box("dc_avito")} Авито</label>
-            <label>${box("dc_music")} музыка</label>
-            <label>${box("dc_price_avito")} цены Авито</label>
-            <label>${box("dc_price_hold")} прайсхолдеры</label>
-            <label>${box("dc_desk")} столы</label>
-            <label>${box("dc_trash")} бумаги</label>
-          </div>
-          <div class="duty-line">
-            <b>Демо</b>
-            <label>${box("dm_body")} кузов</label>
-            <label>${box("dm_mats")} коврики</label>
-            <label>${box("dm_trunk")} багажник</label>
-            <label>${box("dm_dust")} пыль</label>
-            <label>${box("dm_wheel")} колёса</label>
-            <label>${box("dm_bat")} АКБ</label>
-            <input data-duty="note" placeholder="Заметка, например: помыть T7, T4L" value="${escape(d.note||"")}" style="flex:1;min-width:180px" />
+          <div class="cl-cars">${cards}</div>
+          <div class="cl-foot">
+            <div class="cl-box"><b>Дилерский центр</b><div class="cl-chips">
+              ${dutyItem("dc_light","Свет", d.dc_light)}
+              ${dutyItem("dc_avito","Авито", d.dc_avito)}
+              ${dutyItem("dc_music","Музыка", d.dc_music)}
+              ${dutyItem("dc_price_avito","Цены Авито", d.dc_price_avito)}
+              ${dutyItem("dc_price_hold","Прайсхолдеры", d.dc_price_hold)}
+              ${dutyItem("dc_desk","Столы", d.dc_desk)}
+              ${dutyItem("dc_trash","Бумаги", d.dc_trash)}
+            </div></div>
+            <div class="cl-box"><b>Демонстрационные</b><div class="cl-chips">
+              ${dutyItem("dm_body","Кузов", d.dm_body)}
+              ${dutyItem("dm_mats","Коврики", d.dm_mats)}
+              ${dutyItem("dm_trunk","Багажник", d.dm_trunk)}
+              ${dutyItem("dm_dust","Пыль", d.dm_dust)}
+              ${dutyItem("dm_wheel","Колёса", d.dm_wheel)}
+              ${dutyItem("dm_bat","АКБ", d.dm_bat)}
+            </div>
+            <input data-duty="note" placeholder="Заметка: помыть T7, T4L" value="${escape(d.note||"")}" style="width:100%;margin-top:8px;min-height:34px" />
+            </div>
           </div>
         </div>`;
     }
@@ -137,10 +153,7 @@
     }
     async function gibddViaProxy(url){
       const enc=encodeURIComponent(url);
-      const tries=[
-        "https://api.allorigins.win/raw?url="+enc,
-        "https://corsproxy.io/?"+enc
-      ];
+      const tries=["https://api.allorigins.win/raw?url="+enc, "https://corsproxy.io/?"+enc];
       for(const u of tries){
         const r=await gibddFetch(u);
         if(r.ok && r.text && !/^error/i.test(r.text)) return r;
@@ -157,7 +170,7 @@
     }
     function gibddParseFssp(text){
       const t=String(text||"");
-      if(/ Ничего не найдено |не найдено исполнительн/i.test(t)) return {hit:false, n:0, detail:"Исполнительных производств не найдено"};
+      if(/Ничего не найдено|не найдено исполнительн/i.test(t)) return {hit:false, n:0, detail:"Исполнительных производств не найдено"};
       const ips=t.match(/\d+\/\d+\/\d+-?И?П?/g)||[];
       if(ips.length) return {hit:true, n:ips.length, detail:"Найдены ИП: "+ips.slice(0,8).join(", ")};
       return {hit:null, n:0, detail:"ФССП требует капчу. Откройте банк данных, регион — Все."};
@@ -175,7 +188,7 @@
         const name=String(fio||"").split(/\s+/)[0];
         if(name && t.toLowerCase().includes(name.toLowerCase()) && /банкрот/i.test(t)) recs=1;
       }
-      if(recs) return {hit:true, n:recs, detail:"Найдено записей: "+recs+" · в трейд-ин не брать, если было за 3 года"};
+      if(recs) return {hit:true, n:recs, detail:"Найдено записей: "+recs};
       return {hit:null, n:0, detail:"Автопроверка не подтвердила результат. Откройте Федресурс."};
     }
     function gibddVerdict(z,f,b){
@@ -188,53 +201,52 @@
       return {ok:true, text:"По автопроверке записей нет"};
     }
     async function gibddRun(){
-      const form=gibddSaveForm();
-      const vin=String(form.vin||"").replace(/\s+/g,"").toUpperCase();
-      const fio=String(form.fio||"").trim();
-      const dob=gibddDob(form.dob);
-      const nm=gibddSplitFio(fio);
-      const box=document.getElementById("gOut");
-      if(!vin || !nm.last || !nm.first || !dob){
-        if(box) box.innerHTML=`<div class="note-box">Нужны VIN, ФИО (фамилия и имя) и дата рождения.</div>`;
-        return;
-      }
-      if(box) box.innerHTML=`<div class="note-box">Проверяю VIN ${escape(vin)} · ${escape(fio)} · ${escape(dob)} · все регионы…</div>`;
-      const zalogUrl="https://www.reestr-zalogov.ru/search/index";
-      const fsspUrl="https://fssp.gov.ru/iss/ip";
-      const brUrl="https://fedresurs.ru/backend/persons?limit=15&offset=0&searchString="+encodeURIComponent(fio);
-      const brAlt="https://bankrot.fedresurs.ru/Debtors.search.aspx";
-      const [zRaw, fRaw, bRaw]=await Promise.all([
-        gibddViaProxy(zalogUrl+"?vin="+encodeURIComponent(vin)),
-        gibddViaProxy(fsspUrl),
-        gibddFetch(brUrl)
-      ]);
-      const z=gibddParseZalog(zRaw.text, vin);
-      const f=gibddParseFssp(fRaw.text);
-      let b=gibddParseBankrot(bRaw.text, fio);
-      if(b.hit===null){
-        const b2=await gibddViaProxy(brAlt+"?Name="+encodeURIComponent(fio));
-        b=gibddParseBankrot(b2.text, fio);
-      }
-      const v=gibddVerdict(z,f,b);
-      const pack={at:new Date().toISOString(), vin, fio, dob, z, f, b, v};
-      window.__gibddLast=pack;
-      try{ localStorage.setItem("tenet-gibdd-last", JSON.stringify(pack)); }catch(e){}
-      const row=(title, rec, href)=>`<div class="bank-row"><span><b>${title}</b><br/><small>${escape(rec.detail||"")}</small></span><span class="pay">${rec.hit===true?"Есть":rec.hit===false?"Нет":"Проверьте"}</span></div><p class="calc-note"><a href="${href}" target="_blank" rel="noopener">открыть реестр</a></p>`;
-      if(box) box.innerHTML=`
-        <div class="card dc-result ${v.ok===true?"ok":v.ok===false?"bad":""}">
+      try{
+        const form=gibddSaveForm();
+        const vin=String(form.vin||"").replace(/\s+/g,"").toUpperCase();
+        const fio=String(form.fio||"").trim();
+        const dob=gibddDob(form.dob);
+        const nm=gibddSplitFio(fio);
+        const box=document.getElementById("gOut");
+        if(!vin || !nm.last || !nm.first || !dob){
+          if(box) box.innerHTML=`<div class="note-box">Нужны VIN, ФИО (фамилия и имя) и дата рождения.</div>`;
+          return;
+        }
+        if(box) box.innerHTML=`<div class="note-box">Проверяю ${escape(vin)} · ${escape(fio)} · ${escape(dob)} …</div>`;
+        const zalogUrl="https://www.reestr-zalogov.ru/search/index";
+        const fsspUrl="https://fssp.gov.ru/iss/ip";
+        const brUrl="https://fedresurs.ru/backend/persons?limit=15&offset=0&searchString="+encodeURIComponent(fio);
+        const brAlt="https://bankrot.fedresurs.ru/Debtors.search.aspx";
+        const [zRaw, fRaw, bRaw]=await Promise.all([
+          gibddViaProxy(zalogUrl+"?vin="+encodeURIComponent(vin)),
+          gibddViaProxy(fsspUrl),
+          gibddFetch(brUrl)
+        ]);
+        const z=gibddParseZalog(zRaw.text, vin);
+        const f=gibddParseFssp(fRaw.text);
+        let b=gibddParseBankrot(bRaw.text, fio);
+        if(b.hit===null){
+          const b2=await gibddViaProxy(brAlt+"?Name="+encodeURIComponent(fio));
+          b=gibddParseBankrot(b2.text, fio);
+        }
+        const v=gibddVerdict(z,f,b);
+        const pack={at:new Date().toISOString(), vin, fio, dob, z, f, b, v};
+        window.__gibddLast=pack;
+        try{ localStorage.setItem("tenet-gibdd-last", JSON.stringify(pack)); }catch(e){}
+        const row=(title, rec, href)=>`<div class="bank-row"><span><b>${title}</b><br/><small>${escape(rec.detail||"")}</small></span><span class="pay">${rec.hit===true?"Есть":rec.hit===false?"Нет":"Проверьте"}</span></div><p class="calc-note"><a href="${href}" target="_blank" rel="noopener">открыть реестр</a></p>`;
+        if(box) box.innerHTML=`<div class="card dc-result ${v.ok===true?"ok":v.ok===false?"bad":""}">
           <p class="eyebrow">Сводка проверки</p>
           <div class="calc-out" style="font-size:22px">${escape(v.text)}</div>
           <p class="calc-note">${escape(vin)} · ${escape(fio)} · ${escape(dob)}</p>
           ${row("Реестр залогов · VIN", z, zalogUrl)}
           ${row("ФССП · все регионы", f, fsspUrl)}
           ${row("Реестр банкротов · ФИО", b, brAlt)}
-          <p class="calc-note">Банкротство за 3 года — трейд-ин не брать. ФССП и залоги часто просят капчу: тогда откройте ссылку и допишите результат в PDF.</p>
-          <div class="who-line" style="margin-top:10px">
-            <button type="button" class="btn ivory" id="gPdf">Сохранить PDF</button>
-          </div>
+          <div class="who-line" style="margin-top:10px"><button type="button" class="btn ivory" id="gPdf">Сохранить PDF</button></div>
         </div>`;
-      const pdf=document.getElementById("gPdf");
-      if(pdf) pdf.onclick=()=>gibddPdf(pack);
+      }catch(err){
+        const box=document.getElementById("gOut");
+        if(box) box.innerHTML=`<div class="note-box">Ошибка проверки: ${escape(String(err&&err.message||err))}</div>`;
+      }
     }
     function gibddPdf(pack){
       const p=pack||window.__gibddLast;
@@ -249,66 +261,24 @@
       ctx.font="500 20px Inter, Arial, sans-serif";
       ctx.fillStyle="#5c5346";
       ctx.fillText("ЭКСПЕРТ АВТО САМАРА · "+new Date(p.at||Date.now()).toLocaleString("ru-RU"), 72, 128);
-      ctx.fillStyle="#1a1a1a";
-      ctx.font="600 22px Inter, Arial, sans-serif";
+      ctx.fillStyle="#1a1a1a"; ctx.font="600 22px Inter, Arial, sans-serif";
       let y=190;
-      const lines=[
-        "VIN: "+p.vin,
-        "ФИО: "+p.fio,
-        "Дата рождения: "+p.dob,
-        "",
-        "Итог: "+(p.v&&p.v.text||""),
-        "",
-        "1. Реестр залогов (VIN)",
-        (p.z&&p.z.hit===true?"Результат: ЕСТЬ ЗАПИСИ":p.z&&p.z.hit===false?"Результат: НЕ НАЙДЕНО":"Результат: требуется сайт"),
-        p.z&&p.z.detail||"",
-        "",
-        "2. ФССП, все регионы (ФИО + дата рождения)",
-        (p.f&&p.f.hit===true?"Результат: ЕСТЬ ИП":p.f&&p.f.hit===false?"Результат: НЕ НАЙДЕНО":"Результат: требуется сайт"),
-        p.f&&p.f.detail||"",
-        "",
-        "3. Реестр банкротов (только ФИО)",
-        (p.b&&p.b.hit===true?"Результат: ЕСТЬ ЗАПИСИ":p.b&&p.b.hit===false?"Результат: НЕ НАЙДЕНО":"Результат: требуется сайт"),
-        p.b&&p.b.detail||"",
-        "",
-        "Правило ДЦ: банкротство за последние 3 года — авто в трейд-ин не принимаем."
-      ];
-      lines.forEach(ln=>{
-        ctx.fillText(String(ln).slice(0,78), 72, y);
-        y+=34;
-      });
-      ctx.fillStyle="#7a7166";
-      ctx.font="500 16px Inter, Arial, sans-serif";
-      ctx.fillText("fssp.gov.ru  ·  reestr-zalogov.ru  ·  bankrot.fedresurs.ru", 72, 1680);
-      c.toBlob(blob=>{
-        if(!blob) return;
-        const a=document.createElement("a");
-        a.href=URL.createObjectURL(blob);
-        a.download="proverka-"+(p.vin||"gibdd")+".png";
-        a.click();
-        setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
-      }, "image/png");
+      ["VIN: "+p.vin,"ФИО: "+p.fio,"Дата рождения: "+p.dob,"","Итог: "+(p.v&&p.v.text||""),"","1. Залоги: "+(p.z&&p.z.detail||""),"2. ФССП: "+(p.f&&p.f.detail||""),"3. Банкроты: "+(p.b&&p.b.detail||""),"","Банкротство за 3 года — трейд-ин не принимаем."].forEach(ln=>{ ctx.fillText(String(ln).slice(0,78), 72, y); y+=36; });
       const w=window.open("");
-      if(w){
-        w.document.write("<title>Проверка</title><img style='width:100%' src='"+c.toDataURL("image/png")+"' />");
-        w.document.close();
-        setTimeout(()=>{ try{ w.print(); }catch(e){} }, 400);
-      }
+      if(w){ w.document.write("<title>Проверка</title><img style='width:100%' src='"+c.toDataURL("image/png")+"' />"); w.document.close(); setTimeout(()=>{ try{ w.print(); }catch(e){} }, 400); }
     }
     function gibdd(){
       if(needAuth()) return login();
       const g=gibddLoad();
       return banner("Проверки ГИБДД","Залог · ФССП · банкроты","TENET")+`
-        <p class="lead">VIN идёт в реестр залогов. ФИО и дата рождения — в ФССП по всем регионам. Банкроты — только по ФИО.</p>
+        <p class="lead">VIN — залоги. ФИО и дата рождения — ФССП, все регионы. Банкроты — только ФИО.</p>
         <div class="card">
-          <div class="duty-top">
+          <div class="cl-bar">
             <label class="field" style="max-width:none"><span>VIN</span><input id="gVin" value="${escape(g.vin||"")}" placeholder="X7L…" /></label>
             <label class="field" style="max-width:none"><span>ФИО</span><input id="gFio" value="${escape(g.fio||"")}" placeholder="Иванов Иван Иванович" /></label>
             <label class="field" style="width:180px"><span>Дата рождения</span><input id="gDob" value="${escape(g.dob||"")}" placeholder="01.01.1990" /></label>
           </div>
-          <div class="who-line">
-            <button type="button" class="btn ivory" id="gRun">Проверить</button>
-          </div>
+          <div class="who-line"><button type="button" class="btn ivory" id="gRun">Проверить</button></div>
         </div>
         <div id="gOut"></div>`;
     }
@@ -319,28 +289,23 @@
           el.addEventListener("change", persist);
           el.addEventListener("input", persist);
         });
-        const save=document.getElementById("dutySave");
-        if(save) save.onclick=()=>{ dutySave(dutyRead()); save.textContent="Ок"; setTimeout(()=>save.textContent="Сохранить",1000); };
-        const pr=document.getElementById("dutyPrint");
-        if(pr) pr.onclick=()=>{ dutySave(dutyRead()); window.print(); };
-        const cl=document.getElementById("dutyClear");
-        if(cl) cl.onclick=()=>{ localStorage.removeItem("tenet-duty-v1"); render(); };
       }
       if(view==="gibdd"){
-        const run=document.getElementById("gRun");
-        if(run) run.onclick=()=>gibddRun();
         ["gVin","gFio","gDob"].forEach(id=>{
           const el=document.getElementById(id);
           if(el) el.addEventListener("change", gibddSaveForm);
         });
-        const last=(()=>{ try{ return JSON.parse(localStorage.getItem("tenet-gibdd-last")||"null"); }catch(e){ return null; } })();
-        if(last && last.vin){
-          window.__gibddLast=last;
-          const box=document.getElementById("gOut");
-          if(box) box.innerHTML=`<div class="note-box">Последняя сводка: ${escape(last.v&&last.v.text||"")} · ${escape(last.vin)}. Нажмите «Проверить» ещё раз или сохраните PDF.
-            <div class="who-line" style="margin-top:8px"><button type="button" class="btn ghost" id="gPdfLast">PDF последней</button></div></div>`;
-          const b=document.getElementById("gPdfLast");
-          if(b) b.onclick=()=>gibddPdf(last);
-        }
       }
+    }
+    if(!window.__dutyClick){
+      window.__dutyClick=true;
+      document.addEventListener("click", function(ev){
+        const t=ev.target && ev.target.closest ? ev.target.closest("#gRun,#gPdf,#gPdfLast,#dutySave,#dutyPrint,#dutyClear") : ev.target;
+        if(!t || !t.id) return;
+        if(t.id==="gRun"){ ev.preventDefault(); gibddRun(); }
+        if(t.id==="gPdf" || t.id==="gPdfLast"){ ev.preventDefault(); gibddPdf(window.__gibddLast); }
+        if(t.id==="dutySave"){ ev.preventDefault(); dutySave(dutyRead()); t.textContent="Ок"; setTimeout(()=>t.textContent="Сохранить",900); }
+        if(t.id==="dutyPrint"){ ev.preventDefault(); dutySave(dutyRead()); window.print(); }
+        if(t.id==="dutyClear"){ ev.preventDefault(); localStorage.removeItem("tenet-duty-v1"); if(typeof render==="function") render(); }
+      });
     }
