@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
+import re
 
 ROOT = Path(".")
 SITE = Path("_site/index.html")
@@ -7,37 +8,43 @@ JS = ROOT / "duty-fn.js"
 
 CSS = """
 .st.lease{background:#e8f5e9;color:#1b5e20;border:1px solid #a5d6a7}
-.duty-compact{font-size:13px}
-.duty-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 8px}
-.duty-top label{display:flex;gap:6px;align-items:center;font-size:12px}
-.duty-top input,.duty-mini{min-height:28px;padding:2px 6px;font-size:13px}
-.duty-table th,.duty-table td{padding:4px 6px;text-align:center;white-space:nowrap}
-.duty-table td:first-child{text-align:left}
-.duty-line{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;margin-top:8px;padding:8px 10px;border:1px solid var(--line,#e6ddd0);border-radius:10px}
-.duty-line label{display:inline-flex;gap:4px;align-items:center;font-size:12px}
-@media print{
-  header,nav,.who-line,.hub-grid{display:none!important}
-  .duty-sheet{background:#fff}
-}
+.cl{display:flex;flex-direction:column;gap:10px}
+.cl-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.cl-bar input{min-height:34px;padding:6px 10px;border-radius:10px}
+.cl-prog{flex:1;min-width:160px;height:10px;background:#efe6d8;border-radius:99px;overflow:hidden;position:relative}
+.cl-prog i{display:block;height:100%;background:#2e7d32;border-radius:99px}
+.cl-prog span{position:absolute;right:8px;top:-18px;font-size:11px;color:#6d6458}
+.cl-cars{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+@media (max-width:1100px){.cl-cars{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:720px){.cl-cars{grid-template-columns:1fr 1fr}}
+.cl-car{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:10px}
+.cl-car h3{margin:0 0 8px;font-size:14px}
+.cl-item{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:12px;cursor:pointer}
+.cl-item input{appearance:none;width:18px;height:18px;border:1.5px solid #cbbba3;border-radius:5px;background:#fff;flex:none}
+.cl-item input:checked{background:#2e7d32;border-color:#2e7d32;box-shadow:inset 0 0 0 3px #fff}
+.cl-nums{display:flex;gap:6px;margin-top:6px}
+.cl-nums label{flex:1;font-size:10px;color:#7a7166}
+.cl-nums input,.cl-car select{width:100%;min-height:30px;border:1px solid #eadfcf;border-radius:8px;padding:4px 6px}
+.cl-foot{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.cl-box{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:10px}
+.cl-box b{display:block;margin-bottom:6px;font-size:12px}
+.cl-chips{display:flex;flex-wrap:wrap;gap:6px}
+.cl-chips label{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border:1px solid #eadfcf;border-radius:999px;font-size:12px;background:#fbf7f0}
+@media print{header,nav,.who-line,.hub-grid,.cl-bar .btn{display:none!important}}
 """
 
 def patch(html: str) -> str:
     js = JS.read_text(encoding="utf-8") if JS.exists() else ""
     if js:
-        if "function duty()" in html:
-            import re
-            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?    function login\(\)\{", js + "    function login(){", count=1)
-            if "function stockBlob(c){" in html and html.find("function stockBlob(c){") < html.find("function login(){"):
-                pass
-            print("duty fn replace")
+        if "function stockBlob(c){" in html:
+            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?(?=    function login\(\)\{)", js, count=1)
+            print("duty fn replaced")
         elif "    function login(){" in html:
             html = html.replace("    function login(){", js + "    function login(){", 1)
             print("duty fn insert")
-    if ".duty-compact{" not in html:
+    if ".cl-cars{" not in html:
         html = html.replace("</style>", CSS + "\n</style>", 1)
         print("duty css")
-    elif ".duty-table th" not in html:
-        html = html.replace(".duty-sheet h2{margin:18px 0 8px;font-size:16px}", CSS, 1)
     if '["duty","Ч"' not in html:
         needle = '["epts","Э","Заказ ЭПТС","Гарантийное письмо: VIN, PDF и отправка"]'
         if needle in html:
@@ -53,7 +60,7 @@ def patch(html: str) -> str:
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС"};',
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД"};',
     )
-    if "dutyBind" not in html:
+    if "dutyBind" not in html.split("function login")[0] and 'if(typeof dutyBind==="function") dutyBind();' not in html:
         html = html.replace(
             'if(typeof eptsBind==="function") eptsBind();',
             'if(typeof eptsBind==="function") eptsBind();\n      if(typeof dutyBind==="function") dutyBind();',
@@ -63,6 +70,10 @@ def patch(html: str) -> str:
         '${r.demo?` <span class="st demo">ДЕМО</span>`:""}',
         '${r.demo?` <span class="st demo">ДЕМО</span>`:""}${(typeof stockHasSovcom==="function"&&stockHasSovcom(r))?` <span class="st lease">Совкомбанк лизинг</span>`:""}',
     )
+    html = html.replace(
+        '<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>',
+        '${useMpt?`<div class="bank-row"><span>МПТ −10%</span><span class="pay">−10%</span></div>`:`<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub)} ₽</span></div>`}',
+    )
     old_bank = "        const look=typeof kmBankRate===\"function\"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};\n        const term=look.term||months;"
     new_bank = "        const look=typeof kmBankRate===\"function\"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};\n        const kmCar=(typeof STOCK!==\"undefined\"?STOCK:[]).find(x=>x.vin===kmVin);\n        if(typeof stockMptSovcom===\"function\" && stockMptSovcom(kmCar)){ look.rate=19.2; }\n        const term=look.term||months;"
     if old_bank in html:
@@ -71,33 +82,6 @@ def patch(html: str) -> str:
         '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt"',
         '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt","cDownMode","cDown","cDownPct","cMonths"',
     )
-    old_static = "${[12,24,36,48,60,72,84].map(mo=>{ const pay=calcPay(price, Math.round(price*0.2), mo, 19.2); return `<div class=\"bank-row\"><span>${mo} мес. · ПВ 20%</span><span class=\"pay\">${rub(Math.round(pay))} ₽</span></div>`; }).join(\"\")}"
-    new_loan = """${(()=>{ const downMode=kmStr(\"cDownMode\",\"pct\"); const months=kmVal(\"cMonths\", 60); let downPct=kmVal(\"cDownPct\", 20); let down=kmVal(\"cDown\", Math.round(price*0.2)); if(downMode===\"pct\") down=Math.round(price*Math.max(0,downPct)/100); else downPct=price>0?Math.round(down*1000/price)/10:0; down=Math.max(0,Math.min(price,down)); const pay=calcPay(price, down, months, 19.2); return `<p class=\"eyebrow\" style=\"margin-top:8px\">Первый взнос</p>
-              <div class=\"down-mode\">
-                <button type=\"button\" class=\"chip ${downMode===\"sum\"?\"on\":\"\"}\" data-down-mode=\"sum\">Сумма, ₽</button>
-                <button type=\"button\" class=\"chip ${downMode!==\"sum\"?\"on\":\"\"}\" data-down-mode=\"pct\">Проценты</button>
-              </div>
-              <input type=\"hidden\" id=\"cDownMode\" value=\"${downMode===\"sum\"?\"sum\":\"pct\"}\" />
-              ${downMode===\"sum\"
-                ?`<label class=\"field\" style=\"max-width:none\"><span>Первый взнос, ₽</span><input id=\"cDown\" inputmode=\"numeric\" value=\"${down}\" /></label>`
-                :`<label class=\"field\" style=\"max-width:none\"><span>Первый взнос, %</span><input id=\"cDownPct\" inputmode=\"decimal\" value=\"${downPct}\" /></label>`}
-              <p class=\"calc-note\">${rub(down)} ₽ · ${downPct}% от цены</p>
-              <label class=\"field\" style=\"max-width:none\"><span>Срок, мес.</span><input id=\"cMonths\" inputmode=\"numeric\" value=\"${months}\" /></label>
-              <div class=\"bank-row\"><span><b>Кредит 19,2%</b><br/><small>${months} мес. · ПВ ${downPct}%</small></span><span class=\"pay\">${rub(Math.round(pay))} ₽</span></div>`; })()}"""
-    if old_static in html:
-        html = html.replace(old_static, new_loan, 1)
-        print("fleet loan fields")
-    elif "Доп. расчёт к лизингу" in html and "id=\"cMonths\"" not in html.split("Доп. расчёт к лизингу")[1][:1200]:
-        html = html.replace(old_static, new_loan, 1)
-    fleet_mark = '<p class="calc-note">Порядок: флит скидка → трейд-ин → МПТ −10%.</p>'
-    fleet_extra = '''<p class="calc-note">Порядок: флит скидка → трейд-ин → МПТ −10%.</p>
-            ${useMpt?`<div class="note-box" style="margin-top:12px"><p class="eyebrow" style="margin:0 0 6px">Кредит 19,2% · МПТ + Совкомбанк лизинг</p>
-              <p class="calc-note">Доп. расчёт к лизингу. Цена ${rub(Math.round(price))} ₽, ставка 19,2%.</p>
-              ''' + new_loan + '''
-            </div>`:""}'''
-    if fleet_mark in html and "Кредит 19,2%" not in html:
-        html = html.replace(fleet_mark, fleet_extra, 1)
-        print("fleet 19.2 insert")
     return html
 
 def main():
