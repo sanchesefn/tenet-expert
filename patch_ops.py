@@ -7,6 +7,23 @@ SITE = Path("_site/index.html")
 JS = ROOT / "duty-fn.js"
 STOCK_JS = ROOT / "stock-fn.js"
 
+HUB_CSS = """
+.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
+@media(min-width:900px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}}
+.hub-card::before{aspect-ratio:16/8!important;}
+.hub-card .txt{padding:10px 12px 12px!important;}
+.hub-card h3{font-size:16px!important;margin:0 0 4px!important;}
+.hub-card p{font-size:12px!important;line-height:1.35!important;}
+.hub-mark{width:28px!important;height:28px!important;font-size:11px!important;top:8px!important;left:8px!important;border-radius:8px!important;}
+@media(max-width:720px){
+  .hub-card::before{aspect-ratio:16/9!important;}
+  .hub-card h3{font-size:14px!important;}
+  .hub-card p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  h1{font-size:clamp(28px,8vw,40px)!important;}
+  .banner{min-height:110px!important;padding:14px!important;}
+}
+"""
+
 CSS = """
 .st.lease{display:none!important}
 .cl{display:flex;flex-direction:column;gap:10px}
@@ -55,7 +72,7 @@ CSS = """
   .cl-mark{color:#000}
   .st-acc{break-inside:avoid}
 }
-"""
+""" + HUB_CSS
 
 def patch(html: str) -> str:
     js = JS.read_text(encoding="utf-8") if JS.exists() else ""
@@ -91,6 +108,13 @@ def patch(html: str) -> str:
         '${(typeof stockHasSovcom==="function"&&stockHasSovcom(r))?` <span class="st lease">Совкомбанк лизинг</span>`:""}',
         "",
     )
+    html = html.replace(
+        ".hub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px;}\n@media(min-width:640px){.hub-grid{grid-template-columns:1fr 1fr;}}\n@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,1fr);}}",
+        ".hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}\n@media(min-width:900px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}}",
+    )
+    if ".hub-card::before{aspect-ratio:16/8" not in html:
+        html = html.replace("</style>", HUB_CSS + "\n</style>", 1)
+        print("hub compact css")
     if ".st-acc{" not in html:
         html = html.replace("</style>", CSS + "\n</style>", 1)
         print("stock/duty css")
