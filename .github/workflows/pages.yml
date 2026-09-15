@@ -66,6 +66,7 @@ jobs:
           python3 patch_cloud_v2.py
           if [ -f patch_rate_fix.py ]; then python3 patch_rate_fix.py; fi
           if [ -f patch_rate_ui.py ]; then python3 patch_rate_ui.py; fi
+          if [ -f patch_cloud_slim.py ]; then python3 patch_cloud_slim.py || true; fi
           if [ -f patch_km.py ]; then python3 patch_km.py; fi
           if [ -f patch_epts.py ]; then python3 patch_epts.py; fi
           mkdir -p _site/cars _site/docs/prices _site/hub _site/epts
