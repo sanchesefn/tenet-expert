@@ -1,16 +1,43 @@
 from pathlib import Path
-import json, re
+import json, re, urllib.request
 
 cars = []
 upd = ""
+
+def add_payload(payload):
+    global upd, cars
+    if not isinstance(payload, dict):
+        return
+    if payload.get("updated"):
+        upd = payload["updated"]
+    cars.extend(payload.get("cars") or [])
+
 for name in ("stock-part1.json", "stock-part2.json", "stock.json"):
     p = Path(name)
     if not p.exists():
         continue
-    payload = json.loads(p.read_text())
-    if payload.get("updated"):
-        upd = payload["updated"]
-    cars.extend(payload.get("cars") or [])
+    try:
+        payload = json.loads(p.read_text())
+    except Exception:
+        continue
+    add_payload(payload)
+
+if len({c.get("vin") for c in cars if c.get("vin")}) < 40:
+    try:
+        from urllib.parse import urlencode
+        req = urllib.request.Request(
+            "https://rentry.co/api/fetch/r9747p7v",
+            data=urlencode({"edit_code": "KLRBcuns"}).encode(),
+            method="POST",
+            headers={"User-Agent": "tenet-expert-stock"},
+        )
+        with urllib.request.urlopen(req, timeout=20) as r:
+            body = json.loads(r.read().decode("utf-8"))
+        text = (body.get("content") or {}).get("text") or ""
+        add_payload(json.loads(text))
+        print("stock fetched from rentry", len(cars))
+    except Exception as e:
+        print("rentry stock fetch fail", e)
 
 seen = set()
 uniq = []
@@ -21,9 +48,10 @@ for c in cars:
     seen.add(vin)
     uniq.append(c)
 
-DEMO_VINS={"EDXGD34B2TE109064","EDXGB32B0TE110108"}
+DEMO_VINS = {"EDXGD34B2TE109064", "EDXGB32B0TE110108"}
 for c in uniq:
     c["demo"] = c.get("vin") in DEMO_VINS
+
 if len(uniq) < 40:
     print("skip stock inject, only", len(uniq), "cars")
     raise SystemExit(0)
