@@ -1,0 +1,3 @@
+.hub-card[data-go="epts"]::before{background-image:url("hub/epts.svg?v=2");background-position:50% 50%;background-size:cover;}
+.hub-card[data-go="gibdd"]::before{background-image:url("hub/gibdd.svg?v=2");background-position:50% 50%;background-size:cover;}
+.hub-card[data-go="duty"]::before{background-image:url("hub/duty.svg?v=2");background-position:50% 50%;background-size:cover;}
