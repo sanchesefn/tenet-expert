@@ -59,8 +59,8 @@ jobs:
           if [ -f patch_fleet.py ]; then python3 patch_fleet.py; fi
           if [ -f patch_attest.py ]; then python3 patch_attest.py; fi
           if [ -f patch_css.py ]; then python3 patch_css.py; fi
-          if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py; fi
-          if [ -f patch_demo.py ]; then python3 patch_demo.py; fi
+          if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py || true; fi
+          if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_cloud.py ]; then python3 patch_cloud.py; fi
           curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/6d9ce5112b96a0fcf7765654f8ff7c061b71da08/patch_cloud_v2.py -o patch_cloud_v2.py
           python3 patch_cloud_v2.py
