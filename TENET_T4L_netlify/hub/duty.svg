@@ -1,18 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
-  <rect width="800" height="500" fill="#e8e0d2"/>
-  <rect x="170" y="40" width="460" height="420" rx="8" fill="#f7f1e6" stroke="#c9bda8" stroke-width="3"/>
-  <rect x="190" y="40" width="420" height="36" rx="4" fill="#b7bcc2"/>
-  <text x="400" y="110" text-anchor="middle" font-family="Inter,Arial" font-size="28" font-weight="800" fill="#1b1b1e">ЧЕК-ЛИСТ</text>
-  <g font-family="Inter,Arial" font-size="20" fill="#2a2a2e">
-    <rect x="210" y="140" width="22" height="22" rx="3" fill="#1f7a4d"/>
-    <text x="248" y="158">Осмотр кузова</text>
-    <rect x="210" y="186" width="22" height="22" rx="3" fill="#1f7a4d"/>
-    <text x="248" y="204">Салон и свет</text>
-    <rect x="210" y="232" width="22" height="22" rx="3" fill="#fff" stroke="#8d7f6a"/>
-    <text x="248" y="250">Документы</text>
-    <rect x="210" y="278" width="22" height="22" rx="3" fill="#1f7a4d"/>
-    <text x="248" y="296">Тест-драйв</text>
-    <rect x="210" y="324" width="22" height="22" rx="3" fill="#fff" stroke="#8d7f6a"/>
-    <text x="248" y="342">Мойка / выдача</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <rect width="800" height="500" fill="#e8dfd0"/>
+  <rect x="0" y="0" width="220" height="500" fill="#d9cbb6"/>
+  <rect x="196" y="58" width="430" height="384" rx="18" fill="#6b4f3a"/>
+  <rect x="214" y="86" width="394" height="338" rx="8" fill="#f4ead8"/>
+  <rect x="348" y="64" width="126" height="28" rx="6" fill="#c9c2b4"/>
+  <g fill="none" stroke="#2a2a2a" stroke-width="3">
+    <rect x="246" y="126" width="22" height="22" rx="3"/>
+    <rect x="246" y="176" width="22" height="22" rx="3"/>
+    <rect x="246" y="226" width="22" height="22" rx="3"/>
+    <rect x="246" y="276" width="22" height="22" rx="3"/>
+    <rect x="246" y="326" width="22" height="22" rx="3"/>
+    <path d="M250 137l6 7 12-14"/>
+    <path d="M250 187l6 7 12-14"/>
+    <path d="M250 237l6 7 12-14"/>
+    <path d="M250 287l6 7 12-14"/>
   </g>
+  <g stroke="#cbbba3" stroke-width="3">
+    <path d="M286 138h290"/>
+    <path d="M286 188h290"/>
+    <path d="M286 238h290"/>
+    <path d="M286 288h290"/>
+    <path d="M286 338h290"/>
+  </g>
+  <rect x="520" y="350" width="150" height="18" rx="9" fill="#2b2b2b"/>
 </svg>

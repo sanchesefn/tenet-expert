@@ -1,15 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500">
-  <rect width="800" height="500" fill="#dfe5ea"/>
-  <rect x="0" y="360" width="800" height="140" fill="#8f959b"/>
-  <rect x="0" y="360" width="800" height="8" fill="#b7bcc1"/>
-  <g transform="translate(90,210)">
-    <path d="M70 110h470l40-70c8-14 22-24 38-26l52-6v102h-600z" fill="#f4f6f8" stroke="#1d2430" stroke-width="6"/>
-    <path d="M160 40h250l70 70H90z" fill="#dbe3ea" stroke="#1d2430" stroke-width="6"/>
-    <rect x="200" y="8" width="160" height="22" rx="6" fill="#1f4f9a"/>
-    <rect x="200" y="8" width="80" height="22" rx="6" fill="#c81e2b"/>
-    <rect x="40" y="118" width="520" height="22" fill="#1f4f9a"/>
-    <text x="430" y="112" font-family="Inter,Arial" font-size="28" font-weight="800" fill="#1f4f9a">ДПС</text>
-    <circle cx="160" cy="140" r="38" fill="#222" stroke="#f4f6f8" stroke-width="8"/>
-    <circle cx="500" cy="140" r="38" fill="#222" stroke="#f4f6f8" stroke-width="8"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="gsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#cfd8df"/>
+      <stop offset="1" stop-color="#ece7dc"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#gsky)"/>
+  <rect x="0" y="318" width="800" height="182" fill="#7d8389"/>
+  <rect x="0" y="318" width="800" height="18" fill="#c9c3b6"/>
+  <path d="M170 330c18-62 48-98 92-112 28-10 168-12 214 6 46 18 78 62 96 106l-402 0z" fill="#f4f6f8" stroke="#c9ced3" stroke-width="3"/>
+  <path d="M188 328c22-46 48-72 86-82 22-6 128-8 168 6 32 12 58 42 74 76" fill="#d9eefc" stroke="#9aa3ab" stroke-width="3"/>
+  <rect x="176" y="318" width="408" height="36" rx="10" fill="#f7f8fa"/>
+  <rect x="176" y="328" width="408" height="14" fill="#2f5fa8"/>
+  <circle cx="250" cy="362" r="28" fill="#2a2d31"/>
+  <circle cx="250" cy="362" r="16" fill="#8b9096"/>
+  <circle cx="510" cy="362" r="28" fill="#2a2d31"/>
+  <circle cx="510" cy="362" r="16" fill="#8b9096"/>
+  <rect x="332" y="196" width="118" height="18" rx="8" fill="#dbe3ea"/>
+  <rect x="348" y="188" width="28" height="14" rx="4" fill="#c0392b"/>
+  <rect x="386" y="188" width="28" height="14" rx="4" fill="#f4f6f8"/>
+  <rect x="424" y="188" width="28" height="14" rx="4" fill="#2f5fa8"/>
 </svg>
