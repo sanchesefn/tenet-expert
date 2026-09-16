@@ -1,0 +1,95 @@
+name: cloud-sync
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge ntfy into rentry
+        run: |
+          python3 - << 'PY'
+          import json, urllib.parse, urllib.request
+          CLOUD_ID="o6nq7rki"
+          CLOUD_KEY="4fmBrr2H"
+          RELAY="https://ntfy.sh/tenet-expert-o6nq7rki/json?poll=1&since=72h"
+          API="https://tenet-expert.netlify.app/api/rating"
+
+          def rec_key(x):
+              if not x: return None
+              t=x.get("type")
+              if t=="login": return ("login", x.get("surname"))
+              if t=="pass": return ("pass", x.get("surname"), x.get("model"), str(x.get("code") or "").upper())
+              if t=="pin_request": return ("pin", x.get("kind") or "login", x.get("surname"))
+              if not x.get("surname"): return None
+              return ("exam", str(x.get("surname") or "").lower(), x.get("model"), int(x.get("exam") or 1))
+
+          def better(a,b):
+              if not a: return b
+              if not b: return a
+              if a.get("type") or b.get("type"):
+                  out=dict(a); out.update(b); return out
+              ap,bp=float(a.get("percent") or 0), float(b.get("percent") or 0)
+              win,lose=(b,a) if bp>ap else (a,b) if ap>bp else ((b,a) if str(b.get("at") or "")>=str(a.get("at") or "") else (a,b))
+              out=dict(lose); out.update(win); out["status"]="done"; return out
+
+          def merge(old, new):
+              store={}
+              order=[]
+              for x in (old or [])+(new or []):
+                  k=rec_key(x)
+                  if not k: continue
+                  if k not in store:
+                      order.append(k); store[k]=x
+                  else:
+                      store[k]=better(store[k], x)
+              return [store[k] for k in order]
+
+          def fetch_rentry():
+              body=urllib.parse.urlencode({"edit_code":CLOUD_KEY}).encode()
+              req=urllib.request.Request(f"https://rentry.co/api/fetch/{CLOUD_ID}", data=body, headers={"Content-Type":"application/x-www-form-urlencoded"})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  data=json.loads(r.read())
+              content=data.get("content")
+              text=content.get("text") if isinstance(content, dict) else content
+              parsed=json.loads(text or "[]")
+              return parsed if isinstance(parsed, list) else []
+
+          extra=[]
+          try:
+              with urllib.request.urlopen(RELAY, timeout=15) as r:
+                  raw=r.read().decode("utf-8", "ignore")
+              for line in raw.splitlines():
+                  if not line.strip(): continue
+                  try:
+                      msg=json.loads(line)
+                      rec=json.loads(msg["message"]) if isinstance(msg.get("message"), str) else None
+                      if rec and rec.get("surname") and rec.get("surname")!="probe" and rec.get("status")=="done":
+                          extra.append(rec)
+                  except Exception:
+                      pass
+          except Exception as e:
+              print("ntfy", e)
+
+          try:
+              with urllib.request.urlopen(API, timeout=15) as r:
+                  api=json.loads(r.read())
+              if isinstance(api, list):
+                  extra.extend(api)
+          except Exception as e:
+              print("api", e)
+
+          base=fetch_rentry()
+          merged=merge(base, extra)
+          if json.dumps(merged, sort_keys=True, ensure_ascii=False)!=json.dumps(base, sort_keys=True, ensure_ascii=False):
+              body=urllib.parse.urlencode({"edit_code":CLOUD_KEY,"text":json.dumps(merged, ensure_ascii=False)}).encode()
+              req=urllib.request.Request(f"https://rentry.co/api/edit/{CLOUD_ID}", data=body, headers={"Content-Type":"application/x-www-form-urlencoded"})
+              with urllib.request.urlopen(req, timeout=20) as r:
+                  print("rentry", json.loads(r.read()).get("status"), "n", len(merged))
+          else:
+              print("no change", len(merged))
+          PY

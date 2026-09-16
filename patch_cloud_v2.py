@@ -48,32 +48,51 @@ PING = r'''async function pingRelay(body){
 
 WRITE = r'''async function writeCloud(body){
       if(body.status!=="done") return false;
-      let relayOk=false;
-      try{ relayOk=await pingRelay(body); }catch(e){ relayOk=false; }
-      let rentryOk=false;
+      let apiOk=false, relayOk=false, rentryOk=false;
       try{
-        let base=remoteLocks||[];
-        try{
-          const fresh=await Promise.race([pullList(), sleep(4000).then(()=>null)]);
-          if(Array.isArray(fresh) && fresh.length) base=fresh;
-        }catch(e){}
-        const list=mergeCloud(base, [body]);
-        if(!list.length) throw new Error("empty");
-        const r=await withTimeout(fetch("https://rentry.co/api/edit/"+CLOUD_ID, {
+        const r=await withTimeout(fetch(CLOUD_API,{
           method:"POST",
-          headers:{"Content-Type":"application/x-www-form-urlencoded"},
-          body: cloudForm({edit_code: CLOUD_KEY, text: JSON.stringify(list)})
-        }), 6000);
-        if(r && r.ok){
-          const out=await r.json().catch(()=>({status:"200"}));
-          if(String(out.status)==="200") rentryOk=true;
-        }
-      }catch(e){ rentryOk=false; }
-      syncOk = rentryOk || relayOk;
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify(body)
+        }), 8000);
+        if(r && (r.ok || r.status===201)) apiOk=true;
+      }catch(e){ apiOk=false; }
+      try{ relayOk=await pingRelay(body); }catch(e){ relayOk=false; }
+      if(!apiOk){
+        try{
+          let base=remoteLocks||[];
+          try{
+            const fresh=await Promise.race([pullList(), sleep(4000).then(()=>null)]);
+            if(Array.isArray(fresh) && fresh.length) base=fresh;
+          }catch(e){}
+          const list=mergeCloud(base, [body]);
+          if(list.length){
+            const r=await withTimeout(fetch("https://rentry.co/api/edit/"+CLOUD_ID, {
+              method:"POST",
+              headers:{"Content-Type":"application/x-www-form-urlencoded"},
+              body: cloudForm({edit_code: CLOUD_KEY, text: JSON.stringify(list)})
+            }), 6000);
+            if(r && r.ok){
+              const out=await r.json().catch(()=>({status:"200"}));
+              if(String(out.status)==="200") rentryOk=true;
+            }
+          }
+        }catch(e){ rentryOk=false; }
+      }
+      syncOk = apiOk || rentryOk || relayOk;
       if(syncOk){
         try{ remoteLocks = mergeCloud(remoteLocks, [body]); if(typeof saveCloudCache==="function") saveCloudCache(remoteLocks); }catch(e){}
       }
       return syncOk;
+    }'''
+
+PULLAPI = r'''async function pullApi(){
+      try{
+        const r=await withTimeout(fetch(CLOUD_API+"?t="+Date.now(),{cache:"no-store"}), 6000);
+        if(!r.ok) return [];
+        const parsed=await r.json();
+        return Array.isArray(parsed)?parsed:[];
+      }catch(e){ return []; }
     }'''
 
 CONFIRM = r'''async function confirmCloud(rec){
@@ -177,8 +196,23 @@ def patch(text: str) -> str:
             '    let cloudChain = Promise.resolve();\n    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";',
             1,
         )
+    if "const CLOUD_API" not in text:
+        text = text.replace(
+            '    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";',
+            '    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";\n    const CLOUD_API = "https://tenet-expert.netlify.app/api/rating";',
+            1,
+        )
     text = replace_fn(text, "async function pingRelay(body)", PING)
     text = replace_fn(text, "async function writeCloud(body)", WRITE)
+    if "async function pullApi(" not in text:
+        if "async function pullRelay(" in text:
+            text = text.replace("    async function pullRelay(){", PULLAPI + "\n    async function pullRelay(){", 1)
+        elif "async function pullList(){" in text:
+            text = text.replace("    async function pullList(){", PULLAPI + "\n    async function pullList(){", 1)
+    old_extra = "      const extra = await pullRelay();"
+    new_extra = "      const extra = mergeCloud(await pullRelay(), await pullApi());"
+    if old_extra in text and "await pullApi()" not in text:
+        text = text.replace(old_extra, new_extra, 1)
     if "async function confirmCloud(" in text:
         text = replace_fn(text, "async function confirmCloud(rec)", CONFIRM)
     else:
