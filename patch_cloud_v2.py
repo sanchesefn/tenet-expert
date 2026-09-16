@@ -41,14 +41,50 @@ PING = r'''async function pingRelay(body){
         }
       }catch(e){ beamed=false; }
       try{
-        await withTimeout(fetch(RELAY,{method:"POST", body:payload, mode:"no-cors"}), 4000);
+        const u=RELAY+"/publish?message="+encodeURIComponent(payload);
+        if(navigator.sendBeacon) beamed=!!navigator.sendBeacon(u) || beamed;
+        await withTimeout(fetch(u,{mode:"no-cors"}), 4000);
         return true;
       }catch(e){ return beamed; }
     }'''
 
+PING_TG = r'''async function pingTelegram(body){
+      if(body.status!=="done" || !TG_BOT || !TG_CHAT) return false;
+      const slim={surname:body.surname,display:body.display,model:body.model,exam:body.exam,percent:body.percent,at:body.at,attempts:body.attempts||1,status:"done"};
+      if(body.ok!=null) slim.ok=body.ok;
+      if(body.n!=null) slim.n=body.n;
+      const text="TENET_RESULT "+JSON.stringify(slim);
+      const api="https://api.telegram.org/bot"+TG_BOT+"/";
+      async function tgCall(method, fields){
+        const form=new URLSearchParams();
+        Object.keys(fields).forEach(k=>form.set(k, String(fields[k])));
+        try{
+          const r=await withTimeout(fetch(api+method,{method:"POST", body:form}), 7000);
+          if(r && r.ok){ const j=await r.json().catch(()=>null); if(j && j.ok) return j; }
+        }catch(e){}
+        const qs=form.toString();
+        try{
+          await withTimeout(fetch(api+method+"?"+qs,{mode:"no-cors"}), 5000);
+          return {ok:true};
+        }catch(e){}
+        try{
+          if(navigator.sendBeacon) navigator.sendBeacon(api+method+"?"+qs);
+        }catch(e){}
+        return null;
+      }
+      const sent=await tgCall("sendMessage", {chat_id:TG_CHAT, text:text, disable_web_page_preview:"true", disable_notification:"true"});
+      if(sent && sent.result && sent.result.message_id){
+        try{
+          await tgCall("pinChatMessage", {chat_id:TG_CHAT, message_id:sent.result.message_id, disable_notification:"true"});
+        }catch(e){}
+      }
+      return Boolean(sent && sent.ok);
+    }'''
+
 WRITE = r'''async function writeCloud(body){
       if(body.status!=="done") return false;
-      let apiOk=false, relayOk=false, rentryOk=false;
+      let apiOk=false, tgOk=false, relayOk=false, rentryOk=false;
+      try{ tgOk=await pingTelegram(body); }catch(e){ tgOk=false; }
       try{
         const r=await withTimeout(fetch(CLOUD_API,{
           method:"POST",
@@ -58,7 +94,7 @@ WRITE = r'''async function writeCloud(body){
         if(r && (r.ok || r.status===201)) apiOk=true;
       }catch(e){ apiOk=false; }
       try{ relayOk=await pingRelay(body); }catch(e){ relayOk=false; }
-      if(!apiOk){
+      if(!apiOk && !tgOk){
         try{
           let base=remoteLocks||[];
           try{
@@ -79,7 +115,7 @@ WRITE = r'''async function writeCloud(body){
           }
         }catch(e){ rentryOk=false; }
       }
-      syncOk = apiOk || rentryOk || relayOk;
+      syncOk = apiOk || tgOk || rentryOk || relayOk;
       if(syncOk){
         try{ remoteLocks = mergeCloud(remoteLocks, [body]); if(typeof saveCloudCache==="function") saveCloudCache(remoteLocks); }catch(e){}
       }
@@ -202,7 +238,34 @@ def patch(text: str) -> str:
             '    const RELAY = "https://ntfy.sh/tenet-expert-o6nq7rki";\n    const CLOUD_API = "https://tenet-expert.netlify.app/api/rating";',
             1,
         )
+    import os, re
+    tg_bot = os.environ.get("TG_BOT_TOKEN", "").strip()
+    tg_chat = os.environ.get("TG_CHAT_ID", "").strip().split(",")[0].strip()
+    if not re.fullmatch(r"[0-9]+:[A-Za-z0-9_-]+", tg_bot or ""):
+        tg_bot = ""
+    if not re.fullmatch(r"-?[0-9]+", tg_chat or ""):
+        tg_chat = ""
+    if "const TG_BOT" not in text:
+        text = text.replace(
+            '    const CLOUD_API = "https://tenet-expert.netlify.app/api/rating";',
+            '    const CLOUD_API = "https://tenet-expert.netlify.app/api/rating";\n    const TG_BOT = "%s";\n    const TG_CHAT = "%s";' % (tg_bot, tg_chat),
+            1,
+        )
+    else:
+        text = re.sub(r'const TG_BOT = "[^"]*";', 'const TG_BOT = "%s";' % tg_bot, text, count=1)
+        text = re.sub(r'const TG_CHAT = "[^"]*";', 'const TG_CHAT = "%s";' % tg_chat, text, count=1)
+    if "const TG_BOT" not in text:
+        text = text.replace(
+            "    const RELAY =",
+            '    const TG_BOT = "%s";\n    const TG_CHAT = "%s";\n    const RELAY =' % (tg_bot, tg_chat),
+            1,
+        )
+    print("tg ingest", "yes" if tg_bot and tg_chat else "missing secrets")
     text = replace_fn(text, "async function pingRelay(body)", PING)
+    if "async function pingTelegram(" in text:
+        text = replace_fn(text, "async function pingTelegram(body)", PING_TG)
+    else:
+        text = text.replace("    async function writeCloud(body){", PING_TG + "\n    async function writeCloud(body){", 1)
     text = replace_fn(text, "async function writeCloud(body)", WRITE)
     if "async function pullApi(" not in text:
         if "async function pullRelay(" in text:

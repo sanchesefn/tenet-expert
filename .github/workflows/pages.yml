@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Prepare site
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
           mkdir -p _site
           if [ -f prepare_site_b.py ]; then
