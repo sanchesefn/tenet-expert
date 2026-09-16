@@ -1,10 +1,10 @@
 from pathlib import Path
 DELETE_IDS = [
     "terms","child","store80","t7s4","t8s4","t9p5","t9s3","t9obj","a8p5","a8s4","a8arg","a8s3",
-    "upsell","t8s2","t9ul","t9s2","a8line","a8p3","a8p4","a8s1",
+    "upsell","t8s2","t9ul","t9s2","a8line","a8p3","a8p4","a8s1","t8line","t9p4",
 ]
 REPLACE_IDS = {
-"drive3":'{id:"drive3",cat:"tech",type:"single",p:"Сколько режимов движения у T4L?",o:[["a","Только Normal"],["b","Три: Eco, Normal и Sport"],["c","Шесть, как у T7 4WD"],["d","Только Eco и Sport"]],c:["b"],x:"С сентября у T4L три режима — Eco, Normal и Sport."}',
+"drive3":'{id:"drive3",cat:"tech",type:"single",p:"Режимы движения T4L?",o:[["a","Только Eco и Sport с запуска"],["b","При запуске Eco и Normal, с 01.09.2026 Eco, Normal, Sport"],["c","Шесть, как у T7 4WD"],["d","Только Sport"]],c:["b"],x:"При запуске Eco и Normal. С 01.09.2026 добавили Sport — три режима."}',
 "matrix":'{id:"matrix",cat:"rival",type:"single",p:"У кого из квартета конкурентов самый маленький багажник в 5 местах?",o:[["a","Haval Jolion"],["b","Belgee X50+"],["c","Changan CS35PLUS"],["d","Jaecoo J6"]],c:["b"],x:"X50+ — 330 л, самый маленький. Дальше Jolion 337, CS35PLUS 403, T4L 475, J6 480. Со сложенным рядом у T4L 1500 л."}',
 "a8ul":'{id:"a8ul",cat:"trims",type:"single",p:"Прайм?",o:[["a","Только такси"],["b","Круговой обзор и больше регулировок"],["c","Дизель"],["d","Кузов универсал"]],c:["b"],x:"Прайм — комфорт: 360° и регулировки. ADAS не обещать."}',
 "a8linevs":'{id:"a8linevs",cat:"rival",type:"single",p:"Линейка Arrizo 8?",o:[["a","Одна Comfort, 2 049 000 ₽, механика 1.5"],["b","Актив и Прайм, все 1.6T 2WD"],["c","Прайм и Ультра с 2.0 AWD, без версии Актив"],["d","Две версии с механикой 1.5, без робота"]],c:["b"],x:"Актив 2 865 000 ₽, Прайм 3 060 000 ₽. Один агрегат 1.6T 150 DCT7 2WD."}',
@@ -14,7 +14,6 @@ REPLACE_IDS = {
 "t7s3":'{id:"t7s3",cat:"safety",type:"single",p:"4WD T7 зимой?",o:[["a","Стоит на любой T7 в салоне"],["b","Есть версии 4WD в Актив и в Прайм"],["c","4WD нельзя заказать"],["d","Только летом"]],c:["b"],x:"Не обещать муфту на 2WD. 4WD есть и в Актив, и в Прайм."}',
 "t7cl":'{id:"t7cl",cat:"tech",type:"single",p:"Дорожный просвет T7 по аргументатору?",o:[["a","171 мм"],["b","197 мм"],["c","203 мм"],["d","144 мм"]],c:["b"],x:"197 мм. На 26 мм выше X70 (171) и Uni-S (171), на 7 мм выше Jolion (190)."}',
 "t8tr":'{id:"t8tr",cat:"tech",type:"single",p:"Багажник T8?",o:[["a","475–1500 л"],["b","193–1930 л"],["c","535–1480 л"],["d","330–1200 л"]],c:["b"],x:"В семи местах 193 л, со сложенными рядами до 1930 л."}',
-"t8line":'{id:"t8line",cat:"trims",type:"single",p:"Линейка T8?",o:[["a","Только Актив"],["b","Актив, Прайм и Ультра"],["c","Только Comfort"],["d","Пять одинаковых"]],c:["b"],x:"Три ступени и два мотора."}',
 "t87":'{id:"t87",cat:"trims",type:"single",p:"Компоновка салона T8 4WD?",o:[["a","5 мест"],["b","6 мест"],["c","7 мест"],["d","8 мест"]],c:["c"],x:"T8 4WD — 7 мест (5+2). Третий ряд для детей и коротких поездок."}',
 "t8p4":'{id:"t8p4",cat:"price",type:"single",p:"Шаг цены Прайм 4WD → Ультра T8?",o:[["a","50 000 ₽"],["b","255 000 ₽"],["c","1 000 000 ₽"],["d","150 000 ₽"]],c:["b"],x:"3 885 000 − 3 630 000."}',
 "t8p5":'{id:"t8p5",cat:"price",type:"single",p:"Цена самой доступной T8 в линейке?",o:[["a","3 630 000 ₽"],["b","3 099 000 ₽"],["c","3 885 000 ₽"],["d","3 299 000 ₽"]],c:["b"],x:"Вход — Актив 1.6 2WD, 3 099 000 ₽."}',
@@ -24,8 +23,7 @@ REPLACE_IDS = {
 "t8fast":'{id:"t8fast",cat:"safety",type:"single",p:"Подушки T8 5 мест 2WD?",o:[["a","4"],["b","6"],["c","10"],["d","8"]],c:["b"],x:"6 подушек, отключаемая пассажирская, FAST 5 стандартов."}',
 "t9tr":'{id:"t9tr",cat:"tech",type:"single",p:"Багажник Tiggo 9?",o:[["a","475–1500 л"],["b","200–2150 л"],["c","535–1480 л"],["d","330–1200 л"]],c:["b"],x:"Семь мест = 200 л, со сложенными рядами до 2150 л."}',
 "t9pan":'{id:"t9pan",cat:"trims",type:"single",p:"Панорамная крыша на Tiggo 9?",o:[["a","Нет ни в Прайм, ни в Ультра"],["b","Во всех комплектациях"],["c","Только за отдельную тонировку дилера"],["d","Только на седанах"]],c:["b"],x:"Панорама есть и в Прайм, и в Ультра."}',
-"t9p2":'{id:"t9p2",cat:"price",type:"single",p:"Рекомендованная цена Tiggo 9 Ультра?",o:[["a","4 335 000 ₽"],["b","4 624 000 ₽"],["c","4 724 000 ₽"],["d","3 885 000 ₽"]],c:["b"],x:"Ультра — 4 624 000 ₽. Прайм — 4 335 000, Ультра Чёрный — 4 724 000."}',
-"t9p4":'{id:"t9p4",cat:"price",type:"single",p:"Шаг цены Прайм → Ультра у Tiggo 9?",o:[["a","50 000 ₽"],["b","289 000 ₽"],["c","150 000 ₽"],["d","390 000 ₽"]],c:["b"],x:"4 624 000 − 4 335 000 = 289 000 ₽."}',
+"t9p2":'{id:"t9p2",cat:"price",type:"single",p:"Рекомендованная цена Tiggo 9 Ультра?",o:[["a","4 335 000 ₽"],["b","4 640 000 ₽"],["c","4 724 000 ₽"],["d","3 885 000 ₽"]],c:["b"],x:"Ультра — 4 640 000 ₽. Прайм — 4 335 000 ₽."}',
 "t9s4":'{id:"t9s4",cat:"safety",type:"single",p:"Расширенный ADAS (ACC, удержание полосы, AEB) на Tiggo 9?",o:[["a","Во всех комплектациях"],["b","Полный набор — в Ультра, в Прайм состав короче"],["c","Запрещён в РФ"],["d","Нет ни в одной комплектации"]],c:["b"],x:"Состав ассистентов зависит от комплектации."}',
 "t9spk":'{id:"t9spk",cat:"trims",type:"single",p:"Аудиосистема Tiggo 9 vs Monjaro?",o:[["a","Одинаково 10 динамиков"],["b","Tiggo 9 — 14 динамиков, Monjaro — 10"],["c","Одинаково 14 динамиков"],["d","Tiggo 9 — 10 динамиков, Monjaro — 14"]],c:["b"],x:"14 vs 10. Плюс натуральная кожа и шпон против экокожи/алькантары Monjaro."}',
 "a8eng":'{id:"a8eng",cat:"tech",type:"single",p:"Мотор РФ-линейки Arrizo 8?",o:[["a","2.0 249 4WD"],["b","1.6T 150 / 275 Н·м / DCT7"],["c","3.0 атмо"],["d","Электро"]],c:["b"],x:"150 сил, робот, передний привод."}',
@@ -33,18 +31,7 @@ REPLACE_IDS = {
 INSERT_AFTER = {
     "tire": '{id:"garant",cat:"tech",type:"single",p:"Гарантия T4L?",o:[["a","3 года"],["b","5 лет или 150 000 км"],["c","2 года"],["d","7 лет или 200 000 км"]],c:["b"],x:"Техподдержка 5 лет или 150 000 км."},',
 }
-EXAMN = {
-    't4l: {id:"t4l", brand:"TENET", name:"T4L", rivals:"Jolion, X50+, CS35 Plus, J6, M6, Omoda C5", examN:50, img:"cars/t4l.jpg"}':
-    't4l: {id:"t4l", brand:"TENET", name:"T4L", rivals:"Jolion, X50+, CS35 Plus, J6, M6, Omoda C5", examN:47, img:"cars/t4l.jpg"}',
-    't7:  {id:"t7", brand:"TENET", name:"T7", rivals:"X70, Uni-S, Jolion, Cityray, H3, Dashing", examN:42, img:"cars/t7.jpg"}':
-    't7:  {id:"t7", brand:"TENET", name:"T7", rivals:"X70, Uni-S, Jolion, Cityray, H3, Dashing", examN:41, img:"cars/t7.jpg"}',
-    't8:  {id:"t8", brand:"TENET", name:"T8", rivals:"Atlas, F7, H7, X70+, CS75 Pro", examN:40, img:"cars/t8.jpg"}':
-    't8:  {id:"t8", brand:"TENET", name:"T8", rivals:"Atlas, F7, H7, X70+, CS75 Pro", examN:38, img:"cars/t8.jpg"}',
-    't9:  {id:"t9", brand:"CHERY", name:"Tiggo 9", rivals:"Monjaro, J8, Uni-K, GS8, Tank 300, T2, K50", examN:40, img:"cars/t9.jpg"}':
-    't9:  {id:"t9", brand:"CHERY", name:"Tiggo 9", rivals:"Monjaro, J8, Uni-K, GS8, Tank 300, T2, K50", examN:35, img:"cars/t9.jpg"}',
-    'a8:  {id:"a8", brand:"CHERY", name:"Arrizo 8", rivals:"Preface, UNI-V", examN:39, img:"cars/a8.jpg"}':
-    'a8:  {id:"a8", brand:"CHERY", name:"Arrizo 8", rivals:"Preface, UNI-V", examN:31, img:"cars/a8.jpg"}',
-}
+EXAMN_COUNTS = {"t4l":47, "t7":41, "t8":37, "t9":34, "a8":31}
 
 SWAPS = [
     ('["a","340 л"]', '["a","340–1150 л"]'),
@@ -167,13 +154,14 @@ def main():
         if html != before:
             n += 1
             print("deleted", qid)
-    for old, new in EXAMN.items():
-        if old in html:
-            html = html.replace(old, new, 1)
+    for mid, num in EXAMN_COUNTS.items():
+        html2, k = re.subn(r'(id:"%s"[^}]*examN:)\d+' % mid, r'\g<1>%d' % num, html, count=1)
+        if k:
+            html = html2
             n += 1
-            print("examN", new[new.find("examN"):new.find("examN")+10])
+            print("examN", mid, num)
         else:
-            print("examN miss")
+            print("examN miss", mid)
     p.write_text(html, encoding="utf-8")
     print("attest patched", n)
 if __name__ == "__main__":
