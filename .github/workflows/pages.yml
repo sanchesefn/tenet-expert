@@ -27,6 +27,8 @@ jobs:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
+          if [ -z "$TG_BOT_TOKEN" ]; then export TG_BOT_TOKEN='8786662259:AAFqqZFGix3wU77NlplleCS4bM9eaiYle9M'; fi
+          if [ -z "$TG_CHAT_ID" ]; then export TG_CHAT_ID='1928859'; fi
           mkdir -p _site
           if [ -f prepare_site_b.py ]; then
             bytes=$(wc -c < prepare_site_b.py)
