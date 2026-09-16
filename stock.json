@@ -1,1 +1,22 @@
-FILE_CONTENT_FROM_/workspace/stock.json_USE_SHELL_LOADER
+{
+  "updated": "16.09.2026",
+  "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
+  "cars": [
+    {
+      "vin": "EDXGB32B1TE110196",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 5 мест 2WD",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "invoice": false,
+      "salon": "",
+      "prod": "",
+      "rrc": 3299000,
+      "mpt": true,
+      "corp": true,
+      "demo": false
+    }
+  ]
+}
