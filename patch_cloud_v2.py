@@ -53,7 +53,7 @@ PING_TG = r'''async function pingTelegram(body){
       const slim={surname:body.surname,display:body.display,model:body.model,exam:body.exam,percent:body.percent,at:body.at,attempts:body.attempts||1,status:"done"};
       if(body.ok!=null) slim.ok=body.ok;
       if(body.n!=null) slim.n=body.n;
-      const text="TENET_RESULT "+JSON.stringify(slim);
+      const text="Результат с сайта\n"+(slim.display||slim.surname)+" · "+slim.model+" · "+slim.percent+"%\nTENET_RESULT "+JSON.stringify(slim);
       const api="https://api.telegram.org/bot"+TG_BOT+"/";
       async function tgCall(method, fields){
         const form=new URLSearchParams();
