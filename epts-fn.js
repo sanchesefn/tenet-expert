@@ -194,27 +194,32 @@
       ctx.fillText(draft.carLine, L, y); y+=44;
       ctx.font="400 28px Tinos, 'Times New Roman', Times, serif";
       const body2="ООО «ЭКСПЕРТ АВТО САМАРА» обязуется оплатить вышеуказанные а/м до "+draft.payBy+" и гарантирует передачу перечисленных а/м конечным покупателям только после проведения сервисных мероприятий и авторизации ЭПТС в системе электронных паспортов.";
-      const payTop=y;
       eptsWrap(ctx, body2, maxW).forEach(ln=>{ ctx.fillText(ln, L, y); y+=36; });
-      if(eptsStamp){
-        const sw=360, sh=sw*(eptsStamp.height/eptsStamp.width);
+      y+=96;
+      const signY=y;
+      ctx.fillText("Леонтьев А. А. __________", L, signY);
+      const nameW=ctx.measureText("Леонтьев А. А. ").width;
+      const stampBox=eptsInkBox(eptsStamp);
+      const signBox=eptsInkBox(eptsSign);
+      const stampSize=196;
+      const stampCX=L+nameW+78;
+      const stampCY=signY+14;
+      if(eptsStamp && stampBox){
         ctx.save();
         ctx.globalAlpha=0.93;
-        ctx.drawImage(eptsStamp, L+70, payTop+8, sw, sh);
+        ctx.drawImage(eptsStamp, stampBox.x, stampBox.y, stampBox.w, stampBox.h,
+          Math.round(stampCX-stampSize/2), Math.round(stampCY-stampSize/2), stampSize, stampSize);
         ctx.restore();
-        y=Math.max(y, payTop+8+sh-40);
       }
-      if(eptsSign){
-        const nw=200, nh=nw*(eptsSign.height/eptsSign.width);
+      if(eptsSign && signBox){
+        const nw=152, nh=nw*(signBox.h/signBox.w);
         ctx.save();
-        ctx.translate(L+175, payTop+118);
+        ctx.translate(stampCX-8, stampCY-4);
         ctx.rotate(-8*Math.PI/180);
-        ctx.drawImage(eptsSign, 0, 0, nw, nh);
+        ctx.drawImage(eptsSign, signBox.x, signBox.y, signBox.w, signBox.h, -nw*0.32, -nh*0.42, nw, nh);
         ctx.restore();
       }
-      y+=28;
-      ctx.fillText("Леонтьев А. А. __________", L, y); y+=64;
-      y+=28;
+      y=signY+Math.max(120, stampSize/2+64);
       ctx.font="700 20px Tinos, 'Times New Roman', Times, serif";
       ctx.fillText("Исполнитель: руководитель отдела продаж Леонтьев А. А.", L, y); y+=28;
       ctx.fillText("Тел.: +7 927 724 92 77", L, y);

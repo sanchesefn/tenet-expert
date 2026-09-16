@@ -92,7 +92,7 @@ NEW_DRAW = '''      eptsWrap(ctx, body2, maxW).forEach(ln=>{ ctx.fillText(ln, L,
         ctx.drawImage(eptsSign, signBox.x, signBox.y, signBox.w, signBox.h, -nw*0.32, -nh*0.42, nw, nh);
         ctx.restore();
       }
-      y=signY+Math.max(72, stampSize/2+36);
+      y=signY+Math.max(120, stampSize/2+64);
       ctx.font="700 20px Tinos, 'Times New Roman', Times, serif";
       ctx.fillText("Исполнитель: руководитель отдела продаж Леонтьев А. А.", L, y); y+=28;
       ctx.fillText("Тел.: +7 927 724 92 77", L, y);'''
@@ -117,7 +117,29 @@ PAYTOP_DRAW = '''      const payTop=y;
       }
       y+=28;
       ctx.fillText("Леонтьев А. А. __________", L, y); y+=64;
-      y+=28;'''
+      y+=28;
+      ctx.font="700 20px Tinos, 'Times New Roman', Times, serif";
+      ctx.fillText("Исполнитель: руководитель отдела продаж Леонтьев А. А.", L, y); y+=28;
+      ctx.fillText("Тел.: +7 927 724 92 77", L, y);'''
+
+FOOTER = '''      ctx.font="700 20px Tinos, 'Times New Roman', Times, serif";
+      ctx.fillText("Исполнитель: руководитель отдела продаж Леонтьев А. А.", L, y); y+=28;
+      ctx.fillText("Тел.: +7 927 724 92 77", L, y);'''
+
+def dedupe_footer(html: str) -> str:
+    double = FOOTER + "\n" + FOOTER
+    n = 0
+    while double in html:
+        html = html.replace(double, FOOTER, 1)
+        n += 1
+    if n:
+        print("epts footer deduped", n)
+    # leftover footer glued after NEW_DRAW tel line
+    glued = FOOTER.rstrip() + "\n" + FOOTER
+    while glued in html:
+        html = html.replace(glued, FOOTER, 1)
+        print("epts footer glued deduped")
+    return html
 
 def fix_stamp(html: str) -> str:
     if "function eptsInkBox" not in html and "function eptsDrawLetter" in html:
@@ -131,8 +153,14 @@ def fix_stamp(html: str) -> str:
         print("epts stamp on signer line")
     elif "stampCX=L+nameW+78" in html:
         print("epts stamp already on signer line")
+        html = html.replace(
+            "y=signY+Math.max(72, stampSize/2+36);",
+            "y=signY+Math.max(120, stampSize/2+64);",
+            1,
+        )
     else:
         print("epts stamp block not matched")
+    html = dedupe_footer(html)
     return html
 
 def patch_html(html: str) -> str:
