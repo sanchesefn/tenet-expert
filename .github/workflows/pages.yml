@@ -62,8 +62,7 @@ jobs:
           if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py || true; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_cloud.py ]; then python3 patch_cloud.py; fi
-          curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/6d9ce5112b96a0fcf7765654f8ff7c061b71da08/patch_cloud_v2.py -o patch_cloud_v2.py
-          python3 patch_cloud_v2.py
+          if [ -f patch_cloud_v2.py ]; then python3 patch_cloud_v2.py; fi
           if [ -f patch_rate_fix.py ]; then python3 patch_rate_fix.py; fi
           if [ -f patch_rate_ui.py ]; then python3 patch_rate_ui.py; fi
           if [ -f patch_cloud_slim.py ]; then python3 patch_cloud_slim.py || true; fi
