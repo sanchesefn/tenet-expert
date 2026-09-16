@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
-  <title>TENET / CHERY · Отдел продаж</title>
+  <title>TENET · Отдел продаж</title>
   <style>
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 :root {
@@ -270,7 +270,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 <body>
   <div class="wrap">
     <header class="top">
-      <div class="brand" id="brandLine" data-go="hub"><span class="mark">T</span> <span id="brandText">ОТДЕЛ ПРОДАЖ</span></div>
+      <div class="brand" id="brandLine" data-go="hub"><span class="mark">T</span> <span id="brandText">TENET · Отдел продаж</span></div>
       <nav class="desk" id="navDesk"></nav>
     </header>
     <main id="app"><p style="padding:24px">Загрузка…</p></main>
@@ -782,7 +782,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       if(d) d.innerHTML=html;
       if(b) b.innerHTML=html;
       const bt=document.getElementById("brandText");
-      if(bt) bt.textContent = "ОТДЕЛ ПРОДАЖ";
+      if(bt) bt.textContent = "TENET · Отдел продаж";
       const mark=document.querySelector(".mark");
       if(mark) mark.textContent = "T";
     }
@@ -834,7 +834,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         ["stock","S","Склад","В наличии и в пути — T4L, T7, T8"],
         ["docs","D","Документы","Прайсы, PDF и материалы моделей"]
       ];
-      return banner("Кабинет отдела продаж","TENET · CHERY", state.display)+`
+      return banner("Кабинет отдела продаж","TENET · Отдел продаж", state.display)+`
         <p class="lead">${hi}, <b>${escape(state.display)}</b>. ${examHint} Разделы ниже — рабочее пространство салона.</p>
         <div class="who-line">
           <button class="btn ghost" id="logout">Выйти</button>
@@ -1003,7 +1003,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         }).join("")}`;
     }
     function login(){
-      return banner("Аттестация отдела продаж","TENET · CHERY")+`
+      return banner("Аттестация отдела продаж","TENET · Отдел продаж")+`
         <h1>Вход<span>по фамилии</span></h1>
         <p class="lead">Одна фамилия — одна попытка на модель. 90%+ сразу закрепляет в рейтинге. Ниже 90% — тренировка и пересдача по коду РОП, в рейтинге будет «было / стало».</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" /></label>

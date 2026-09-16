@@ -1,6 +1,6 @@
     function login(){
       return `<section class="login-box">
-        <p class="eyebrow">TENET · CHERY</p>
+        <p class="eyebrow">TENET · Отдел продаж</p>
         <h2 class="login-title">Вход в кабинет</h2>
         <p class="login-sub">Фамилия и личный код от РОП. Если не входит — откройте сайт в Chrome или Safari, не из Telegram.</p>
         <label class="field"><span>Фамилия</span><input id="surname" placeholder="Иванов" autocomplete="off" autocapitalize="words" autocorrect="off" spellcheck="false" /></label>
