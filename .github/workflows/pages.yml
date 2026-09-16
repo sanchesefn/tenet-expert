@@ -85,6 +85,21 @@ jobs:
             cp -f docs/*.pdf docs/*.html _site/docs/ 2>/dev/null || true
             if [ -d docs/prices ]; then cp -f docs/prices/* _site/docs/prices/ 2>/dev/null || true; fi
           fi
+          cat > _site/index.html << 'HTML'
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="refresh" content="0;url=https://tenet-expert.github.io/" />
+  <title>TENET · Отдел продаж</title>
+  <script>location.replace("https://tenet-expert.github.io/"+location.search+location.hash);</script>
+</head>
+<body>
+  <p>Сайт переехал: <a href="https://tenet-expert.github.io/">https://tenet-expert.github.io/</a></p>
+</body>
+</html>
+HTML
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

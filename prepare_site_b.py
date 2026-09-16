@@ -49,3 +49,7 @@ if m:
         stock.append({"vin":"EDEDB21B7SD723791","model":"t7l","name":"Tiggo 7 L","trim":"Актив","color":"Серебристый","status":"in","note":"В салоне · с 06.08.2026","invoice":False,"salon":"","prod":"","rrc":2735000,"mpt":False})
     html=html[:m.start(1)]+json.dumps(stock, ensure_ascii=False)+html[m.end(1):]
     print("stock patched", sum(1 for x in stock if x.get("mpt")), "mpt", len(stock), "cars")
+
+Path("_site").mkdir(exist_ok=True)
+Path("_site/index.html").write_text(html)
+print("wrote _site/index.html", len(html))
