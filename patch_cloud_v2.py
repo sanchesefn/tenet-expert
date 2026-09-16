@@ -129,10 +129,48 @@ RETRY = '''const retryCloud=document.getElementById("retryCloud");
         if(rec){ rec.status="done"; cloudVerified=await confirmCloud(rec); }
         savingCloud=false; syncOk=cloudVerified; render();
       };
-      const copyBtn=document.getElementById("copyCode");'''
+      const copyBtn=document.getElementById("copyCode");
+      if(copyBtn) copyBtn.onclick=()=>{ try{ navigator.clipboard.writeText(state.lastCode||""); copyBtn.textContent="Скопировано"; }catch(e){} };'''
+
+BANNER = (
+    '${mode==="exam"?`<div class="card" style="margin:14px 0;padding:16px;border:2px solid ${cloudVerified?"#1b7f3a":"#b42318"}">'
+    '<p style="margin:0;font-size:20px;font-weight:800;color:${cloudVerified?"#1b7f3a":"#b42318"}">'
+    '${cloudVerified?"Результат в рейтинге. Можно закрывать.":(savingCloud?"Не закрывайте страницу":"Не ушло в рейтинг")}</p>'
+    '<p style="margin:8px 0 0">${savingCloud?"Отправляем результат… обычно до 15 секунд.":'
+    '(cloudVerified?"Проверка прошла успешно.":"Нажмите «Повторить отправку» или скопируйте код.")}</p>'
+    '${!savingCloud && !cloudVerified && state.lastCode?`<button class="btn ghost" id="copyCode" style="margin-top:8px">Скопировать код результата</button>`:""}'
+    '</div>`:""}'
+)
+
+OLD_STATUS = (
+    '${mode==="exam"?`<p style="margin-top:10px;font-size:14px;color:${syncOk?"#1b7f3a":"#b42318"}">'
+    '${syncOk?"Результат отправлен в общий рейтинг и Telegram.":"Отправляю в рейтинг… не закрывайте страницу."}</p>`:""}'
+)
+
+OLD_BTNS = """          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            <button class="btn ivory" data-go="rate">Рейтинг</button>
+            ${mode==="exam"&&canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
+            <button class="btn ghost" data-go="home">Модели</button>
+          </div>"""
+
+NEW_BTNS = """          <div style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap">
+            ${mode!=="exam"?`<button class="btn ivory" data-go="rate">Рейтинг</button><button class="btn ghost" data-go="home">Модели</button>`:(savingCloud?`<button class="btn ghost" disabled>Отправка…</button>`:(cloudVerified?`<button class="btn ivory" data-go="rate" style="font-size:18px;padding:12px 22px">Готово</button>`:`<button class="btn ghost" id="retryCloud">Повторить отправку</button>`))}
+            ${mode==="exam"&&cloudVerified&&canPractice()?`<button class="btn ghost" data-practice="all">Тренировка</button>`:""}
+            ${mode==="exam"&&cloudVerified?`<button class="btn ghost" data-go="home">Модели</button>`:""}
+          </div>"""
 
 
 def patch(text: str) -> str:
+    if "savingCloud" not in text:
+        text = text.replace(
+            "locked = false, done = false, closing = false;",
+            "locked = false, done = false, closing = false, savingCloud = false, cloudVerified = false;",
+            1,
+        )
+        text = text.replace(
+            "done=false; closing=false; answers=[];",
+            "done=false; closing=false; savingCloud=false; cloudVerified=false; answers=[];",
+        )
     if "const RELAY =" not in text:
         text = text.replace(
             "    let cloudChain = Promise.resolve();",
@@ -146,18 +184,21 @@ def patch(text: str) -> str:
     else:
         text = text.replace("    async function finish(){", CONFIRM + "\n    async function finish(){", 1)
     text = replace_fn(text, "async function finish()", FINISH)
+    if OLD_STATUS in text:
+        text = text.replace(OLD_STATUS, BANNER, 1)
+    if 'id="retryCloud"' not in text and OLD_BTNS in text:
+        text = text.replace(OLD_BTNS, NEW_BTNS, 1)
     if 'retryCloud.onclick=()=>finish()' in text:
         text = text.replace(
             'const retryCloud=document.getElementById("retryCloud");\n      if(retryCloud) retryCloud.onclick=()=>finish();\n      const copyBtn=document.getElementById("copyCode");',
             RETRY,
             1,
         )
-    elif 'id="retryCloud"' in text and "confirmCloud(rec)" not in text.split("retryCloud")[1][:400]:
-        text = text.replace(
-            'const copyBtn=document.getElementById("copyCode");',
-            RETRY,
-            1,
-        )
+    elif "unpackResult(state.lastCode" not in text:
+        if 'const copyBtn=document.getElementById("copyCode");' in text:
+            text = text.replace('const copyBtn=document.getElementById("copyCode");', RETRY, 1)
+        else:
+            text = text.replace("    function bind(){", "    function bind(){\n      " + RETRY, 1)
     return text
 
 
