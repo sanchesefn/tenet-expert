@@ -1,6 +1,11 @@
 name: rebuild-stock
 on:
   workflow_dispatch:
+  push:
+    paths:
+      - stock-part1.json
+      - stock-part2.json
+      - .github/workflows/rebuild-stock.yml
 jobs:
   rebuild:
     runs-on: ubuntu-latest
