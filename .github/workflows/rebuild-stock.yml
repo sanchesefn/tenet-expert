@@ -1,0 +1,39 @@
+name: rebuild-stock
+on:
+  workflow_dispatch:
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Merge stock-part1/part2 into stock.json
+        run: |
+          python3 << 'PY'
+          import json
+          from pathlib import Path
+          cars, seen, upd, dealer = [], set(), "", "ООО «ЭКСПЕРТ АВТО САМАРА»"
+          for name in ("stock-part1.json", "stock-part2.json"):
+              p = json.loads(Path(name).read_text(encoding="utf-8"))
+              upd = p.get("updated") or upd
+              dealer = p.get("dealer") or dealer
+              for c in p.get("cars") or []:
+                  v = c.get("vin")
+                  if v and v not in seen:
+                      seen.add(v)
+                      cars.append(c)
+          out = {"updated": upd, "dealer": dealer, "cars": cars}
+          Path("stock.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print("wrote stock.json", len(cars), upd)
+          if len(cars) < 40:
+              raise SystemExit("too few cars")
+          PY
+      - name: Commit and push stock.json
+        run: |
+          git config user.name "sanchesefn"
+          git config user.email "sanchesefn@gmail.com"
+          git add stock.json
+          git diff --staged --quiet && echo "no change" && exit 0
+          git commit -m "склад: rebuild stock.json from parts 17.09.2026 (morning)"
+          git push
