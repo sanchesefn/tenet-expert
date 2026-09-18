@@ -59,6 +59,22 @@ css = """
 .offer-eq{margin:0 0 12px;padding:0 0 0 18px;font-size:13px;line-height:1.45;}
 .offer-eq li{margin:0 0 4px;}
 .offer-eq-h{margin:12px 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.offer-step{margin:14px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.offer-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 4px}
+@media(min-width:800px){.offer-fams{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.offer-fam{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:0;overflow:hidden;text-align:left;box-shadow:var(--shadow);cursor:pointer}
+.offer-fam img{width:100%;height:78px;object-fit:cover;display:block;background:#ece8df}
+.offer-fam .txt{padding:8px 10px 10px;display:block}
+.offer-fam .txt b{display:block;font-size:13px;letter-spacing:-.02em}
+.offer-fam .txt span{display:block;margin-top:2px;font-size:11px;color:var(--muted);font-weight:600}
+.offer-fam.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
+.offer-trims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+@media(min-width:800px){.offer-trims{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.offer-trim{border:1px solid var(--border);background:var(--surface);border-radius:14px;padding:12px;text-align:left;cursor:pointer}
+.offer-trim b{display:block;font-size:13px}
+.offer-trim span{display:block;margin-top:4px;font-size:12px;color:var(--muted);font-weight:700}
+.offer-trim.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.offer-trim.on span{color:rgba(255,255,255,.82)}
 """
 
 EQUIP_CSS = """
@@ -67,6 +83,22 @@ EQUIP_CSS = """
 .offer-eq{margin:0 0 12px;padding:0 0 0 18px;font-size:13px;line-height:1.45;}
 .offer-eq li{margin:0 0 4px;}
 .offer-eq-h{margin:12px 0 4px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.offer-step{margin:14px 0 6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700;}
+.offer-fams{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0 4px}
+@media(min-width:800px){.offer-fams{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.offer-fam{border:1px solid var(--border);background:var(--surface);border-radius:16px;padding:0;overflow:hidden;text-align:left;box-shadow:var(--shadow);cursor:pointer}
+.offer-fam img{width:100%;height:78px;object-fit:cover;display:block;background:#ece8df}
+.offer-fam .txt{padding:8px 10px 10px;display:block}
+.offer-fam .txt b{display:block;font-size:13px}
+.offer-fam .txt span{display:block;margin-top:2px;font-size:11px;color:var(--muted);font-weight:600}
+.offer-fam.on{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary)}
+.offer-trims{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 12px}
+@media(min-width:800px){.offer-trims{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.offer-trim{border:1px solid var(--border);background:var(--surface);border-radius:14px;padding:12px;text-align:left;cursor:pointer}
+.offer-trim b{display:block;font-size:13px}
+.offer-trim span{display:block;margin-top:4px;font-size:12px;color:var(--muted);font-weight:700}
+.offer-trim.on{background:var(--fg);color:#fff;border-color:var(--fg)}
+.offer-trim.on span{color:rgba(255,255,255,.82)}
 """
 
 
@@ -103,87 +135,37 @@ def write_jpgs():
             print("jpg", out, out.stat().st_size)
 
 
-def bake_offer_new(text):
-    """Surgical: add pack/equip to existing offerNew without rewriting the whole block."""
-    if "const pack=typeof offerPack" not in text:
-        old_pay = (
-            '      const pay=typeof calcPay==="function"?Math.round(calcPay(out, down, months, 19.2)):0;\n'
-            "      const text=`Коммерческое предложение · новый автомобиль"
-        )
-        new_pay = (
-            '      const pay=typeof calcPay==="function"?Math.round(calcPay(out, down, months, 19.2)):0;\n'
-            '      const pack=typeof offerPack==="function"?offerPack(m.id):null;\n'
-            '      const equip=typeof offerPackText==="function"?offerPackText(pack):"";\n'
-            "      const text=`Коммерческое предложение · новый автомобиль"
-        )
-        if old_pay in text:
-            text = text.replace(old_pay, new_pay, 1)
-            print("bake pack vars")
-        else:
-            print("WARN no pay-anchor for pack vars")
-
-    if "${equip}" not in text:
-        old_line = (
-            'Ориентир платежа (Совкомбанк 19,2%): ${pay?rub(pay)+" ₽ / мес.":"—"}\n'
-            "\nПредложение действует ${valid}."
-        )
-        new_line = (
-            'Ориентир платежа (Совкомбанк 19,2%): ${pay?rub(pay)+" ₽ / мес.":"—"}\n'
-            "${equip}\n"
-            "\nПредложение действует ${valid}."
-        )
-        if old_line in text:
-            text = text.replace(old_line, new_line, 1)
-            print("bake equip in text")
-        else:
-            print("WARN no pay-line for equip text")
-
-    if 'class="card offer-equip-card"' not in text and "Лист оснащения" not in text:
-        old_end = (
-            '            <button type="button" class="btn ivory" data-offer-copy="ofTextNew">Скопировать</button>\n'
-            "          </div>\n"
-            "        </div>`;"
-        )
-        new_end = (
-            '            <button type="button" class="btn ivory" data-offer-copy="ofTextNew">Скопировать</button>\n'
-            "          </div>\n"
-            "        </div>\n"
-            '        <div class="card offer-equip-card">\n'
-            '          <p class="eyebrow">Лист оснащения</p>\n'
-            '          <h3 style="margin:0 0 10px">${escape(m.name)}</h3>\n'
-            '          ${typeof offerPackHtml==="function"?offerPackHtml(pack):""}\n'
-            "        </div>`;"
-        )
-        if old_end in text:
-            text = text.replace(old_end, new_end, 1)
-            print("bake equip card")
-        else:
-            print("WARN no card-end for equip html")
-    return text
-
-
-def inject_equip(html):
-    if "function offerPack(" in html:
-        print("equip functions already in html")
-        return html
-    if not equip:
-        print("WARN no equip source")
-        return html
-    block = equip.rstrip() + "\n"
-    if '    let offerTab = "home";' in html:
-        html = html.replace('    let offerTab = "home";', block + '    let offerTab = "home";', 1)
-        print("equip inject before offerTab")
-        return html
-    if "    function offerNew(){" in html:
-        html = html.replace("    function offerNew(){", block + "    function offerNew(){", 1)
-        print("equip inject before offerNew")
-        return html
-    print("WARN no inject anchor for equip")
-    return html
+def replace_offer_block(html, block):
+    if not block or "function offer(" not in block:
+        return html, False
+    starts = []
+    for m in (
+        "    function offerSpecOf(id){",
+        '    let offerTab = "home";',
+        "    let offerTab=\"home\";",
+    ):
+        i = html.find(m)
+        if i >= 0:
+            starts.append(i)
+    end = html.find("    function docs(){")
+    if starts and end > min(starts):
+        start = min(starts)
+        html = html[:start] + block.rstrip() + "\n" + html[end:]
+        print("replaced offer block", end - start, "->", len(block))
+        return html, True
+    if "function offer()" not in html and "    function docs(){" in html:
+        html = html.replace("    function docs(){", block.rstrip() + "\n    function docs(){", 1)
+        print("injected offer before docs")
+        return html, True
+    if "function offer()" not in html:
+        html = html.replace("</script>", block + "\n</script>", 1)
+        print("injected offer at script end")
+        return html, True
+    print("offer block already present, no replace anchor")
+    return html, False
 
 
 write_jpgs()
-fn = bake_offer_new(fn)
 
 HUB_OLD = '        ["gibdd","Г","Проверки ГИБДД","ФССП, залоги, банкроты"]'
 HUB_NEW = HUB_OLD + '\n        ,["offer","КП","Коммерческое предложение","Новый а/м, сервис и лизинг"]'
@@ -191,8 +173,10 @@ HUB_NEW = HUB_OLD + '\n        ,["offer","КП","Коммерческое пре
 NAV_OLD = 'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД"};'
 NAV_NEW = 'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД",offer:"КП"};'
 
-MAP_OLD = "const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,review,terms,calc,stock,docs,epts,duty,gibdd};"
-MAP_NEW = "const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,review,terms,calc,stock,docs,epts,duty,gibdd,offer};"
+MAP_NEEDLES = [
+    "const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,review,terms,calc,stock,docs,epts,duty,gibdd};",
+    "const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,terms,calc,stock,docs,epts,duty,gibdd};",
+]
 
 BIND_OLD = '      document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{'
 BIND_NEW = '      if(typeof offerBind==="function") offerBind();\n      document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>{'
@@ -214,29 +198,28 @@ for p in (Path("index.html"), Path("_site/index.html")):
         if "hub/offer.jpg?v=3" not in html:
             html = html.replace("</style>", css + "\n</style>", 1)
             print(p, "css inject")
-    if ".offer-equip-card{" not in html:
+    if ".offer-fams{" not in html:
         html = html.replace("</style>", EQUIP_CSS + "\n</style>", 1)
-        print(p, "equip css")
+        print(p, "fam/trim css")
     if '["offer","КП"' not in html:
         html = html.replace(HUB_OLD, HUB_NEW, 1)
         print(p, "hub card")
     html = html.replace(NAV_OLD, NAV_NEW, 1)
-    html = html.replace(MAP_OLD, MAP_NEW, 1)
+    if "duty,gibdd,offer}" not in html:
+        for old in MAP_NEEDLES:
+            if old in html:
+                html = html.replace(old, old[:-2] + ",offer};", 1)
+                print(p, "map offer")
+                break
+        else:
+            if "docs,epts,duty,gibdd};" in html:
+                html = html.replace("docs,epts,duty,gibdd};", "docs,epts,duty,gibdd,offer};", 1)
+                print(p, "map offer fallback")
     if "offerBind()" not in html:
         html = html.replace(BIND_OLD, BIND_NEW, 1)
         print(p, "bind")
 
-    html = inject_equip(html)
-    html = bake_offer_new(html)
-
-    if fn and "function offer()" not in html:
-        anchor = "    function docs(){"
-        if anchor in html:
-            html = html.replace(anchor, fn + "\n    function docs(){", 1)
-            print(p, "functions")
-        else:
-            html = html.replace("</script>", fn + "\n</script>", 1)
-            print(p, "functions at script end")
+    html, _ = replace_offer_block(html, fn)
 
     p.write_text(html, encoding="utf-8")
     print(
@@ -245,8 +228,10 @@ for p in (Path("index.html"), Path("_site/index.html")):
         p.stat().st_size,
         "pack",
         "function offerPack(" in html,
-        "equipText",
-        "${equip}" in html,
-        "card",
-        "offer-equip-card" in html,
+        "pdf",
+        "function offerPdf(" in html,
+        "fams",
+        "data-offer-fam" in html,
+        "map",
+        "duty,gibdd,offer}" in html,
     )
