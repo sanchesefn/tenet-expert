@@ -43,7 +43,6 @@
       if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
       if(r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
       if(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin))) bits.push(`<span class="st corp">Корпоративный</span>`);
-      if(r.reserved) bits.push(`<span class="st reserved">Забронирован</span>`);
       if(r.demo) bits.push(`<span class="st demo">ДЕМО</span>`);
       return bits.join(" ");
     }
@@ -51,12 +50,15 @@
       const salon=salonLabel(r.salon);
       const price=stockRrc(r);
       const meta=[r.trim, r.color, salon, r.prod].filter(Boolean).join(" · ");
-      return `<article class="st-row">
+      const reservedCls=r.reserved?" is-reserved":"";
+      const reservedBadge=r.reserved?`<span class="st reserved st-reserved-mid">Забронирован</span>`:"";
+      return `<article class="st-row${reservedCls}">
         <div>
           <b>${escape(r.name||"")}</b>
           <small>${escape(meta)}</small>
           <small class="st-vin">${escape(r.vin||"")}${r.note?" · "+escape(r.note):""}</small>
         </div>
+        ${reservedBadge}
         <div class="st-side">
           <b>${price?rub(price)+" ₽":"—"}</b>
           <div class="st-flags">${stockBadges(r)}</div>
