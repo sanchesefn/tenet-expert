@@ -619,6 +619,17 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     }
     function save(){ localStorage.setItem(KEY, JSON.stringify(state)); }
     function norm(s){ return (s||"").trim().replace(/\s+/g," ").replace(/ё/g,"е").replace(/Ё/g,"е").toLowerCase(); }
+    function staffKey(s){
+      const n=norm(s);
+      if(!n) return "";
+      if(typeof STAFF!=="undefined" && Array.isArray(STAFF) && STAFF.includes(n)) return n;
+      const parts=n.split(/[\s.,/]+/).filter(Boolean);
+      if(typeof STAFF!=="undefined" && Array.isArray(STAFF)){
+        for(const p of parts){ if(STAFF.includes(p)) return p; }
+      }
+      return n;
+    }
+
     function pinDigits(s){ return String(s||"").replace(/\D/g,""); }
     function pinEq(a,b){
       if(!a || !b) return false;
