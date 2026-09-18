@@ -6,13 +6,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -27,31 +27,12 @@ jobs:
           TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: |
-          if [ -z "$TG_BOT_TOKEN" ]; then export TG_BOT_TOKEN='8786662259:AAFqqZFGix3wU77NlplleCS4bM9eaiYle9M'; fi
-          if [ -z "$TG_CHAT_ID" ]; then export TG_CHAT_ID='1928859'; fi
           mkdir -p _site
-          if [ -f prepare_site_b.py ]; then
-            bytes=$(wc -c < prepare_site_b.py)
-            if [ "$bytes" -lt 5000 ]; then
-              curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/839cacdd1f03b1b6c04c34e811fb9d52558c3f2c/prepare_site_b.py -o prepare_site_b.py
+          if [ -f duty-fn.js ]; then
+            bytes=$(wc -c < duty-fn.js)
+            if [ "$bytes" -lt 8000 ]; then
+              curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/main/duty-fn.js -o duty-fn.js || true
             fi
-          fi
-          if [ -f terms-calc-data.js ]; then
-            bytes=$(wc -c < terms-calc-data.js)
-            if [ "$bytes" -lt 5000 ]; then
-              curl -fsSL https://raw.githubusercontent.com/sanchesefn/tenet-expert/3c546270ea6f075d4c1c84d7e4f4032a8faced33/terms-calc-data.js -o terms-calc-data.js
-            fi
-            python3 - << 'PY'
-          from pathlib import Path
-          p = Path("terms-calc-data.js")
-          t = p.read_text()
-          t = t.replace(
-              "      tbank:[12,24,36,48,60,72,84,96]\n    ];\n    const KM_BANK_RATES",
-              "      tbank:[12,24,36,48,60,72,84,96]\n    };\n    const KM_BANK_RATES",
-          )
-          p.write_text(t)
-          print("terms-calc-data bytes", p.stat().st_size)
-          PY
           fi
           if [ -f prepare_site_a.py ] && [ -f prepare_site_b.py ]; then
             cat prepare_site_a.py prepare_site_b.py > prepare_site.py
@@ -62,18 +43,29 @@ jobs:
           python3 prepare_site.py
           if [ -f patch_mpt.py ]; then python3 patch_mpt.py; fi
           if [ -f patch_fleet.py ]; then python3 patch_fleet.py; fi
+          if [ -f patch_reserved.py ]; then python3 patch_reserved.py || true; fi
           if [ -f patch_attest.py ]; then python3 patch_attest.py; fi
           if [ -f patch_css.py ]; then python3 patch_css.py; fi
           if [ -f patch_stock_src.py ]; then python3 patch_stock_src.py || true; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_cloud.py ]; then python3 patch_cloud.py; fi
           if [ -f patch_cloud_v2.py ]; then python3 patch_cloud_v2.py; fi
-          if [ -f patch_rate_fix.py ]; then python3 patch_rate_fix.py; fi
+          if [ -f patch_rate_form.py ]; then python3 patch_rate_form.py; fi
           if [ -f patch_rate_ui.py ]; then python3 patch_rate_ui.py; fi
+          if [ -f patch_rate_empty.py ]; then python3 patch_rate_empty.py || true; fi
           if [ -f patch_cloud_slim.py ]; then python3 patch_cloud_slim.py || true; fi
           if [ -f patch_km.py ]; then python3 patch_km.py; fi
+          if [ -f patch_mpt_compare.py ]; then python3 patch_mpt_compare.py; fi
+          if [ -f patch_stock_merge.py ]; then python3 patch_stock_merge.py; fi
+          if [ -f patch_offer.py ]; then python3 patch_offer.py; fi
           if [ -f patch_epts.py ]; then python3 patch_epts.py; fi
-          if [ -f patch_ops.py ]; then python3 patch_ops.py || true; fi
+          if [ -f patch_ops.py ]; then
+            bytes=$(wc -c < patch_ops.py)
+            if [ "$bytes" -lt 2000 ]; then
+              curl -fsSL https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/ef5ef532c8a4e344c3a1cdfc4222009427a7e56a/patch_ops.py -o patch_ops.py
+            fi
+            python3 patch_ops.py || true
+          fi
           if [ -f patch_hub_previews.py ]; then python3 patch_hub_previews.py || true; fi
           mkdir -p _site/cars _site/docs/prices _site/hub _site/epts
           if [ -d cars ]; then cp -f cars/*.jpg _site/cars/ 2>/dev/null || true; fi
@@ -85,8 +77,36 @@ jobs:
             cp -f docs/*.pdf docs/*.html _site/docs/ 2>/dev/null || true
             if [ -d docs/prices ]; then cp -f docs/prices/* _site/docs/prices/ 2>/dev/null || true; fi
           fi
-          python3 -c "from pathlib import Path; Path('_site').mkdir(exist_ok=True); Path('_site/index.html').write_text('<!DOCTYPE html><html lang=ru><head><meta charset=UTF-8><meta http-equiv=refresh content=\"0;url=https://tenet-expert.github.io/\"><title>TENET</title><script>location.replace(\"https://tenet-expert.github.io/\"+location.search+location.hash)</script></head><body><p><a href=https://tenet-expert.github.io/>https://tenet-expert.github.io/</a></p></body></html>')"
-
+          python3 patch_duty_vert.py
+          if grep -q 'dutyPdfOpen' index.html 2>/dev/null; then cp -f index.html _site/index.html; echo "copied root index to _site"; fi
+          if [ -f patch_stock_merge.py ]; then python3 patch_stock_merge.py; fi
+          if [ -f patch_offer.py ]; then python3 patch_offer.py; fi
+          if [ -f patch_rate_empty.py ]; then python3 patch_rate_empty.py || true; fi
+          python3 - << 'PY'
+          from pathlib import Path
+          js = Path("duty-overlay.js")
+          Path("_site").mkdir(exist_ok=True)
+          if js.exists():
+              Path("_site/duty-overlay.js").write_text(js.read_text(encoding="utf-8"), encoding="utf-8")
+          tag = '<script src="duty-overlay.js?v=d3"></script>'
+          for p in (Path("_site/index.html"), Path("index.html")):
+              if not p.exists() or p.stat().st_size < 1000:
+                  continue
+              t = p.read_text(encoding="utf-8")
+              if "duty-overlay.js" not in t:
+                  if "</body>" in t:
+                      t = t.replace("</body>", tag + "\n</body>", 1)
+                  else:
+                      t += tag
+              if "<!-- duty-vert-d3 -->" not in t:
+                  t = t.replace("<head>", "<head>\n<!-- duty-vert-d3 -->", 1)
+              p.write_text(t, encoding="utf-8")
+              print("final", p, p.stat().st_size, "open", "dutyPdfOpen" in t, "carH", "carH=198" in t)
+          PY
+          if [ -f patch_rate_empty.py ]; then python3 patch_rate_empty.py || true; fi
+          if [ -f patch_rate_avgcol.py ]; then python3 patch_rate_avgcol.py || true; fi
+          cp -f favicon.svg favicon.ico favicon-32.png apple-touch-icon.png icon-192.png icon-512.png icon-512-maskable.png manifest.webmanifest duty-overlay.js duty-fn.js _site/ 2>/dev/null || true
+          touch _site/.nojekyll
 
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -94,3 +114,15 @@ jobs:
           path: _site
       - id: deployment
         uses: actions/deploy-pages@v4
+      - name: Sync patched index to branch
+        if: github.event.head_commit.message != 'sync patched duty index'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A index.html TENET_T4L_netlify/index.html || true
+          if git diff --staged --quiet; then
+            echo "index already synced"
+          else
+            git commit -m "sync patched duty index"
+            git push || echo "git push failed"
+          fi
