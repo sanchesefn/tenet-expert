@@ -43,6 +43,7 @@
       if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
       if(r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
       if(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin))) bits.push(`<span class="st corp">Корпоративный</span>`);
+      if(r.reserved) bits.push(`<span class="st reserved">Забронирован</span>`);
       if(r.demo) bits.push(`<span class="st demo">ДЕМО</span>`);
       return bits.join(" ");
     }
