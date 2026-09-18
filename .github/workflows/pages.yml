@@ -77,7 +77,7 @@ jobs:
             cp -f docs/*.pdf docs/*.html _site/docs/ 2>/dev/null || true
             if [ -d docs/prices ]; then cp -f docs/prices/* _site/docs/prices/ 2>/dev/null || true; fi
           fi
-          python3 patch_duty_vert.py
+          if [ -f patch_duty_vert.py ]; then python3 patch_duty_vert.py || true; fi
           if grep -q 'dutyPdfOpen' index.html 2>/dev/null; then cp -f index.html _site/index.html; echo "copied root index to _site"; fi
           if [ -f patch_stock_merge.py ]; then python3 patch_stock_merge.py; fi
           if [ -f patch_offer.py ]; then python3 patch_offer.py; fi
