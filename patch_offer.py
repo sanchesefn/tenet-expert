@@ -21,23 +21,23 @@ else:
 
 css = """
 .hub-card[data-go="offer"]::before{
-  background-image:url("hub/offer.jpg?v=3");
+  background-image:url("hub/offer.jpg?v=8");
   background-position:50% 48%;
   background-size:cover;
 }
 .hub-card[data-offer-tab="new"]::before{
-  background-image:url("hub/offer-new.jpg?v=3");
+  background-image:url("hub/offer-new.jpg?v=8");
   background-position:48% 52%;
   background-size:cover;
 }
 .hub-card[data-offer-tab="service"]::before{
-  background-image:url("hub/offer-service.jpg?v=3");
+  background-image:url("hub/offer-service.jpg?v=8");
   background-position:50% 46%;
   background-size:cover;
 }
 .hub-card[data-offer-tab="lease"]::before{
-  background-image:url("hub/offer-lease.jpg?v=3");
-  background-position:50% 58%;
+  background-image:url("hub/offer-lease.jpg?v=8");
+  background-position:50% 42%;
   background-size:cover;
 }
 .offer-grid{margin-top:12px;}
@@ -186,7 +186,14 @@ for p in (Path("index.html"), Path("_site/index.html")):
         print("skip", p)
         continue
     html = p.read_text(encoding="utf-8")
-    if "hub/offer.jpg?v=3" not in html or ".offer-grid" not in html:
+    html, n_v = re.subn(
+        r"hub/(offer(?:-new|-service|-lease)?)\.jpg\?v=\d+",
+        r"hub/\1.jpg?v=8",
+        html,
+    )
+    if n_v:
+        print(p, "preview cache", n_v)
+    if "hub/offer.jpg?v=8" not in html or ".offer-grid" not in html:
         html2, n = re.subn(
             r'\.hub-card\[data-go="offer"\]::before\{[\s\S]*?background-size:cover;\n\}',
             "",
@@ -195,12 +202,12 @@ for p in (Path("index.html"), Path("_site/index.html")):
         )
         if n:
             html = html2
-        if "hub/offer.jpg?v=3" not in html:
+        if "hub/offer.jpg?v=8" not in html:
             html = html.replace("</style>", css + "\n</style>", 1)
             print(p, "css inject")
     if ".offer-fams{" not in html:
         html = html.replace("</style>", EQUIP_CSS + "\n</style>", 1)
-        print(p, "fam/trim css")
+            print(p, "fam/trim css")
     if '["offer","КП"' not in html:
         html = html.replace(HUB_OLD, HUB_NEW, 1)
         print(p, "hub card")
