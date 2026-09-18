@@ -114,6 +114,18 @@ def write_jpgs():
     for name in names:
         raw = None
         for d in dirs:
+            if not d.exists():
+                continue
+            parts = sorted(d.glob(f"{name}.jpg.b64.*"))
+            if parts:
+                blob = "".join("".join(p.read_text(encoding="ascii").split()) for p in parts)
+                try:
+                    cand_raw = base64.b64decode(blob)
+                    if cand_raw and len(cand_raw) > 1000:
+                        raw = cand_raw
+                        break
+                except Exception:
+                    pass
             for cand in (d / f"{name}.jpg.b64", d / f"{name}.b64", d / f"{name}.jpg"):
                 if cand.exists() and cand.stat().st_size > 1000:
                     if cand.name.endswith(".b64"):
