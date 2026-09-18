@@ -1,1 +1,1 @@
-17.09.2026 morning Logicstars sync — stock.json rebuilt from parts
+склад-logicstars-08 18.09.2026 cars=90 LOGIN_OK
