@@ -548,8 +548,7 @@
       "status": "in",
       "note": "В салоне · с 27.07.2026",
       "rrc": 3630000,
-      "invoice": true,
-      "prod": "08.07.2026"
+      "invoice": true
     },
     {
       "vin": "EDXGD34B5TE082040",
@@ -608,8 +607,7 @@
       "status": "in",
       "note": "В салоне · с 13.07.2026",
       "rrc": 3099000,
-      "invoice": true,
-      "prod": "23.06.2026"
+      "invoice": true
     },
     {
       "vin": "EDXGD34B2TE057953",
