@@ -111,6 +111,7 @@ jobs:
           if [ -f patch_offer.py ]; then python3 patch_offer.py || true; fi
           if [ -f patch_js_heal.py ]; then python3 patch_js_heal.py || true; fi
           if [ -f patch_offer_route.py ]; then python3 patch_offer_route.py || true; fi
+          if [ -f patch_rate_mobile.py ]; then python3 patch_rate_mobile.py || true; fi
           cp -f favicon.svg favicon.ico favicon-32.png apple-touch-icon.png icon-192.png icon-512.png icon-512-maskable.png manifest.webmanifest duty-overlay.js duty-fn.js _site/ 2>/dev/null || true
           touch _site/.nojekyll
 
