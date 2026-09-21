@@ -29,8 +29,8 @@
       ]}
     ];
     const TERMS_INV = [
-      {model:"T4L",trim:"Active",price:"2 200 нал, 2 150 ТИ"},
-      {model:"T4L",trim:"Prime",price:"2 300 нал, 2 250 ТИ"},
+      {model:"T4L",trim:"Active",price:"2 150 нал, 2 050 ТИ"},
+      {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}

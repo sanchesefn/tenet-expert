@@ -82,6 +82,7 @@
       if(id==="t4la"||id==="t4lp") return "T4L";
       if(id==="t7a"||id==="t7p"||id==="t7a4"||id==="t7p4") return "T7";
       if(id==="t8a"||id==="t8p"||id==="t8p4"||id==="t8u4") return "T8";
+      if(id==="tt9p"||id==="tt9u") return "TENET T9";
       if(id==="ta8p"||id==="ta8u") return "TENET A8";
       if(id==="t9p"||id==="t9u") return "Tiggo 9";
       if(id==="a8a"||id==="a8p"||id==="a8u") return "Arrizo 8";
@@ -135,7 +136,7 @@
       return v||def;
     }
     function kmChipGroups(active){
-      const order=["T4","T4L","T7","T8","TENET A8","Tiggo 9","Arrizo 8","Tiggo 7 L"];
+      const order=["T4","T4L","T7","T8","TENET T9","TENET A8","Tiggo 9","Arrizo 8","Tiggo 7 L"];
       const groups={};
       KM_MODELS.forEach(x=>{
         const g=kmLineOf(x.id);
