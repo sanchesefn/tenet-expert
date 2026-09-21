@@ -3,10 +3,10 @@
 from pathlib import Path
 import json, re
 
-EXTRA_CORP = ["EDXGB32B0TE110108", "EDXGB32B3TE076049"]
+EXTRA_CORP = []
 
 HELPERS = r'''    function isT8TwoWd(c){
-      if(!c) return false;
+      if(!c || c.invoice) return false;
       const vin=String(c.vin||"").toUpperCase();
       if(vin.indexOf("EDXGB32B")===0) return true;
       if(String(c.model||"").toLowerCase()!=="t8") return false;
@@ -14,8 +14,8 @@ HELPERS = r'''    function isT8TwoWd(c){
       if(t.includes("4wd")||t.includes("ультра")||t.includes("7 мест")) return false;
       return t.includes("2wd") || t.includes("актив") || t.includes("прайм") || !t;
     }
-    function carIsMpt(c){ return !!(c && (c.mpt || isT8TwoWd(c))); }
-    function carIsCorp(c){ return !!(c && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
+    function carIsMpt(c){ return !!(c && !c.invoice && (c.mpt || isT8TwoWd(c))); }
+    function carIsCorp(c){ return !!(c && !c.invoice && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
     function kmHasBrandSub(m){
       if(!m || m.id==="tt9p" || m.id==="tt9u" || m.stock==="tt9") return false;
       const f=typeof fleetOf==="function"?fleetOf(m.id):null;
@@ -23,10 +23,12 @@ HELPERS = r'''    function isT8TwoWd(c){
     }
     function kmIsCorp(vin){
       const v=String(vin||"");
-      if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
-      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
-      return !!(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp));
+      if(car && car.invoice) return false;
+      if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
+      if(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp)) return true;
+      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
+      return false;
     }
 '''
 
@@ -40,7 +42,7 @@ OLD_KM_IS_CORP = r'''    function kmIsCorp(vin){
 
 
 def is_t8_2wd(car):
-    if not car:
+    if not car or car.get("invoice"):
         return False
     vin = str(car.get("vin") or "").upper()
     if vin.startswith("EDXGB32B"):
@@ -112,6 +114,24 @@ def inject_helpers(text):
     return text, "missing"
 
 
+
+def strip_invoice_corp(text):
+    m = re.search(r"const STOCK = (\[.*?\]);", text, re.S)
+    cm = re.search(r"const CORP_VINS = new Set\(\[(.*?)\]\);", text, re.S)
+    if not m or not cm:
+        return text, 0
+    try:
+        stock = json.loads(m.group(1))
+    except Exception:
+        return text, 0
+    invoice = {x.get("vin") for x in stock if x.get("invoice") and x.get("vin")}
+    vins = re.findall(r'"([^"]+)"', cm.group(1))
+    keep = [v for v in vins if v not in invoice]
+    if keep == vins:
+        return text, 0
+    new = "const CORP_VINS = new Set([\n      " + ",\n      ".join(f'"{v}"' for v in keep) + "\n    ]);"
+    return text[: cm.start()] + new + text[cm.end() :], len(vins) - len(keep)
+
 def flag_stock(text):
     m = re.search(r"const STOCK = (\[.*?\]);", text, re.S)
     if not m:
@@ -123,7 +143,12 @@ def flag_stock(text):
         return text, 0
     n = 0
     for x in stock:
-        if is_t8_2wd(x):
+        if x.get("invoice"):
+            if x.get("mpt") or x.get("corp"):
+                n += 1
+            x["mpt"] = False
+            x["corp"] = False
+        elif is_t8_2wd(x):
             if not x.get("mpt") or not x.get("corp"):
                 n += 1
             x["mpt"] = True
@@ -133,14 +158,28 @@ def flag_stock(text):
 
 
 def patch_badges(text):
+    xor = """      if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
+      else {
+        if(typeof carIsMpt==="function"?carIsMpt(r):r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
+        if(typeof carIsCorp==="function"?carIsCorp(r):(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin)))) bits.push(`<span class="st corp">Корпоративный</span>`);
+      }"""
+    indep = """      if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
+      if(typeof carIsMpt==="function"?carIsMpt(r):r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
+      if(typeof carIsCorp==="function"?carIsCorp(r):(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin)))) bits.push(`<span class="st corp">Корпоративный</span>`);"""
+    indep_old = """      if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
+      if(r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
+      if(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin))) bits.push(`<span class="st corp">Корпоративный</span>`);"""
+    if xor in text:
+        return text, False
+    for old in (indep, indep_old):
+        if old in text:
+            return text.replace(old, xor, 1), True
     old = """      if(r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
       if(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin))) bits.push(`<span class="st corp">Корпоративный</span>`);"""
     new = """      if(typeof carIsMpt==="function"?carIsMpt(r):r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
       if(typeof carIsCorp==="function"?carIsCorp(r):(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin)))) bits.push(`<span class="st corp">Корпоративный</span>`);"""
     if old in text:
         return text.replace(old, new), True
-    if "carIsMpt(r)" in text:
-        return text, False
     return text, False
 
 
@@ -455,6 +494,8 @@ def apply_text(text, label):
     log.append("corp_vins:+" + str(n))
     text, n = flag_stock(text)
     log.append("stock_flags:" + str(n))
+    text, n = strip_invoice_corp(text)
+    log.append("corp_strip:" + str(n))
     text, ok = patch_badges(text)
     log.append("badges:" + str(ok))
     text, n = patch_side_list_tags(text)

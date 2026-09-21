@@ -3,7 +3,6 @@
       "EDXFB32B3TE091114","EDXFD32B4TE092587","EDXFD32B4TE092590",
       "EDXGB32B1TE110196","EDXGB32B8TE110275","EDXGB32B0TE089261",
       "EDXGB32B1TE104317","EDXGB32B4TE110225","EDXGB32BXTE087470",
-      "EDXGB32B3TE076049",
       "EDXGB32B0TE110108"
     ]);
     const FLEET_BFS = {
@@ -30,7 +29,7 @@
     };
     const FLEET_TI = 50000;
     function isT8TwoWd(c){
-      if(!c) return false;
+      if(!c || c.invoice) return false;
       const vin=String(c.vin||"").toUpperCase();
       if(vin.indexOf("EDXGB32B")===0) return true;
       if(String(c.model||"").toLowerCase()!=="t8") return false;
@@ -38,8 +37,8 @@
       if(t.includes("4wd")||t.includes("ультра")||t.includes("7 мест")) return false;
       return t.includes("2wd") || t.includes("актив") || t.includes("прайм") || !t;
     }
-    function carIsMpt(c){ return !!(c && (c.mpt || isT8TwoWd(c))); }
-    function carIsCorp(c){ return !!(c && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
+    function carIsMpt(c){ return !!(c && !c.invoice && (c.mpt || isT8TwoWd(c))); }
+    function carIsCorp(c){ return !!(c && !c.invoice && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
     function kmHasBrandSub(m){
       if(!m || m.id==="tt9p" || m.id==="tt9u" || m.stock==="tt9") return false;
       const f=typeof fleetOf==="function"?fleetOf(m.id):null;
@@ -47,10 +46,12 @@
     }
     function kmIsCorp(vin){
       const v=String(vin||"");
-      if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
-      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
-      return !!(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp));
+      if(car && car.invoice) return false;
+      if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
+      if(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp)) return true;
+      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
+      return false;
     }
     function stockIsDemo(c){
       if(!c) return false;
