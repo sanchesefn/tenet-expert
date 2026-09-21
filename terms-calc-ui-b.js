@@ -123,16 +123,16 @@
       const overMptOne=payMptOne*mptTerm-creditMpt;
       const banksMpt=[{id:"sovcom", name:"Совкомбанк", rate:mptRate, term:mptTerm, capped:mptTerm!==months, payMpt:payMptOne, overMpt:overMptOne}];
       const mptBreak=`<div class="mpt-break">
-                <div><span>Комплектация</span><b>${escape((fMpt&&fMpt.name)||m.name)}</b></div>
-                ${mptSample?`<div><span>На складе</span><b>${escape(mptSample.color||"—")} · ${escape(mptSample.vin||"")}</b></div>`:""}
-                <div><span>РРЦ</span><b>${rub(mptRrc)}</b></div>
-                <div><span>Флит</span><b>${rub(mptTidy)}</b></div>
-                ${useTi?`<div><span>Трейд-ин</span><b>− ${rub(tiMpt)}</b></div>`:""}
-                <div><span>${showSub?"Субсидия бренда −"+rub(subAmt):"МПТ −10%"}</span><b>${rub(priceMpt)}</b></div>
-                <div><span>Первый взнос</span><b>${rub(downMptShow)}</b></div>
-                <div><span>из них каско и Д/О</span><b>${rub(Math.min(MPT_EXTRA, downMptShow))}</b></div>
-                <div><span>ПВ в авто</span><b>${rub(downMptCar)}</b></div>
-                <div><span>Тело кредита</span><b>${rub(creditMpt)}</b></div>
+                <div class="bank-row"><span>Комплектация</span><span class="pay">${escape((fMpt&&fMpt.name)||m.name)}</span></div>
+                ${mptSample?`<div class="bank-row"><span>На складе</span><span class="pay">${escape(mptSample.color||"—")} · ${escape(mptSample.vin||"")}</span></div>`:""}
+                <div class="bank-row"><span>РРЦ</span><span class="pay">${rub(mptRrc)}</span></div>
+                <div class="bank-row"><span>Флит</span><span class="pay">${rub(mptTidy)}</span></div>
+                ${useTi?`<div class="bank-row"><span>Трейд-ин</span><span class="pay">− ${rub(tiMpt)}</span></div>`:""}
+                <div class="bank-row"><span>${showSub?"Субсидия бренда −"+rub(subAmt):"МПТ −10%"}</span><span class="pay">${rub(priceMpt)}</span></div>
+                <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(downMptShow)}</span></div>
+                <div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(Math.min(MPT_EXTRA, downMptShow))}</span></div>
+                <div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(downMptCar)}</span></div>
+                <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
               </div>`;
       const banks=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
         const look=typeof kmBankRate==="function"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};
