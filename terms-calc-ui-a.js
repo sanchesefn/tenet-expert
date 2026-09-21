@@ -144,7 +144,25 @@
       });
       return order.filter(g=>groups[g]).map(g=>`<div class="km-line"><p class="stock-h">${g}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`).join("");
     }
-    function kmSideList(m){
+    function kmPrioRecRows(cur, carPrice, downPct, months, extras){
+      const list=typeof STOCK!=="undefined"?STOCK:[];
+      const price0=Number(carPrice)|| (cur&&cur.rrc)||0;
+      const pct=Number(downPct)||20;
+      const term=Number(months)||60;
+      const extra=Number(extras)||0;
+      const refPay=typeof calcPay==="function"?calcPay(price0+extra, Math.round(price0*pct/100), term, 10):0;
+      return list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin).map(c=>{
+        const id=typeof kmIdFromCar==="function"?kmIdFromCar(c):"";
+        const mm=KM_MODELS.find(x=>x.id===id);
+        const price=mm?mm.rrc:price0;
+        const group=typeof kmRateGroup==="function"?kmRateGroup(mm||cur):"t4l_t7";
+        const look=typeof kmBankRate==="function"?kmBankRate("sber", group, term, pct):{rate:10, term};
+        const down=Math.round(price*Math.max(0,pct)/100);
+        const pay=typeof calcPay==="function"?calcPay(price+extra, down, look.term||term, look.rate):0;
+        return {c, mm, price, pay, d:Math.abs(price-price0)+Math.abs(pay-refPay)};
+      }).sort((a,b)=>a.d-b.d).slice(0,4);
+    }
+    function kmSideList(m, carPrice, downPct, months, extras){
       const cars=kmStockCars(m).slice().sort((a,b)=>{
         const pa=PRIO_VINS.has(a.vin)?0:1;
         const pb=PRIO_VINS.has(b.vin)?0:1;
@@ -152,54 +170,44 @@
         if(a.status!==b.status) return a.status==="in"?-1:1;
         return (a.color||"").localeCompare(b.color||"");
       });
-      const inn=cars.filter(c=>c.status==="in").length;
-      const way=cars.filter(c=>c.status==="way").length;
-      if(!cars.length){
-        return `<div class="card stock-side"><p class="eyebrow">Склад · ${escape(m.name)}</p><p class="lead" style="max-width:none">Нет этой комплектации в наличии и в пути.</p></div>`;
-      }
-      const block=(title, arr)=>!arr.length?"":`<p class="stock-h">${title} · ${arr.length}</p>`+arr.map(c=>{
+      const inn=cars.filter(c=>c.status==="in");
+      const way=cars.filter(c=>c.status==="way");
+      const recs=kmPrioRecRows(m, carPrice!=null?carPrice:m.rrc, downPct!=null?downPct:20, months!=null?months:60, extras||0);
+      const hereVins=new Set(cars.map(c=>c.vin));
+      const recVins=new Set(recs.map(r=>r.c.vin));
+      const recOther=recs.filter(r=>!hereVins.has(r.c.vin));
+      const carBtn=(c)=>{
         const prio=PRIO_VINS.has(c.vin);
+        const rec=recVins.has(c.vin) || prio;
         const on=kmVin===c.vin;
         const st=c.status==="in"?"в наличии":"в пути";
-        return `<button type="button" class="stock-car${prio?" prio":""}${c.mpt?" mpt":""}${on?" on":""}" data-km-vin="${escape(c.vin)}">
+        return `<button type="button" class="stock-car${prio?" prio":""}${rec?" rec":""}${(typeof carIsMpt==="function"?carIsMpt(c):c.mpt)?" mpt":""}${(typeof carIsCorp==="function"?carIsCorp(c):(c.corp||(typeof kmIsCorp==="function"&&kmIsCorp(c.vin))))?" corp":""}${c.demo?" demo":""}${on?" on":""}" data-km-vin="${escape(c.vin)}">
           <b>${escape(c.color||"—")} · ${escape(c.trim||"")}${prio?" · приоритет":""}</b>
-          ${c.mpt?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}
+          ${(typeof carIsMpt==="function"?carIsMpt(c):c.mpt)?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}${(typeof carIsCorp==="function"?carIsCorp(c):(c.corp||(typeof kmIsCorp==="function"&&kmIsCorp(c.vin))))?`<span class="mpt-tag corp-tag">Корп · лизинг</span>`:""}${c.demo?`<span class="mpt-tag demo-tag">ДЕМО</span>`:""}
           <span class="vin">${escape(c.vin)}</span>
-          <span class="stock-meta">${st}${c.invoice?" · спец инвойс":""}${c.mpt?" · МПТ":""}${c.note?" · "+escape(c.note):""}</span>
+          <span class="stock-meta">${st}${c.invoice?" · спец инвойс":""}${(typeof carIsMpt==="function"?carIsMpt(c):c.mpt)?" · МПТ":""}${(typeof carIsCorp==="function"?carIsCorp(c):c.corp)?" · корп":""}${c.demo?" · ДЕМО":""}${c.note?" · "+escape(c.note):""}</span>
         </button>`;
-      }).join("");
-      return `<div class="card stock-side">
-        <p class="eyebrow">Склад · ${escape(m.name)}</p>
-        <p class="lead" style="max-width:none;margin:0 0 10px">Только эта комплектация. В наличии ${inn} · в пути ${way}.</p>
-        ${block("В наличии", cars.filter(c=>c.status==="in"))}
-        ${block("В пути", cars.filter(c=>c.status==="way"))}
-      </div>`;
-    }
-    function kmPrioRecs(cur, carPrice, downPct, months, extras){
-      const list=typeof STOCK!=="undefined"?STOCK:[];
-      const refPay=typeof calcPay==="function"?calcPay(carPrice+extras, Math.round(carPrice*downPct/100), months, 10):0;
-      const rows=list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin).map(c=>{
-        const id=kmIdFromCar(c);
-        const mm=KM_MODELS.find(x=>x.id===id);
-        const price=mm?mm.rrc:carPrice;
-        const group=typeof kmRateGroup==="function"?kmRateGroup(mm||cur):"t4l_t7";
-        const look=typeof kmBankRate==="function"?kmBankRate("sber", group, months, downPct):{rate:10, term:months};
-        const down=Math.round(price*Math.max(0,downPct)/100);
-        const pay=calcPay(price+extras, down, look.term||months, look.rate);
-        return {c, mm, price, pay, d:Math.abs(price-carPrice)+Math.abs(pay-refPay)};
-      }).sort((a,b)=>a.d-b.d).slice(0,4);
-      if(!rows.length) return "";
-      return `<div class="card rec-box">
-        <p class="eyebrow">Рекомендуем рассмотреть</p>
-        <p class="lead" style="max-width:none;margin:0 0 10px">Приоритетные авто рядом по цене и платежу.</p>
-        ${rows.map(r=>{
+      };
+      if(!cars.length && !recOther.length){
+        return `<div class="card stock-side"><p class="eyebrow">В наличии · ${escape(m.name)}</p><p class="lead" style="max-width:none">Нет этой комплектации в наличии и в пути.</p></div>`;
+      }
+      const recBlock=!recOther.length?"":recOther.map(r=>{
           const st=r.c.status==="in"?"в наличии":"в пути";
-          return `<button type="button" class="stock-car prio rec${r.c.mpt?" mpt":""}" data-km-vin="${escape(r.c.vin)}">
+          return `<button type="button" class="stock-car prio rec${(typeof carIsMpt==="function"?carIsMpt(r.c):r.c.mpt)?" mpt":""}${(typeof carIsCorp==="function"?carIsCorp(r.c):r.c.corp)?" corp":""}" data-km-vin="${escape(r.c.vin)}">
             <b>${escape((r.mm&&r.mm.name)||r.c.name)} · ${escape(r.c.color||"—")}</b>
-            ${r.c.mpt?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}
+            ${(typeof carIsMpt==="function"?carIsMpt(r.c):r.c.mpt)?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}${(typeof carIsCorp==="function"?carIsCorp(r.c):r.c.corp)?`<span class="mpt-tag corp-tag">Корп · лизинг</span>`:""}
             <span class="vin">${escape(r.c.vin)} · ${escape(r.c.trim||"")} · ${st}</span>
             <span class="stock-meta">РРЦ ${rub(r.price)} · платёж ~${rub(Math.round(r.pay))} ₽ · приоритет</span>
           </button>`;
-        }).join("")}
+        }).join("");
+      return `<div class="card stock-side rec-box">
+        <p class="eyebrow">В наличии · ${escape(m.name)}</p>
+        <p class="lead" style="max-width:none;margin:0 0 10px">${inn.length} в салоне · ${way.length} в пути.</p>
+        ${recBlock}
+        ${inn.length?`<p class="stock-h">Эта комплектация · ${inn.length}</p>`+inn.map(c=>carBtn(c)).join(""):""}
+        ${way.length?`<p class="stock-h">В пути · ${way.length}</p>`+way.map(c=>carBtn(c)).join(""):""}
       </div>`;
+    }
+    function kmPrioRecs(cur, carPrice, downPct, months, extras){
+      return "";
     }

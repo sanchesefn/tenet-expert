@@ -41,8 +41,8 @@
       const bits=[];
       bits.push(`<span class="st ${r.status}">${(ST_LABEL&&ST_LABEL[r.status])||r.status}</span>`);
       if(r.invoice) bits.push(`<span class="st inv">Спец инвойс</span>`);
-      if(r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
-      if(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin))) bits.push(`<span class="st corp">Корпоративный</span>`);
+      if(typeof carIsMpt==="function"?carIsMpt(r):r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
+      if(typeof carIsCorp==="function"?carIsCorp(r):(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin)))) bits.push(`<span class="st corp">Корпоративный</span>`);
       if(r.demo) bits.push(`<span class="st demo">ДЕМО</span>`);
       return bits.join(" ");
     }

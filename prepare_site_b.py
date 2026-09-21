@@ -16,6 +16,12 @@ if m:
         stock=json.loads(m.group(1))
     for x in stock:
         x["mpt"]=x.get("vin") in MPT_VINS
+        _vin=str(x.get("vin") or "").upper()
+        _t=str(x.get("trim") or "").lower()
+        _mid=str(x.get("model") or "")
+        if _vin.startswith("EDXGB32B") or (_mid=="t8" and "4wd" not in _t and "ультра" not in _t and "7 мест" not in _t):
+            x["mpt"]=True
+            x["corp"]=True
         x["demo"]=x.get("vin") in DEMO_VINS
         salon=str(x.get("salon") or "")
         if "коричнев" in salon.lower().replace("ё","е"):
