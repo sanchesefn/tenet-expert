@@ -14,6 +14,7 @@ if m:
             print("stock.json loaded", len(stock), "updated", upd)
     else:
         stock=json.loads(m.group(1))
+    stock=[x for x in stock if str(x.get("vin") or "") not in DEMO_VINS and not x.get("demo")]
     for x in stock:
         x["mpt"]=x.get("vin") in MPT_VINS
         _vin=str(x.get("vin") or "").upper()
@@ -22,7 +23,6 @@ if m:
         if _vin.startswith("EDXGB32B") or (_mid=="t8" and "4wd" not in _t and "ультра" not in _t and "7 мест" not in _t):
             x["mpt"]=True
             x["corp"]=True
-        x["demo"]=x.get("vin") in DEMO_VINS
         salon=str(x.get("salon") or "")
         if "коричнев" in salon.lower().replace("ё","е"):
             x["salon"]="Brown"

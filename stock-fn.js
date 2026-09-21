@@ -37,6 +37,12 @@
       const map={t4p:2449000,t4la:2329000,t4lp:2479000,t7a:2785000,t7p:2985000,t7a4:2990000,t7p4:3190000,t8a:3099000,t8p:3299000,t8p4:3630000,t8u4:3885000,t9p:4335000,t9u:4640000,a8a:2865000,a8p:3060000,a8u:3275000,t7l:2735000};
       return map[id]||0;
     }
+    function stockIsDemo(c){
+      if(!c) return false;
+      if(c.demo) return true;
+      const v=String(c.vin||"").toUpperCase();
+      return v==="EDXGD34B2TE109064" || v==="EDXGB32B0TE110108";
+    }
     function stockBadges(r){
       const bits=[];
       bits.push(`<span class="st ${r.status}">${(ST_LABEL&&ST_LABEL[r.status])||r.status}</span>`);
@@ -68,12 +74,13 @@
     function stock(){
       if(needAuth()) return login();
       const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"11.09.2026"};
-      const list=STOCK.filter(x=>{
+      const sale=(typeof STOCK!=="undefined"?STOCK:[]).filter(x=>typeof stockIsDemo==="function"?!stockIsDemo(x):!x.demo);
+      const list=sale.filter(x=>{
         if(stockFilter!=="all" && x.model!==stockFilter) return false;
         if(stockStatus!=="all" && x.status!==stockStatus) return false;
         return true;
       });
-      const scoped=stockFilter==="all"?STOCK:STOCK.filter(x=>x.model===stockFilter);
+      const scoped=stockFilter==="all"?sale:sale.filter(x=>x.model===stockFilter);
       const nIn=scoped.filter(x=>x.status==="in").length;
       const nWay=scoped.filter(x=>x.status==="way").length;
       const byModel={};

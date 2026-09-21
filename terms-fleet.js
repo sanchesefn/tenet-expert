@@ -52,6 +52,12 @@
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
       return !!(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp));
     }
+    function stockIsDemo(c){
+      if(!c) return false;
+      if(c.demo) return true;
+      const v=String(c.vin||"").toUpperCase();
+      return v==="EDXGD34B2TE109064" || v==="EDXGB32B0TE110108";
+    }
     function fleetOf(id){
       return FLEET_BFS[id] || FLEET_BFS.t9u;
     }

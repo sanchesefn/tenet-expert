@@ -49,30 +49,30 @@ for c in cars:
     uniq.append(c)
 
 DEMO_VINS = {"EDXGD34B2TE109064", "EDXGB32B0TE110108"}
-for c in uniq:
-    c["demo"] = c.get("vin") in DEMO_VINS
+uniq = [c for c in uniq if c.get("vin") not in DEMO_VINS and not c.get("demo")]
 
 if len(uniq) < 40:
     print("skip stock inject, only", len(uniq), "cars")
     raise SystemExit(0)
 
-html_path = Path("_site/index.html")
-if not html_path.exists():
-    print("no _site/index.html")
+targets = [p for p in (Path("_site/index.html"), Path("index.html")) if p.exists()]
+if not targets:
+    print("no index.html to patch")
     raise SystemExit(0)
 
-html = html_path.read_text()
-if upd:
-    html = re.sub(
-        r"const STOCK_META = \{.*?\};",
-        "const STOCK_META = {updated:%s, dealer:\"ООО «ЭКСПЕРТ АВТО САМАРА»\"};" % json.dumps(upd, ensure_ascii=False),
-        html,
-        count=1,
-    )
-m = re.search(r"const STOCK = (\[.*?\]);", html, re.S)
-if not m:
-    print("STOCK array not found")
-    raise SystemExit(1)
-html = html[: m.start(1)] + json.dumps(uniq, ensure_ascii=False) + html[m.end(1) :]
-html_path.write_text(html)
-print("patched _site STOCK", len(uniq), "updated", upd)
+for html_path in targets:
+    html = html_path.read_text()
+    if upd:
+        html = re.sub(
+            r"const STOCK_META = \{.*?\};",
+            "const STOCK_META = {updated:%s, dealer:\"ООО «ЭКСПЕРТ АВТО САМАРА»\"};" % json.dumps(upd, ensure_ascii=False),
+            html,
+            count=1,
+        )
+    m = re.search(r"const STOCK = (\[.*?\]);", html, re.S)
+    if not m:
+        print("STOCK array not found in", html_path)
+        raise SystemExit(1)
+    html = html[: m.start(1)] + json.dumps(uniq, ensure_ascii=False) + html[m.end(1) :]
+    html_path.write_text(html)
+    print("patched", html_path, "STOCK", len(uniq), "updated", upd)

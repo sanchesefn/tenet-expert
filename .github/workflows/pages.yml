@@ -110,6 +110,7 @@ jobs:
           if [ -f restore_offer_fn.py ]; then python3 restore_offer_fn.py || true; fi
           if [ -f patch_offer.py ]; then python3 patch_offer.py || true; fi
           if [ -f patch_t8_mpt.py ]; then python3 patch_t8_mpt.py || true; fi
+          if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_js_heal.py ]; then python3 patch_js_heal.py || true; fi
           if [ -f patch_offer_route.py ]; then python3 patch_offer_route.py || true; fi
           if [ -f patch_rate_mobile.py ]; then python3 patch_rate_mobile.py || true; fi

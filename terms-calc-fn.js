@@ -402,6 +402,12 @@
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
       return !!(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp));
     }
+    function stockIsDemo(c){
+      if(!c) return false;
+      if(c.demo) return true;
+      const v=String(c.vin||"").toUpperCase();
+      return v==="EDXGD34B2TE109064" || v==="EDXGB32B0TE110108";
+    }
     function fleetOf(id){
       return FLEET_BFS[id] || FLEET_BFS.t9u;
     }
@@ -654,7 +660,7 @@
     }
     function kmStockCars(m){
       const list=typeof STOCK!=="undefined"?STOCK:[];
-      return list.filter(c=>c.model===m.stock && kmTrimFit(m,c));
+      return list.filter(c=>!(typeof stockIsDemo==="function"?stockIsDemo(c):c.demo) && c.model===m.stock && kmTrimFit(m,c));
     }
     function terms(){
       if(needAuth()) return login();
@@ -714,7 +720,7 @@
       const term=Number(months)||60;
       const extra=Number(extras)||0;
       const refPay=typeof calcPay==="function"?calcPay(price0+extra, Math.round(price0*pct/100), term, 10):0;
-      return list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin).map(c=>{
+      return list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin && !(typeof stockIsDemo==="function"?stockIsDemo(c):c.demo)).map(c=>{
         const id=typeof kmIdFromCar==="function"?kmIdFromCar(c):"";
         const mm=KM_MODELS.find(x=>x.id===id);
         const price=mm?mm.rrc:price0;
