@@ -25,9 +25,9 @@ HELPERS = r'''    function isT8TwoWd(c){
       const v=String(vin||"");
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
       if(car && car.invoice) return false;
+      if(typeof isT8TwoWd==="function" ? isT8TwoWd(car||{vin:v}) : String(v).toUpperCase().indexOf("EDXGB32B")===0) return false;
       if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
-      if(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp)) return true;
-      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
+      if(car && car.corp) return true;
       return false;
     }
 '''
@@ -486,6 +486,25 @@ def patch_sovcom(text):
     return text, False
 
 
+
+def collapse_consecutive(text, func_name):
+    pattern = rf"(    function {func_name}\([^)]*\)\{{[\s\S]*?\n    \}}\n)(?:    function {func_name}\([^)]*\)\{{[\s\S]*?\n    \}}\n)+"
+    text2, n = re.subn(pattern, r"\1", text)
+    return text2, n
+
+
+def strip_t8_from_corp(text):
+    cm = re.search(r"const CORP_VINS = new Set\(\[(.*?)\]\);", text, re.S)
+    if not cm:
+        return text, 0
+    vins = re.findall(r'"([^"]+)"', cm.group(1))
+    keep = [v for v in vins if not v.upper().startswith("EDXGB32B")]
+    if keep == vins:
+        return text, 0
+    new = "const CORP_VINS = new Set([\n      " + ",\n      ".join(f'"{v}"' for v in keep) + "\n    ]);"
+    return text[: cm.start()] + new + text[cm.end() :], len(vins) - len(keep)
+
+
 def apply_text(text, label):
     log = [label]
     text, how = inject_helpers(text)
@@ -496,6 +515,12 @@ def apply_text(text, label):
     log.append("stock_flags:" + str(n))
     text, n = strip_invoice_corp(text)
     log.append("corp_strip:" + str(n))
+    text, n = strip_t8_from_corp(text)
+    log.append("t8_corp:" + str(n))
+    text, n = collapse_consecutive(text, "fleetPayRows")
+    log.append("dedupe_fleet:" + str(n))
+    text, n = collapse_consecutive(text, "kmPrioRecRows")
+    log.append("dedupe_rec:" + str(n))
     text, ok = patch_badges(text)
     log.append("badges:" + str(ok))
     text, n = patch_side_list_tags(text)

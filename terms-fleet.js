@@ -1,9 +1,10 @@
     const CORP_VINS = new Set([
-      "EDXFB32B2TE041658","EDXFB32B4TE041659","EDXFB32B1TE087336",
-      "EDXFB32B3TE091114","EDXFD32B4TE092587","EDXFD32B4TE092590",
-      "EDXGB32B1TE110196","EDXGB32B8TE110275","EDXGB32B0TE089261",
-      "EDXGB32B1TE104317","EDXGB32B4TE110225","EDXGB32BXTE087470",
-      "EDXGB32B0TE110108"
+      "EDXFB32B2TE041658",
+      "EDXFB32B4TE041659",
+      "EDXFB32B1TE087336",
+      "EDXFB32B3TE091114",
+      "EDXFD32B4TE092587",
+      "EDXFD32B4TE092590"
     ]);
     const FLEET_BFS = {
       t9p:{name:"Tiggo 9 Prime 4WD",rrc:4335000,dealer:3895000,an:546000,client:3814800,prem:166900,km:49918,tidy:3789000,sub:241000,do:70000,casco:80000},
@@ -48,9 +49,9 @@
       const v=String(vin||"");
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===v);
       if(car && car.invoice) return false;
+      if(typeof isT8TwoWd==="function" ? isT8TwoWd(car||{vin:v}) : String(v).toUpperCase().indexOf("EDXGB32B")===0) return false;
       if(typeof CORP_VINS!=="undefined" && CORP_VINS.has(v)) return true;
-      if(car && (typeof carIsCorp==="function"?carIsCorp(car):car.corp)) return true;
-      if(v.toUpperCase().indexOf("EDXGB32B")===0) return true;
+      if(car && car.corp) return true;
       return false;
     }
     function stockIsDemo(c){

@@ -1,12 +1,21 @@
 from pathlib import Path
-p = Path("_site/index.html")
-if not p.exists():
-    print("skip fleet patch")
-else:
+import re
+
+fleet_src = Path("terms-fleet.js")
+src = fleet_src.read_text() if fleet_src.exists() else ""
+chunk = re.search(r"function fleetPayRows[\s\S]*function calcFleet\(m\)\{[\s\S]*?\n    \}\n", src) if src else None
+if not chunk and src:
+    chunk = re.search(r"function fleetCreditBox[\s\S]*function calcFleet\(m\)\{[\s\S]*?\n    \}\n", src)
+block = chunk.group(0) if chunk else ""
+
+for p in (Path("index.html"), Path("_site/index.html")):
+    if not p.exists():
+        print("skip fleet patch", p)
+        continue
     html = p.read_text()
     html = html.replace(
         '"EDEDD24BXSG010341","EDEDD24B2SG003755","EDEDD24B3SG003926",\n      "LVVDC21B0SD594112","LVVDC21B7SD594110","LVVDC21B2SDJ34062"',
-        '"EDXFB32B2TE041658","EDXFB32B4TE041659","EDXFB32B1TE087336",\n      "EDXFB32B3TE091114","EDXFD32B4TE092587","EDXFD32B4TE092590",\n      "EDXGB32B1TE110196","EDXGB32B8TE110275","EDXGB32B0TE089261",\n      "EDXGB32B1TE104317","EDXGB32B4TE110225","EDXGB32BXTE087470"'
+        '"EDXFB32B2TE041658","EDXFB32B4TE041659","EDXFB32B1TE087336",\n      "EDXFB32B3TE091114","EDXFD32B4TE092587","EDXFD32B4TE092590"'
     )
     html = html.replace(
         'const m=KM_MODELS.find(x=>x.id===kmId)||KM_MODELS[0];',
@@ -33,5 +42,17 @@ else:
         '["kmRrc","kmInv","kmUseTi"',
         '["kmRrc","kmInv","kmUseTi","kmFleetDisc","kmFleetMpt"'
     )
+    if block:
+        html2, n = re.subn(
+            r"(?:    function fleetPayRows\([^)]*\)\{[\s\S]*?\n    \}\n)*    function fleetCreditBox\([\s\S]*?    function calcFleet\(m\)\{[\s\S]*?\n    \}\n",
+            block if block.startswith("    ") else "    " + block,
+            html,
+            count=1,
+        )
+        if n:
+            html = html2
+            print(p, "fleet credit compare spliced", n)
+        else:
+            print(p, "fleet compare splice skipped")
     p.write_text(html)
-    print("fleet patched")
+    print("fleet patched", p)
