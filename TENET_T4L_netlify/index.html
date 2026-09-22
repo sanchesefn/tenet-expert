@@ -301,6 +301,22 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
   .rate-col{flex:none !important;min-width:0 !important;}
 }
 
+
+.pay-split{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+@media (min-width:720px){.pay-split{grid-template-columns:1fr 1fr;align-items:start;gap:16px}}
+.pay-col{border:1.5px solid #9bb0c7;border-radius:14px;padding:12px 14px;background:#f4f7fb;box-shadow:inset 4px 0 0 #1f4e79}
+.pay-col.std{border-color:#9bb0c7;background:#f4f7fb;box-shadow:inset 4px 0 0 #1f4e79}
+.pay-col.mpt{background:#eef6ee;border:1.5px solid #7fb084;border-style:solid;box-shadow:inset 4px 0 0 #2e7d32}
+.pay-col.sub{background:#fbf4e6;border:1.5px solid #d4a84a;border-style:solid;box-shadow:inset 4px 0 0 #c28b2a}
+.pay-col .eyebrow{margin:0 0 6px}
+.pay-col.std .eyebrow{color:#1f4e79}
+.pay-col.mpt .eyebrow{color:#1e5c24}
+.pay-col.sub .eyebrow{color:#8a5a10}
+.pay-col .bank-row{margin-top:8px}
+.pay-col.std .mpt-break{border-top-color:rgba(31,78,121,.28)}
+.pay-col.mpt .mpt-break{border-top-color:rgba(46,125,50,.32)}
+.pay-col.sub .mpt-break{border-top-color:rgba(194,139,42,.4)}
+
 </style>
 </head>
 <body>
