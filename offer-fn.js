@@ -56,6 +56,7 @@
         if(t.indexOf("прайм")>=0) return "t8p";
         return "t8a";
       }
+      if(m==="tt9") return t.indexOf("ультра")>=0?"tt9u":"tt9p";
       if(m==="t9") return t.indexOf("ультра")>=0?"t9u":"t9p";
       if(m==="a8"){
         if(t.indexOf("ультра")>=0) return "a8u";

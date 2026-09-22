@@ -23,6 +23,15 @@ if m:
         if x.get("vin")=="EDEEB31B8TE003261":
             x["model"]="t4"
             x["name"]="T4"
+        _vinu=str(x.get("vin") or "").upper()
+        if _vinu.startswith("EDEHD24"):
+            x["model"]="tt9"
+            x["name"]="T9"
+            x["invoice"]=False
+        elif _vinu.startswith("EDEDD24") or str(x.get("model") or "")=="t9":
+            x["model"]="t9"
+            if str(x.get("name") or "") in ("T9","t9","TT9","tt9") or not x.get("name"):
+                x["name"]="Tiggo 9"
         t=str(x.get("trim") or "").lower()
         mid=str(x.get("model") or "")
         rrc=None
@@ -38,7 +47,8 @@ if m:
             elif "4wd" in t: rrc=3630000
             elif "прайм" in t: rrc=3299000
             else: rrc=3099000
-        elif mid=="t9": rrc=4335000 if "прайм" in t else 4640000
+        elif mid=="tt9": rrc=3949000 if "прайм" in t else 4299000
+        elif mid=="t9": rrc=x.get("rrc") or (4335000 if "прайм" in t else 4640000)
         elif mid=="a8":
             if "ультра" in t: rrc=3275000
             elif "актив" in t: rrc=2865000
@@ -60,7 +70,13 @@ if 'id:"t4"' not in html:
         't4l: {id:"t4l", brand:"TENET", name:"T4L"',
         't4:  {id:"t4", brand:"TENET", name:"T4", rivals:"", examN:0, img:"cars/t4l.jpg"},\n      t4l: {id:"t4l", brand:"TENET", name:"T4L"'
     )
-html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!=="t7l"&&x.id!=="t4")')
+if not re.search(r'\btt9:\s*\{id:"tt9"', html):
+    html=html.replace(
+        't9:  {id:"t9", brand:"CHERY", name:"Tiggo 9"',
+        'tt9: {id:"tt9", brand:"TENET", name:"T9", rivals:"", examN:0, img:"cars/t9.jpg"},\n      t9:  {id:"t9", brand:"CHERY", name:"Tiggo 9"'
+    )
+html=html.replace('Object.values(MODELS)', 'Object.values(MODELS).filter(x=>x.id!=="t7l"&&x.id!=="t4"&&x.id!=="tt9")')
+html=html.replace('x.id!=="t7l"&&x.id!=="t4")', 'x.id!=="t7l"&&x.id!=="t4"&&x.id!=="tt9")')
 html=html.replace(
     '<p style="color:var(--muted);font-size:13px">Облако рейтинга: ${syncOk?"онлайн, все видят одни результаты":"пока не отвечает — нажмите обновить"}. <button class="btn ghost" id="syncNow">Обновить</button></p>',
     ''

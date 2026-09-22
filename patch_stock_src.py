@@ -51,6 +51,25 @@ for c in cars:
 DEMO_VINS = {"EDXGD34B2TE109064", "EDXGB32B0TE110108"}
 uniq = [c for c in uniq if c.get("vin") not in DEMO_VINS and not c.get("demo")]
 
+def classify_t9(car):
+    vin = str(car.get("vin") or "").upper()
+    t = str(car.get("trim") or "").lower()
+    if vin.startswith("EDEHD24"):
+        car["model"] = "tt9"
+        car["name"] = "T9"
+        car["invoice"] = False
+        rrc = car.get("rrc")
+        if not rrc or rrc in (4335000, 4640000, 4710000):
+            car["rrc"] = 3949000 if "прайм" in t else 4299000
+        return car
+    if vin.startswith("EDEDD24") or str(car.get("model") or "") == "t9":
+        car["model"] = "t9"
+        if str(car.get("name") or "") in ("T9", "t9", "TT9", "tt9") or not car.get("name"):
+            car["name"] = "Tiggo 9"
+    return car
+
+uniq = [classify_t9(c) for c in uniq]
+
 if len(uniq) < 40:
     print("skip stock inject, only", len(uniq), "cars")
     raise SystemExit(0)

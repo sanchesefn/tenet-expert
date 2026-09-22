@@ -12,7 +12,7 @@
       ["EDELB31","t4l"],["EDEEB31","t4l"],
       ["EDEFB32","t7"],["EDXFB32","t7"],["EDEFD32","t7"],["EDXFD32","t7"],
       ["EDXGB32","t8"],["EDXGD34","t8"],
-      ["EDEDD24","t9"],
+      ["EDEHD24","tt9"],["EDEDD24","t9"],
       ["LVVDC21","a8"]
     ];
     function eptsCleanVin(v){
@@ -63,6 +63,7 @@
       if(id==="t4l") return "TENET Т4L";
       if(id==="t7") return "TENET Т7";
       if(id==="t8") return "TENET Т8";
+      if(id==="tt9") return "TENET T9";
       if(id==="t9") return "CHERY Tiggo 9";
       if(id==="a8") return "CHERY Arrizo 8";
       const m=MODELS[id];

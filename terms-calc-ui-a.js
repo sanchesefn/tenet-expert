@@ -44,6 +44,8 @@
       if(id==="t8p") return t.includes("прайм") && !t.includes("4wd");
       if(id==="t8p4") return t.includes("прайм") && t.includes("4wd");
       if(id==="t8u4") return t.includes("ультра");
+      if(id==="tt9p") return t.includes("прайм");
+      if(id==="tt9u") return t.includes("ультра");
       if(id==="t9p") return t.includes("прайм");
       if(id==="t9u") return t.includes("ультра");
       if(id==="a8a") return t.includes("актив");
@@ -68,6 +70,7 @@
         if(t.includes("прайм")) return "t8p";
         return "t8a";
       }
+      if(car.model==="tt9" || String(car.vin||"").toUpperCase().indexOf("EDEHD24")===0) return t.includes("прайм")?"tt9p":"tt9u";
       if(car.model==="t9") return t.includes("прайм")?"t9p":"t9u";
       if(car.model==="a8"){
         if(t.includes("ультра")) return "a8u";
