@@ -3,8 +3,8 @@
 from pathlib import Path
 
 DATA = '''    const PANGO_FIX = {
-      t4la:{cash:2150000,ti:2050000},
-      t4lp:{cash:2250000,ti:2200000},
+      t4la:{cash:2200000,ti:2150000},
+      t4lp:{cash:2300000,ti:2250000},
       t7p:{cash:2550000,ti:2450000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}
@@ -125,7 +125,7 @@ def patch_text(text, path):
         if "const PANGO_FIX" not in text and "const TERMS_PRIO" in text:
             text = text.replace("    const TERMS_PRIO = [", DATA + "    const TERMS_PRIO = [", 1)
             n += 1
-        if "PANGO · 17,4%" not in text and RET in text:
+        if "PANGO · 17,4%" not in text and "pShow=" not in text and "Спеццена · PANGO" not in text and RET in text:
             text = text.replace(RET, PANGO_JS + RET, 1)
             n += 1
     if name.endswith(".html") or name.endswith(".css"):

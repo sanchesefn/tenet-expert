@@ -84,6 +84,15 @@
   .km-layout.km-3 > .km-disc{grid-column:auto}
   body:has(.km-layout.km-3) .wrap{max-width:1360px}
 }
+@media(min-width:900px) and (max-width:1399px){
+  .km-layout.km-4{grid-template-columns:1fr 1fr 1fr;align-items:start;gap:14px}
+  .km-layout.km-4 > .km-disc{grid-column:1 / -1}
+}
+@media(min-width:1400px){
+  .km-layout.km-4{grid-template-columns:minmax(200px,.56fr) minmax(230px,1fr) minmax(230px,1fr) minmax(250px,1.08fr);align-items:start;gap:14px}
+  .km-layout.km-4 > .km-disc{grid-column:auto}
+  body:has(.km-layout.km-4) .wrap{max-width:1600px}
+}
 
 .pay-col.pango{background:#f6f3fb;border:1.5px solid #b79bc7;box-shadow:inset 4px 0 0 #6a3d86}
 .pay-col.pango .eyebrow{color:#5b2d7a}

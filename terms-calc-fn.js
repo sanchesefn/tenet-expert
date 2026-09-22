@@ -1,4 +1,4 @@
-    const TERMS_DATE = "21.09.2026";
+    const TERMS_DATE = "22.09.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -32,15 +32,15 @@
       ]}
     ];
     const TERMS_INV = [
-      {model:"T4L",trim:"Active",price:"2 150 нал, 2 050 ТИ"},
-      {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
+      {model:"T4L",trim:"Active",price:"2 200 нал, 2 150 ТИ"},
+      {model:"T4L",trim:"Prime",price:"2 300 нал, 2 250 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}
     ];
     const PANGO_FIX = {
-      t4la:{cash:2150000,ti:2050000},
-      t4lp:{cash:2250000,ti:2200000},
+      t4la:{cash:2200000,ti:2150000},
+      t4lp:{cash:2300000,ti:2250000},
       t7p:{cash:2550000,ti:2450000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}
@@ -493,10 +493,7 @@
                 <div class="bank-row"><span>В кредит ещё Д/О + каско + комиссия</span><span class="pay">${rub(extras)}</span></div>
                 <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditReg)}</span></div>
               </div>`;
-      return `<div class="note-box" style="margin-top:12px">
-        <p class="eyebrow" style="margin:0 0 6px">Сравнение · стандартный кредит и ${isSub?"субсидия бренда":"МПТ"}</p>
-        <p class="calc-note">Одинаковые ПВ и срок. Слева — обычный кредит. Справа — ${isSub?"субсидия бренда (AQ)":"эта МПТ"}.</p>
-        <p class="eyebrow" style="margin-top:8px">Первый взнос</p>
+      const inputs=`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
         <div class="down-mode">
           <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
           <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
@@ -505,23 +502,57 @@
         ${downMode==="sum"
           ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
           :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
-        <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены МПТ</p>
-        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
-        <div class="pay-split">
-          <div class="pay-col">
+        <p class="calc-note">${rub(down)} ₽ · ${downPct}% · одинаковые ПВ и срок для обоих расчётов</p>
+        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`;
+      const stdCol=`<div class="pay-col std km-pay">
             <p class="eyebrow">Стандартный кредит</p>
-            <p class="calc-note">ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
+            <p class="calc-note">Та же комплектация без флита. ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
             ${fleetPayRows(banks,"pay","over",months)}
             ${regBreak}
-          </div>
-          <div class="pay-col mpt">
-            <p class="eyebrow">${headLabel}</p>
+          </div>`;
+      const altCol=`<div class="pay-col ${isSub?"sub":"mpt"} km-pay">
+            <p class="eyebrow">${isSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+            <p class="calc-note">${isSub?"Машина не проходит под МПТ. Это не стандартный кредит: сначала флит, затем субсидия бренда (AQ), Совкомбанк 19,2%.":"МПТ −10% от флита. Совкомбанк 19,2%."}</p>
+            ${mptBreak}
             <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
             ${fleetPayRows(banksMpt,"payMpt","overMpt",months)}
-            ${mptBreak}
-          </div>
-        </div>
-      </div>`;
+          </div>`;
+      let pangoCol="";
+      const _pgF=(m && typeof pangoOf==="function")?pangoOf(m.id):null;
+      if(_pgF){
+        const pFix=useTi?_pgF.ti:_pgF.cash;
+        const pDownP=Math.max(0, Math.min(pFix, down));
+        const pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
+        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
+        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
+        const pYears=months/12;
+        const pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
+        const yNum=Number(pYearsLabel);
+        const pYearsWord=(yNum===1)?"год":(yNum>1&&yNum<5&&Math.abs(yNum-Math.round(yNum))<0.05?"года":"лет");
+        const pBase=Math.max(0, pFix-pDownP)+pBundle;
+        const pNss=Math.round(pBase*pNssRate*pYears);
+        const pCreditB=pBase+pNss;
+        const pPayA=typeof calcPay==="function"?calcPay(pBase+pDownP, pDownP, months, pRateA):0;
+        const pPayB=typeof calcPay==="function"?calcPay(pCreditB+pDownP, pDownP, months, pRateB):0;
+        const pOverA=pPayA*months-pBase;
+        const pOverB=pPayB*months-pCreditB;
+        pangoCol=`<div class="pay-col pango km-pay">
+            <p class="eyebrow">Спеццена · PANGO</p>
+            <p class="calc-note">Если машина по спеццене. Фикс ${useTi?"с трейд-ин":"без трейд-ин"} ${rub(pFix)}. Каско + GAP + ДМС ${rub(pBundle)} всегда в кредите.</p>
+            <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
+            <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
+            <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
+            <p class="eyebrow" style="margin-top:10px">17,4% без комиссий</p>
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
+            <p class="eyebrow" style="margin-top:10px">14,4% · НСС в теле</p>
+            <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
+            <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pPayB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
+          </div>`;
+      }
+      return {inputs, stdCol, altCol, pangoCol};
     }
     function calcFleet(m){
       const f=fleetOf(m.id);
@@ -543,9 +574,9 @@
       const subCut=f.sub||0;
       const fleetBox=(useMpt||useSub)?fleetCreditBox(price, m, f, useFleet, useTi, useMpt?"mpt":"sub"):null;
       return banner("Калькулятор","Флит · BFS Совкомбанк лизинг","TENET")+`
-        <p class="lead">${fleetBox?(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ."):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
+        <p class="lead">${fleetBox?(fleetBox.pangoCol?"Три расчёта рядом: стандартный кредит, "+(useSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ.")):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
         ${kmChipGroups(m.id)}
-        <div class="km-layout${fleetBox?" km-3":""}">
+        <div class="km-layout${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
           <div class="card km-disc">
             <p class="eyebrow">BFS Совкомбанк лизинг · ${escape(f.name)}</p>
             ${car?`<p class="calc-note">${escape(car.vin)} · ${escape(car.color||"")} · ${escape(car.trim||"")}${carMpt?" · МПТ":""}${carIsCorp(car)?" · корп":""}</p>`:""}
@@ -562,7 +593,7 @@
             </div>
             ${fleetBox?fleetBox.inputs:""}
           </div>
-          ${fleetBox?fleetBox.stdCol+fleetBox.altCol:""}
+          ${fleetBox?fleetBox.stdCol+fleetBox.altCol+(fleetBox.pangoCol||""):""}
         </div>
         <div class="card">
               <p class="eyebrow">Лист «Флит» BFS</p>
@@ -881,7 +912,9 @@
       const ok=kmK+0.05>=lo && kmK-0.05<=hi;
       const price=Math.round(carPrice);
       const fee=typeof KM_BANK_FEE==="number"?KM_BANK_FEE:30000;
-      const extras=useLoan?(addons+(pack||0)+fee):0;
+      const _pgTrim=(typeof pangoOf==="function")?pangoOf(m.id):null;
+      if(_pgTrim && !useLoan) pack=150000;
+      const extras=(useLoan||_pgTrim)?(addons+(pack||0)+fee):0;
       const downMode=kmStr("cDownMode","pct");
       const months=kmVal("cMonths", 60);
       let downPct=kmVal("cDownPct", 20);
@@ -949,90 +982,41 @@
           return `<div class="bank-row"><span><b>${escape(b.name)}</b><br/><small>${b.rate}% · ${note} · переплата ~${rub(over)}</small></span><span class="pay">${rub(pay)} ₽</span></div>`;
         }).join("");
       }
-      const _pg=(selected && selected.invoice && typeof pangoOf==="function")?pangoOf(m.id):null;
+      const _pg=(typeof pangoOf==="function")?pangoOf(m.id):null;
+      const pShow=!!(_pg && (showMpt || showSub || canSub));
+      let pFix=0, pDownP=0, pBundle=150000, pBase=0, pCreditB=0, pRateA=17.4, pRateB=14.4, pNss=0, pPayA=0, pPayB=0, pOverA=0, pOverB=0, pYears=0, pYearsLabel="0", pYearsWord="лет", pKm=km, pKmK=kmK, pOk=ok, pDiscount=0, pTiBack=0, pCard=0, pBonus=0, pMargin=0, pIron=0;
       if(_pg){
-        const pFix=useTi?_pg.ti:_pg.cash;
-        const pPctWant=downMode==="pct"?Math.max(0, downPct):(pFix>0?Math.round(down*1000/pFix)/10:0);
-        let pDown=downMode==="pct"?Math.round(pFix*pPctWant/100):down;
-        pDown=Math.max(0, Math.min(pFix, pDown));
-        const pPct=pFix>0?Math.round(pDown*1000/pFix)/10:0;
-        const pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
-        const pCredit=Math.max(0, pFix-pDown)+pBundle;
-        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
-        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        pFix=useTi?_pg.ti:_pg.cash;
+        pDownP=Math.max(0, Math.min(pFix, down));
+        pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
+        pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
+        pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
         const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
-        const pPayA=calcPay(pFix+pBundle, pDown, months, pRateA);
-        const pPayB=calcPay(pFix+pBundle, pDown, months, pRateB);
-        const pNss=Math.round(pCredit*pNssRate);
-        const pOverA=pPayA*months-pCredit;
-        const pOverB=pPayB*months-pCredit;
-        const pDiscount=Math.max(0, rrc-pFix);
-        const pTiBack=useTi?(m.tiBack||0):0;
-        const pCasco=80000, pCard=Math.max(0, pBundle-pCasco);
-        const pBonus=invoice>0?(invoice/m.vat)*m.bonus:0;
-        const pMargin=rrc-invoice;
-        const pIron=pMargin-pDiscount+pTiBack+pBonus*1.2;
-        const pKm=(pCasco*0.3+pCard*0.8+pIron)/m.vat-pFix*m.fee;
-        const pKmK=pKm/1000;
-        const pOk=pKmK+0.05>=lo && pKmK-0.05<=hi;
-        return banner("Калькулятор","Спеццена · PANGO","TENET")+`
-        <p class="lead">Фикс: без трейд-ин ${rub(_pg.cash)}, с трейд-ин ${rub(_pg.ti)}. Кредит PANGO всегда включает каско, GAP и ДМС банка ${rub(pBundle)} и считается по двум ставкам.</p>
-        ${kmChipGroups(m.id)}
-        <div class="km-layout km-3">
-          <div class="card km-disc">
-            <p class="eyebrow">Спеццена · ${escape(m.name)}</p>
-            ${selected?`<p class="calc-note">${escape(selected.vin)} · ${escape(selected.color||"")} · ${escape(selected.trim||"")}</p>`:""}
-            <label class="check-row"><input id="kmUseTi" type="checkbox" ${useTi?"checked":""} /> <span>Трейд-ин · ${rub(_pg.ti)} вместо ${rub(_pg.cash)}</span></label>
-            <div class="note-box" style="margin-top:14px">
-              <p class="eyebrow" style="margin:0 0 6px">${useTi?"Цена с трейд-ин":"Цена без трейд-ин"}</p>
-              ${rrc>pFix?`<div class="calc-out" style="text-decoration:line-through;opacity:.42;margin-bottom:2px">${rub(rrc)} ₽</div>`:""}
-              <div class="calc-out">${rub(pFix)} ₽</div>
-              <p class="calc-note">Другая цена: ${useTi?rub(_pg.cash)+" без трейд-ин":rub(_pg.ti)+" с трейд-ин"}. Скидки ДЦ и спецпредложение сверху не ставятся.</p>
-            </div>
-            <p class="eyebrow" style="margin-top:12px">Первый взнос</p>
-            <div class="down-mode">
-              <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
-              <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
-            </div>
-            <input type="hidden" id="cDownMode" value="${downMode==="sum"?"sum":"pct"}" />
-            ${downMode==="sum"
-              ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${pDown}" /></label>`
-              :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${pPct}" /></label>`}
-            <p class="calc-note">${rub(pDown)} ₽ · ${pPct}% от спеццены. В тело кредита сверху ${rub(pBundle)}.</p>
-            <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
-          </div>
-          <div class="pay-col pango km-pay">
-            <p class="eyebrow">PANGO · 17,4%</p>
-            <p class="calc-note">Без дополнительных комиссий.</p>
-            <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
-            <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDown)}</span></div>
-            <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
-            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pCredit)}</span></div>
-            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
-          </div>
-          <div class="pay-col pango-nss km-pay">
-            <p class="eyebrow">PANGO · 14,4% · НСС</p>
-            <p class="calc-note">Назначь свою ставку. НСС ${rub(pNss)} — 0,89% от тела кредита, разово, в платёж не входит.</p>
-            <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
-            <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDown)}</span></div>
-            <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
-            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pCredit)}</span></div>
-            <div class="bank-row"><span>НСС 0,89%</span><span class="pay">${rub(pNss)}</span></div>
-            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
-          </div>
-        </div>
-        ${kmSideList(m, pFix, pPct, months, pBundle)}
-        <div class="card dc-result ${pOk?"ok":"bad"}">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС · спеццена</p>
-          <div class="calc-out">${rub(Math.round(pKm))} ₽</div>
-          <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${pKmK.toFixed(1)} тыс. · ${pOk?"в коридоре":"вне коридора"}</p>
-          <div class="note-box">Цена авто <b>${rub(pFix)} ₽</b> · скидка от РРЦ ${rub(pDiscount)}<br/>Маржа 1С ${rub(Math.round(pMargin))} · бонус ${rub(Math.round(pBonus))} · доход на железе ${rub(Math.round(pIron))}<br/>Каско 80 000 + GAP/ДМС ${rub(pCard)} внутри PANGO${useTi?" · возмещение трейд-ин "+rub(pTiBack):""}${prio?" · приоритет":""}</div>
-        </div>`;
+        pYears=months/12;
+        pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
+        const yNum=Number(pYearsLabel);
+        pYearsWord=(yNum===1)?"год":(yNum>1&&yNum<5&&Math.abs(yNum-Math.round(yNum))<0.05?"года":"лет");
+        pBase=Math.max(0, pFix-pDownP)+pBundle;
+        pNss=Math.round(pBase*pNssRate*pYears);
+        pCreditB=pBase+pNss;
+        pPayA=calcPay(pBase+pDownP, pDownP, months, pRateA);
+        pPayB=calcPay(pCreditB+pDownP, pDownP, months, pRateB);
+        pOverA=pPayA*months-pBase;
+        pOverB=pPayB*months-pCreditB;
+        pDiscount=Math.max(0, rrc-pFix);
+        pTiBack=useTi?(m.tiBack||0):0;
+        const pCasco=80000; pCard=Math.max(0, pBundle-pCasco);
+        pBonus=invoice>0?(invoice/m.vat)*m.bonus:0;
+        pMargin=rrc-invoice;
+        pIron=pMargin-pDiscount+pTiBack+pBonus*1.2;
+        pKm=(pCasco*0.3+pCard*0.8+pIron)/m.vat-pFix*m.fee;
+        pKmK=pKm/1000;
+        pOk=pKmK+0.05>=lo && pKmK-0.05<=hi;
       }
       return banner("Калькулятор","КМ и платёж · база "+TERMS_DATE,"TENET")+`
-        <p class="lead">Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит».</p>
+        <p class="lead">${pShow?"Три расчёта рядом: стандартный кредит, "+(showSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":"Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит»."}</p>
         ${kmChipGroups(m.id)}
-        <div class="km-layout${useLoan&&showSplit?" km-3":""}">
+        <div class="km-layout${pShow?" km-4":useLoan&&showSplit?" km-3":""}">
           <div class="card km-disc">
             <p class="eyebrow">Калькулятор КМ · ${escape(m.name)}</p>
             <label class="field" style="max-width:none;margin-top:8px"><span>РРЦ, ₽ · из условий ${TERMS_DATE}</span><input id="kmRrc" inputmode="numeric" value="${rrc}" /></label>
@@ -1052,11 +1036,12 @@
               <div class="calc-out">${rub(Math.round(client))} ₽</div>
               <p class="calc-note">Авто ${rub(Math.round(carPrice))} + Д/О ${rub(Math.round(addons))}. Каско не входит.${discount?` Скидка ${rub(Math.round(discount))}.`:""}</p>
             </div>
+            ${_pg?`<div class="note-box">Спеццена ${rub(_pg.cash)} без трейд-ин · ${rub(_pg.ti)} с трейд-ин. ${(selected&&selected.invoice)?"Этот VIN по спеццене — блок PANGO.":"Блок PANGO — спеццена для сравнения."}</div>`:""}
             ${useLoan
               ?`<label class="field" style="max-width:none"><span>Каско расширенное, ₽</span><input id="kmPack" inputmode="numeric" value="${pack}" /></label>`
               :`<label class="field" style="max-width:none"><span>КАСКО, ₽</span><input id="kmCasco" inputmode="numeric" value="${casco}" /></label>`}
             ${prio?`<div class="note-box">Приоритетный VIN ${escape(kmVin)}. Коридор ${lo} … ${hi} тыс.</div>`:""}
-            ${useLoan?`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
+            ${useLoan||pShow?`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
               <div class="down-mode">
                 <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
                 <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
@@ -1068,7 +1053,7 @@
               <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub)?` · ${showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
               <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`:""}
           </div>
-          ${useLoan&&showSplit?`
+          ${(useLoan&&showSplit)||pShow?`
           <div class="pay-col std km-pay">
             <p class="eyebrow">Стандартный кредит</p>
             <p class="calc-note">ПВ ${rub(down)} · тело ${rub(credit)}</p>
@@ -1084,7 +1069,21 @@
             :`<p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
             ${kmPayRows(banksMpt,"payMpt","overMpt")}
             ${mptBreak}`}
-          </div>`:`<div class="km-right">
+          </div>
+          ${pShow?`<div class="pay-col pango km-pay">
+            <p class="eyebrow">Спеццена · PANGO</p>
+            <p class="calc-note">${selected&&selected.invoice?"Этот VIN по спеццене.":"Если машина по спеццене."} Фикс ${useTi?"с трейд-ин":"без трейд-ин"} ${rub(pFix)}. Каско + GAP + ДМС ${rub(pBundle)} всегда в кредите.</p>
+            <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
+            <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
+            <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
+            <p class="eyebrow" style="margin-top:10px">17,4% без комиссий</p>
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
+            <p class="eyebrow" style="margin-top:10px">14,4% · НСС в теле</p>
+            <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
+            <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
+          </div>`:""}`: `<div class="km-right">
             ${useLoan?`<div class="card">
               <p class="eyebrow">Кредит · ${escape(m.name)}</p>
               <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.${pickMpt?" Выбран VIN с меткой МПТ.":""}</p>
@@ -1099,12 +1098,12 @@
             ${kmSideList(m, price, downPct, months, extras)}
           </div>`}
         </div>
-        ${useLoan&&showSplit?kmSideList(m, price, downPct, months, extras):""}
-        <div class="card dc-result ${ok?"ok":"bad"}">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС</p>
-          <div class="calc-out">${rub(Math.round(km))} ₽</div>
-          <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${kmK.toFixed(1)} тыс. · ${ok?"в коридоре":"вне коридора"}</p>
-          <div class="note-box">Цена авто <b>${rub(Math.round(carPrice))} ₽</b> · клиенту с Д/О <b>${rub(Math.round(client))} ₽</b><br/>Скидка ${rub(Math.round(discount))} · маржа 1С ${rub(Math.round(margin))}<br/>Бонус ${rub(Math.round(bonus))} (${Math.round(m.bonus*100)}%) · доход на железе ${rub(Math.round(iron))}<br/>НДС ${m.vat===1.22?"22%":"20%"} · сбор ${Math.round(m.fee*100)}% от цены авто${prio?" · приоритет":""}</div>
+        ${(useLoan&&showSplit)||pShow?kmSideList(m, price, downPct, months, extras):""}
+        <div class="card dc-result ${(selected&&selected.invoice&&_pg?pOk:ok)?"ok":"bad"}">
+          <p class="eyebrow">Доходность ДЦ · КМ без НДС${selected&&selected.invoice&&_pg?" · спеццена":""}</p>
+          <div class="calc-out">${rub(Math.round(selected&&selected.invoice&&_pg?pKm:km))} ₽</div>
+          <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${(selected&&selected.invoice&&_pg?pKmK:kmK).toFixed(1)} тыс. · ${(selected&&selected.invoice&&_pg?pOk:ok)?"в коридоре":"вне коридора"}</p>
+          <div class="note-box">${selected&&selected.invoice&&_pg?`Спеццена <b>${rub(pFix)} ₽</b> · скидка от РРЦ ${rub(pDiscount)}<br/>Маржа 1С ${rub(Math.round(pMargin))} · бонус ${rub(Math.round(pBonus))} · доход на железе ${rub(Math.round(pIron))}<br/>Каско 80 000 + GAP/ДМС ${rub(pCard)} внутри PANGO${useTi?" · возмещение трейд-ин "+rub(pTiBack):""}`:`Цена авто <b>${rub(Math.round(carPrice))} ₽</b> · клиенту с Д/О <b>${rub(Math.round(client))} ₽</b><br/>Скидка ${rub(Math.round(discount))} · маржа 1С ${rub(Math.round(margin))}<br/>Бонус ${rub(Math.round(bonus))} (${Math.round(m.bonus*100)}%) · доход на железе ${rub(Math.round(iron))}<br/>НДС ${m.vat===1.22?"22%":"20%"} · сбор ${Math.round(m.fee*100)}% от цены авто${prio?" · приоритет":""}`}</div>
         </div>`;
     }
     function calc(){

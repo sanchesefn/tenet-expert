@@ -131,10 +131,7 @@
                 <div class="bank-row"><span>В кредит ещё Д/О + каско + комиссия</span><span class="pay">${rub(extras)}</span></div>
                 <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditReg)}</span></div>
               </div>`;
-      return `<div class="note-box" style="margin-top:12px">
-        <p class="eyebrow" style="margin:0 0 6px">Сравнение · стандартный кредит и ${isSub?"субсидия бренда":"МПТ"}</p>
-        <p class="calc-note">Одинаковые ПВ и срок. Слева — обычный кредит. Справа — ${isSub?"субсидия бренда (AQ)":"эта МПТ"}.</p>
-        <p class="eyebrow" style="margin-top:8px">Первый взнос</p>
+      const inputs=`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
         <div class="down-mode">
           <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
           <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
@@ -143,23 +140,57 @@
         ${downMode==="sum"
           ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
           :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
-        <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены МПТ</p>
-        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
-        <div class="pay-split">
-          <div class="pay-col">
+        <p class="calc-note">${rub(down)} ₽ · ${downPct}% · одинаковые ПВ и срок для обоих расчётов</p>
+        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`;
+      const stdCol=`<div class="pay-col std km-pay">
             <p class="eyebrow">Стандартный кредит</p>
-            <p class="calc-note">ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
+            <p class="calc-note">Та же комплектация без флита. ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
             ${fleetPayRows(banks,"pay","over",months)}
             ${regBreak}
-          </div>
-          <div class="pay-col mpt">
-            <p class="eyebrow">${headLabel}</p>
+          </div>`;
+      const altCol=`<div class="pay-col ${isSub?"sub":"mpt"} km-pay">
+            <p class="eyebrow">${isSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+            <p class="calc-note">${isSub?"Машина не проходит под МПТ. Это не стандартный кредит: сначала флит, затем субсидия бренда (AQ), Совкомбанк 19,2%.":"МПТ −10% от флита. Совкомбанк 19,2%."}</p>
+            ${mptBreak}
             <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
             ${fleetPayRows(banksMpt,"payMpt","overMpt",months)}
-            ${mptBreak}
-          </div>
-        </div>
-      </div>`;
+          </div>`;
+      let pangoCol="";
+      const _pgF=(m && typeof pangoOf==="function")?pangoOf(m.id):null;
+      if(_pgF){
+        const pFix=useTi?_pgF.ti:_pgF.cash;
+        const pDownP=Math.max(0, Math.min(pFix, down));
+        const pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
+        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
+        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
+        const pYears=months/12;
+        const pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
+        const yNum=Number(pYearsLabel);
+        const pYearsWord=(yNum===1)?"год":(yNum>1&&yNum<5&&Math.abs(yNum-Math.round(yNum))<0.05?"года":"лет");
+        const pBase=Math.max(0, pFix-pDownP)+pBundle;
+        const pNss=Math.round(pBase*pNssRate*pYears);
+        const pCreditB=pBase+pNss;
+        const pPayA=typeof calcPay==="function"?calcPay(pBase+pDownP, pDownP, months, pRateA):0;
+        const pPayB=typeof calcPay==="function"?calcPay(pCreditB+pDownP, pDownP, months, pRateB):0;
+        const pOverA=pPayA*months-pBase;
+        const pOverB=pPayB*months-pCreditB;
+        pangoCol=`<div class="pay-col pango km-pay">
+            <p class="eyebrow">Спеццена · PANGO</p>
+            <p class="calc-note">Если машина по спеццене. Фикс ${useTi?"с трейд-ин":"без трейд-ин"} ${rub(pFix)}. Каско + GAP + ДМС ${rub(pBundle)} всегда в кредите.</p>
+            <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
+            <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
+            <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
+            <p class="eyebrow" style="margin-top:10px">17,4% без комиссий</p>
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
+            <p class="eyebrow" style="margin-top:10px">14,4% · НСС в теле</p>
+            <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
+            <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
+            <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pPayB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
+          </div>`;
+      }
+      return {inputs, stdCol, altCol, pangoCol};
     }
     function calcFleet(m){
       const f=fleetOf(m.id);
@@ -181,9 +212,9 @@
       const subCut=f.sub||0;
       const fleetBox=(useMpt||useSub)?fleetCreditBox(price, m, f, useFleet, useTi, useMpt?"mpt":"sub"):null;
       return banner("Калькулятор","Флит · BFS Совкомбанк лизинг","TENET")+`
-        <p class="lead">${fleetBox?(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ."):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
+        <p class="lead">${fleetBox?(fleetBox.pangoCol?"Три расчёта рядом: стандартный кредит, "+(useSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ.")):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
         ${kmChipGroups(m.id)}
-        <div class="km-layout${fleetBox?" km-3":""}">
+        <div class="km-layout${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
           <div class="card km-disc">
             <p class="eyebrow">BFS Совкомбанк лизинг · ${escape(f.name)}</p>
             ${car?`<p class="calc-note">${escape(car.vin)} · ${escape(car.color||"")} · ${escape(car.trim||"")}${carMpt?" · МПТ":""}${carIsCorp(car)?" · корп":""}</p>`:""}
@@ -200,7 +231,7 @@
             </div>
             ${fleetBox?fleetBox.inputs:""}
           </div>
-          ${fleetBox?fleetBox.stdCol+fleetBox.altCol:""}
+          ${fleetBox?fleetBox.stdCol+fleetBox.altCol+(fleetBox.pangoCol||""):""}
         </div>
         <div class="card">
               <p class="eyebrow">Лист «Флит» BFS</p>
