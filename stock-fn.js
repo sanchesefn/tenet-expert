@@ -61,7 +61,7 @@
       const meta=[r.trim, r.color, salon, r.prod].filter(Boolean).join(" · ");
       const reservedCls=r.reserved?" is-reserved":"";
       const reservedBadge=r.reserved?`<span class="st reserved st-reserved-mid">Забронирован</span>`:"";
-      return `<article class="st-row${reservedCls}">
+      return `<article class="st-row${reservedCls}${r.invoice?" is-invoice":""}">
         <div>
           <b>${escape(r.name||"")}</b>
           <small>${escape(meta)}</small>

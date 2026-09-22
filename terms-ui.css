@@ -15,6 +15,17 @@
 .bank-row b{font-size:14px}
 .bank-row .pay{font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
 .stock-car.mpt{border-color:#2e7d32;background:#e8f5e9}
+.stock-car.invoice{border-color:#c81e2b;background:#fdecee}
+.stock-car.invoice.on{border-color:#9a1b28;box-shadow:0 0 0 1px #9a1b28}
+.inv-tag{color:#9a1b28}
+.st-row.is-invoice{background:#fdecee}
+.calc-more{margin-top:8px;border-top:1px dashed rgba(109,90,62,.28);padding-top:4px}
+.calc-more summary{cursor:pointer;font-size:13px;font-weight:700;color:#6d5a3e;min-height:44px;display:flex;align-items:center;list-style:none}
+.calc-more summary::-webkit-details-marker{display:none}
+.calc-more summary:before{content:"▸  ";color:#9a1b28}
+.calc-more[open] summary:before{content:"▾  "}
+.pay-col.pango .bank-row.pay-top .pay,.pay-col.mpt .bank-row:first-of-type .pay,.pay-col.sub .bank-row:first-of-type .pay{font-size:22px;line-height:1.1}
+
 .stock-car.mpt .mpt-tag,.mpt-tag{display:block;color:#1b5e20;font-weight:700;font-size:12px;margin:4px 0 2px}
 .rec-box .stock-car{width:100%;text-align:left;margin:0 0 8px}
 .term-group .term-row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;margin-top:8px}
