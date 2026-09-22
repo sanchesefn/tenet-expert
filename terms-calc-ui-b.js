@@ -153,8 +153,8 @@
       return banner("Калькулятор","КМ и платёж · база "+TERMS_DATE,"TENET")+`
         <p class="lead">Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит».</p>
         ${kmChipGroups(m.id)}
-        <div class="km-layout">
-          <div class="card">
+        <div class="km-layout${useLoan&&showSplit?" km-3":""}">
+          <div class="card km-disc">
             <p class="eyebrow">Калькулятор КМ · ${escape(m.name)}</p>
             <label class="field" style="max-width:none;margin-top:8px"><span>РРЦ, ₽ · из условий ${TERMS_DATE}</span><input id="kmRrc" inputmode="numeric" value="${rrc}" /></label>
             <label class="field" style="max-width:none"><span>Сумма счёта, ₽ · из условий ${TERMS_DATE}</span><input id="kmInv" inputmode="numeric" value="${invoice}" /></label>
@@ -177,12 +177,7 @@
               ?`<label class="field" style="max-width:none"><span>Каско расширенное, ₽</span><input id="kmPack" inputmode="numeric" value="${pack}" /></label>`
               :`<label class="field" style="max-width:none"><span>КАСКО, ₽</span><input id="kmCasco" inputmode="numeric" value="${casco}" /></label>`}
             ${prio?`<div class="note-box">Приоритетный VIN ${escape(kmVin)}. Коридор ${lo} … ${hi} тыс.</div>`:""}
-          </div>
-          <div class="km-right">
-            ${useLoan?`<div class="card">
-              <p class="eyebrow">Кредит · ${escape(m.name)}</p>
-              <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.${showSplit?(showSub?" Сравнение: стандартный кредит и субсидия бренда.":" Сравнение: стандартный кредит и МПТ рядом."):""}${pickMpt?" Выбран VIN с меткой МПТ.":""}</p>
-              <p class="eyebrow" style="margin-top:12px">Первый взнос</p>
+            ${useLoan?`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
               <div class="down-mode">
                 <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
                 <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
@@ -192,31 +187,36 @@
                 ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
                 :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
               <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub)?` · ${showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
-              <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
-              ${showSplit?`<div class="pay-split">
-                <div class="pay-col">
-                  <p class="eyebrow">Стандартный кредит</p>
-                  <p class="calc-note">ПВ ${rub(down)} · тело ${rub(credit)}</p>
-                  ${kmPayRows(banks,"pay","over")}
-                </div>
-                <div class="pay-col mpt">
-                  <p class="eyebrow">${showSub?"Субсидия бренда · Совкомбанк 19,2%":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
-                  <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
-                  ${kmPayRows(banksMpt,"payMpt","overMpt")}
-                  ${mptBreak}
-                </div>
-              </div>`
-              :showMpt||showSub?`<p class="eyebrow" style="margin-top:16px">${showSub?"Субсидия бренда · Совкомбанк 19,2%":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+              <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`:""}
+          </div>
+          ${useLoan&&showSplit?`
+          <div class="pay-col std km-pay">
+            <p class="eyebrow">Стандартный кредит</p>
+            <p class="calc-note">ПВ ${rub(down)} · тело ${rub(credit)}</p>
+            ${kmPayRows(banks,"pay","over")}
+            <p class="calc-note">Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
+          </div>
+          <div class="pay-col ${showSub?"sub":"mpt"} km-pay">
+            <p class="eyebrow">${showSub?"Субсидия бренда · Совкомбанк 19,2%":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+            <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
+            ${kmPayRows(banksMpt,"payMpt","overMpt")}
+            ${mptBreak}
+          </div>`:`<div class="km-right">
+            ${useLoan?`<div class="card">
+              <p class="eyebrow">Кредит · ${escape(m.name)}</p>
+              <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.${pickMpt?" Выбран VIN с меткой МПТ.":""}</p>
+              ${showMpt||showSub?`<p class="eyebrow" style="margin-top:16px">${showSub?"Субсидия бренда · Совкомбанк 19,2%":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
               <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О · тело ${rub(creditMpt)}</p>
               ${kmPayRows(banksMpt,"payMpt","overMpt")}
               ${mptBreak}`
               :`<p class="eyebrow" style="margin-top:16px">Платёж в месяц</p>
               ${kmPayRows(banks,"pay","over")}`}
-              <p class="calc-note">${showMpt&&!showSplit?"МПТ. ":showSub&&!showSplit?"Субсидия бренда. ":""}Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
+              <p class="calc-note">${showMpt?"МПТ. ":showSub?"Субсидия бренда. ":""}Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
             </div>`:`<div class="card"><p class="eyebrow">Кредит</p><p class="lead" style="max-width:none">Включите галочку «Кредит», чтобы открыть расчёт платежа${hasMpt?" и сравнение с МПТ":canSub?" и сравнение с субсидией бренда":""}.</p></div>`}
             ${kmSideList(m, price, downPct, months, extras)}
-          </div>
+          </div>`}
         </div>
+        ${useLoan&&showSplit?kmSideList(m, price, downPct, months, extras):""}
         <div class="card dc-result ${ok?"ok":"bad"}">
           <p class="eyebrow">Доходность ДЦ · КМ без НДС</p>
           <div class="calc-out">${rub(Math.round(km))} ₽</div>

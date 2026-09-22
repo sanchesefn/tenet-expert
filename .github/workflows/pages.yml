@@ -116,6 +116,7 @@ jobs:
           if [ -f patch_km_dccr.py ]; then python3 patch_km_dccr.py || true; fi
           if [ -f patch_mpt_break.py ]; then python3 patch_mpt_break.py || true; fi
           if [ -f patch_mpt_split.py ]; then python3 patch_mpt_split.py || true; fi
+          if [ -f patch_km_3col.py ]; then python3 patch_km_3col.py || true; fi
           if [ -f patch_tt9.py ]; then python3 patch_tt9.py || true; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_js_heal.py ]; then python3 patch_js_heal.py || true; fi
