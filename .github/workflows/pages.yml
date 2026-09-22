@@ -59,6 +59,7 @@ jobs:
           if [ -f patch_mpt_compare.py ]; then python3 patch_mpt_compare.py; fi
           if [ -f patch_stock_merge.py ]; then python3 patch_stock_merge.py; fi
           if [ -f patch_offer.py ]; then python3 patch_offer.py; fi
+          if [ -f patch_offer_fmt.py ]; then python3 patch_offer_fmt.py || true; fi
           if [ -f patch_epts.py ]; then python3 patch_epts.py; fi
           if [ -f patch_ops.py ]; then
             bytes=$(wc -c < patch_ops.py)
@@ -83,6 +84,7 @@ jobs:
           if [ -f patch_stock_merge.py ]; then python3 patch_stock_merge.py; fi
           if [ -f restore_offer_fn.py ]; then python3 restore_offer_fn.py || true; fi
           if [ -f patch_offer.py ]; then python3 patch_offer.py; fi
+          if [ -f patch_offer_fmt.py ]; then python3 patch_offer_fmt.py || true; fi
           if [ -f patch_rate_empty.py ]; then python3 patch_rate_empty.py || true; fi
           python3 - << 'PY'
           from pathlib import Path
@@ -109,6 +111,7 @@ jobs:
           if [ -f patch_rate_avgcol.py ]; then python3 patch_rate_avgcol.py || true; fi
           if [ -f restore_offer_fn.py ]; then python3 restore_offer_fn.py || true; fi
           if [ -f patch_offer.py ]; then python3 patch_offer.py || true; fi
+          if [ -f patch_offer_fmt.py ]; then python3 patch_offer_fmt.py || true; fi
           if [ -f patch_t8_mpt.py ]; then python3 patch_t8_mpt.py || true; fi
           if [ -f patch_km_dccr.py ]; then python3 patch_km_dccr.py || true; fi
           if [ -f patch_mpt_break.py ]; then python3 patch_mpt_break.py || true; fi
