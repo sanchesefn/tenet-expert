@@ -23,7 +23,6 @@
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 4299000,
-      "invoice": false,
       "salon": "Brown"
     },
     {
@@ -187,6 +186,106 @@
       "rrc": 2329000
     },
     {
+      "vin": "EDELB31B1TE118873",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B6TE120277",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Красный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B4TE118754",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B2TE119918",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B9TE116241",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDEFB32B0TE120559",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDELB31B9TE113744",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDEFB32B8TE120504",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32B1TE120652",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32B9TE120835",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Голубой",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2985000
+    },
+    {
       "vin": "EDXGD34B7TE034443",
       "model": "t8",
       "name": "T8",
@@ -241,9 +340,9 @@
       "status": "in",
       "note": "В салоне · с 07.09.2026",
       "rrc": 2985000,
+      "salon": "Brown",
       "mpt": true,
-      "corp": true,
-      "salon": "Brown"
+      "corp": true
     },
     {
       "vin": "EDXFB32B3TE091114",
@@ -385,8 +484,7 @@
       "color": "Белый",
       "status": "in",
       "note": "В салоне · с 21.09.2026",
-      "rrc": 4299000,
-      "invoice": false
+      "rrc": 4299000
     },
     {
       "vin": "EDEDD24BXSG010341",
@@ -482,7 +580,8 @@
       "status": "in",
       "note": "В салоне · с 31.08.2026",
       "rrc": 2785000,
-      "prod": "26.08.2026"
+      "prod": "26.08.2026",
+      "reserved": true
     },
     {
       "vin": "EDEFB32B2TE105500",
