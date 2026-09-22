@@ -38,6 +38,18 @@
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}
     ];
+    const PANGO_FIX = {
+      t4la:{cash:2150000,ti:2050000},
+      t4lp:{cash:2250000,ti:2200000},
+      t7p:{cash:2550000,ti:2450000},
+      t8p4:{cash:3100000,ti:3000000},
+      t8u4:{cash:3300000,ti:3200000}
+    };
+    const PANGO_BUNDLE = 150000;
+    const PANGO_RATE_A = 17.4;
+    const PANGO_RATE_B = 14.4;
+    const PANGO_NSS = 0.0089;
+    function pangoOf(id){ return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null; }
     const TERMS_PRIO = [
       {model:"T4",vin:"EDEED31B1SE053704",trim:"Prime 4WD",year:"2025",color:"Белый",extra:"Сидоров",pay:500,bonus:1000,sold:true,seller:"Сидоров"},
       {model:"T7",vin:"EDXFB32B4TE041659",trim:"Active",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:1000},

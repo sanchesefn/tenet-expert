@@ -84,3 +84,8 @@
   .km-layout.km-3 > .km-disc{grid-column:auto}
   body:has(.km-layout.km-3) .wrap{max-width:1360px}
 }
+
+.pay-col.pango{background:#f6f3fb;border:1.5px solid #b79bc7;box-shadow:inset 4px 0 0 #6a3d86}
+.pay-col.pango .eyebrow{color:#5b2d7a}
+.pay-col.pango-nss{background:#fdecee;border:1.5px solid #e3a0a8;box-shadow:inset 4px 0 0 #c81e2b}
+.pay-col.pango-nss .eyebrow{color:#9a1b28}
