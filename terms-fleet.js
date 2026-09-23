@@ -249,10 +249,12 @@
                 : (useSub?`<div class="bank-row"><span>Субсидия бренда AQ</span><span class="pay">${rub(subCut)} ₽</span></div>`:`<div class="bank-row"><span>Субсидия TENET</span><span class="pay">${rub(f.sub||0)} ₽</span></div>`)}
               <p class="calc-note">${useMpt?"На цену действует МПТ −10%, не субсидия бренда.":useSub?"Порядок: флит скидка → трейд-ин → субсидия бренда (AQ). МПТ и субсидия не суммируются.":"Порядок: флит скидка → трейд-ин."}</p>
             </div>
-        ${kmSideList(m)}
-        <div class="card dc-result ok">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС · флит BFS</p>
-          <div class="calc-out">${rub(f.km)} ₽</div>
-          <p class="calc-note">КМ с листа «Флит», блок BFS. Пауза банка, ориентир 21.09.</p>
+        <div class="km-bottom">
+          <div class="card dc-result ok">
+            <p class="eyebrow">Доходность ДЦ · КМ без НДС · флит BFS</p>
+            <div class="calc-out">${rub(f.km)} ₽</div>
+            <p class="calc-note">КМ с листа «Флит», блок BFS. Пауза банка, ориентир 21.09.</p>
+          </div>
+          ${kmSideList(m)}
         </div>`;
     }
