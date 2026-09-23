@@ -3,8 +3,8 @@
 from pathlib import Path
 
 DATA = '''    const PANGO_FIX = {
-      t4la:{cash:2200000,ti:2150000},
-      t4lp:{cash:2300000,ti:2250000},
+      t4la:{cash:2150000,ti:2100000},
+      t4lp:{cash:2250000,ti:2200000},
       t7p:{cash:2550000,ti:2450000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}

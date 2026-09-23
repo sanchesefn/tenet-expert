@@ -32,15 +32,15 @@
       ]}
     ];
     const TERMS_INV = [
-      {model:"T4L",trim:"Active",price:"2 200 нал, 2 150 ТИ"},
-      {model:"T4L",trim:"Prime",price:"2 300 нал, 2 250 ТИ"},
+      {model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"},
+      {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}
     ];
     const PANGO_FIX = {
-      t4la:{cash:2200000,ti:2150000},
-      t4lp:{cash:2300000,ti:2250000},
+      t4la:{cash:2150000,ti:2100000},
+      t4lp:{cash:2250000,ti:2200000},
       t7p:{cash:2550000,ti:2450000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}

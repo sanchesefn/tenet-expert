@@ -4,11 +4,15 @@ from pathlib import Path
 
 OLD_PRICES = [
     ('{model:"T4L",trim:"Active",price:"2 150 нал, 2 050 ТИ"}',
-     '{model:"T4L",trim:"Active",price:"2 200 нал, 2 150 ТИ"}'),
-    ('{model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"}',
-     '{model:"T4L",trim:"Prime",price:"2 300 нал, 2 250 ТИ"}'),
-    ("t4la:{cash:2150000,ti:2050000}", "t4la:{cash:2200000,ti:2150000}"),
-    ("t4lp:{cash:2250000,ti:2200000}", "t4lp:{cash:2300000,ti:2250000}"),
+     '{model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"}'),
+    ('{model:"T4L",trim:"Active",price:"2 200 нал, 2 150 ТИ"}',
+     '{model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"}'),
+    ('{model:"T4L",trim:"Prime",price:"2 300 нал, 2 250 ТИ"}',
+     '{model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"}'),
+    ("t4la:{cash:2150000,ti:2050000}", "t4la:{cash:2150000,ti:2100000}"),
+    ("t4la:{cash:2200000,ti:2150000}", "t4la:{cash:2150000,ti:2100000}"),
+    ("t4lp:{cash:2300000,ti:2250000}", "t4lp:{cash:2250000,ti:2200000}"),
+    ('const TERMS_DATE = "21.09.2026"', 'const TERMS_DATE = "22.09.2026"'),
 ]
 
 MATH = r'''      const _pg=(typeof pangoOf==="function")?pangoOf(m.id):null;
