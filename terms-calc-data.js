@@ -1,1 +1,1 @@
-@/workspace/terms-calc-data.js
+FILE_CONTENT_PLACEHOLDER_DO_NOT_COMMIT
