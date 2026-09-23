@@ -225,7 +225,6 @@
         <p class="lead">${fleetBox?(fleetBox.pangoCol?"Три расчёта рядом: стандартный кредит, "+(useSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ.")):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
         <div class="km-stage${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
         <div class="km-chips">${kmChipGroups(m.id)}</div>
-        ${fleetBox?fleetBox.inputs:""}
         <div class="km-layout${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
           <div class="card km-disc">
             <p class="eyebrow">BFS Совкомбанк лизинг · ${escape(f.name)}</p>
@@ -242,7 +241,7 @@
               <p class="calc-note">${steps.length?steps.join(" → "):"Базовая цена без скидок."}${useFleet?" · AP без тюнинга "+rub(f.tidy):""}</p>
             </div>
           </div>
-          ${fleetBox?fleetBox.stdCol+fleetBox.altCol+(fleetBox.pangoCol||""):""}
+          ${fleetBox?`<div class="km-credit">${fleetBox.inputs}<div class="km-pays">${fleetBox.stdCol}${fleetBox.altCol}${fleetBox.pangoCol||""}</div></div>`:""}
         </div>
         </div>
         <div class="card">
