@@ -122,6 +122,7 @@ jobs:
           if [ -f patch_pango_cmp.py ]; then python3 patch_pango_cmp.py || true; fi
           if [ -f patch_calc_fold.py ]; then python3 patch_calc_fold.py || true; fi
           if [ -f patch_km_row.py ]; then python3 patch_km_row.py || true; fi
+          if [ -f patch_km_pv.py ]; then python3 patch_km_pv.py || true; fi
           if [ -f patch_tt9.py ]; then python3 patch_tt9.py || true; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_js_heal.py ]; then python3 patch_js_heal.py || true; fi

@@ -107,6 +107,27 @@
   .km-bottom .stock-side{max-height:min(72vh,720px)}
 }
 
+.km-pv{padding:12px 14px}
+.km-pv .eyebrow{margin:0 0 8px}
+.km-pv-row{display:grid;grid-template-columns:auto minmax(140px,1fr) minmax(110px,150px);gap:10px 14px;align-items:end}
+.km-pv .down-mode{margin:0}
+.km-pv label.field{max-width:none;margin:0}
+.km-pv .calc-note{margin:8px 0 0}
+@media(max-width:720px){
+  .km-pv-row{grid-template-columns:1fr}
+}
+@media(min-width:1100px){
+  .km-stage.km-4,.km-stage.km-3{display:grid;align-items:start}
+  .km-stage.km-4{grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
+  .km-stage.km-3{grid-template-columns:minmax(220px,.7fr) minmax(300px,1.2fr) minmax(300px,1.2fr);gap:16px}
+  .km-stage.km-4 > .km-chips,.km-stage.km-3 > .km-chips{grid-column:1 / -1;grid-row:1;min-width:0}
+  .km-stage.km-4 > .km-pv,.km-stage.km-3 > .km-pv{grid-column:2 / -1;grid-row:1;align-self:end;z-index:2;min-width:0}
+  .km-stage.km-4 > .km-chips .km-line:nth-last-child(-n+3){max-width:calc((100% - 42px) / 4)}
+  .km-stage.km-3 > .km-chips .km-line:nth-last-child(-n+3){max-width:calc((100% - 32px) * 0.226)}
+  .km-stage > .km-layout{grid-column:1 / -1;grid-row:2;margin-top:0}
+}
+
+
 .pay-col.pango{background:#f6f3fb;border:1.5px solid #b79bc7;box-shadow:inset 4px 0 0 #6a3d86}
 .pay-col.pango .eyebrow{color:#5b2d7a}
 .pay-col.pango-nss{background:#fdecee;border:1.5px solid #e3a0a8;box-shadow:inset 4px 0 0 #c81e2b}

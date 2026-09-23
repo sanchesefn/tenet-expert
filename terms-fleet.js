@@ -131,17 +131,21 @@
                 <div class="bank-row"><span>В кредит ещё Д/О + каско + комиссия</span><span class="pay">${rub(extras)}</span></div>
                 <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditReg)}</span></div>
               </div>`;
-      const inputs=`<p class="eyebrow" style="margin-top:12px">Первый взнос</p>
-        <div class="down-mode">
-          <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
-          <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
+      const inputs=`<div class="card km-pv">
+        <p class="eyebrow">Первый взнос</p>
+        <div class="km-pv-row">
+          <div class="down-mode">
+            <button type="button" class="chip ${downMode==="sum"?"on":""}" data-down-mode="sum">Сумма, ₽</button>
+            <button type="button" class="chip ${downMode!=="sum"?"on":""}" data-down-mode="pct">Проценты</button>
+          </div>
+          ${downMode==="sum"
+            ?`<label class="field"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
+            :`<label class="field"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
+          <label class="field"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
         </div>
         <input type="hidden" id="cDownMode" value="${downMode==="sum"?"sum":"pct"}" />
-        ${downMode==="sum"
-          ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
-          :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
         <p class="calc-note">${rub(down)} ₽ · ${downPct}% · одинаковые ПВ и срок для обоих расчётов</p>
-        <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`;
+      </div>`;
       const stdCol=`<div class="pay-col std km-pay">
             <p class="eyebrow">Стандартный кредит</p>
             <p class="calc-note">Та же комплектация без флита. ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
@@ -219,7 +223,9 @@
       const fleetBox=(useMpt||useSub)?fleetCreditBox(price, m, f, useFleet, useTi, useMpt?"mpt":"sub"):null;
       return banner("Калькулятор","Флит · BFS Совкомбанк лизинг","TENET")+`
         <p class="lead">${fleetBox?(fleetBox.pangoCol?"Три расчёта рядом: стандартный кредит, "+(useSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":(useSub?"Три блока: скидки флита, стандартный кредит той же комплектации и справа флит с субсидией бренда — машина не под МПТ.":"Три блока: скидки флита, стандартный кредит и МПТ.")):"Корпоративный VIN. Сбер / Альфа / Т-Банк на этот VIN нельзя."}</p>
-        ${kmChipGroups(m.id)}
+        <div class="km-stage${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
+        <div class="km-chips">${kmChipGroups(m.id)}</div>
+        ${fleetBox?fleetBox.inputs:""}
         <div class="km-layout${fleetBox?(fleetBox.pangoCol?" km-4":" km-3"):""}">
           <div class="card km-disc">
             <p class="eyebrow">BFS Совкомбанк лизинг · ${escape(f.name)}</p>
@@ -235,9 +241,9 @@
               <div class="calc-out">${rub(Math.round(price))} ₽</div>
               <p class="calc-note">${steps.length?steps.join(" → "):"Базовая цена без скидок."}${useFleet?" · AP без тюнинга "+rub(f.tidy):""}</p>
             </div>
-            ${fleetBox?fleetBox.inputs:""}
           </div>
           ${fleetBox?fleetBox.stdCol+fleetBox.altCol+(fleetBox.pangoCol||""):""}
+        </div>
         </div>
         <div class="card">
               <p class="eyebrow">Лист «Флит» BFS</p>
