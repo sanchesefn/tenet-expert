@@ -1,0 +1,36 @@
+name: sync-stock-from-live
+on:
+  workflow_dispatch:
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pull stock files from live site repo
+        run: |
+          set -e
+          BASE="https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/main"
+          for f in stock.json stock-part1.json stock-part2.json; do
+            curl -fsSL "$BASE/$f" -o "$f"
+            # reject stub / tiny
+            sz=$(wc -c < "$f")
+            echo "$f size=$sz"
+            test "$sz" -gt 1000
+            python3 -c "import json; d=json.load(open('$f')); assert d.get('updated')=='23.09.2026'; d; print('$f', 'cars', len(d.get('cars',[])))"
+          done
+      - name: Commit and push
+        run: |
+          git config user.name "tenet-expert-bot"
+          git config user.email "bot@tenet-expert.github.io"
+          git add stock.json stock-part1.json stock-part2.json
+          git diff --staged --quiet && echo "no change" && exit 0
+          git commit -m "склад: утро 23.09.2026 Logicstars sync (118 авто) — mirror from live"
+          for i in 1 2 3 4 5; do
+            git pull --rebase origin main && git push && exit 0
+            echo "push retry $i"; sleep 3
+          done
+          exit 1
