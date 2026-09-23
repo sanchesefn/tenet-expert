@@ -13,14 +13,14 @@ jobs:
       - name: Pull stock files from live site repo
         run: |
           set -e
-          BASE="https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/main"
+          # Pin to rebuild commit (raw main may CDN-cache stub briefly)
+          BASE="https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/82cf8b00e8f4914bf8336510dbdf930be19e8b42"
           for f in stock.json stock-part1.json stock-part2.json; do
             curl -fsSL "$BASE/$f" -o "$f"
-            # reject stub / tiny
             sz=$(wc -c < "$f")
             echo "$f size=$sz"
             test "$sz" -gt 1000
-            python3 -c "import json; d=json.load(open('$f')); assert d.get('updated')=='23.09.2026'; d; print('$f', 'cars', len(d.get('cars',[])))"
+            python3 -c "import json; d=json.load(open('$f')); assert d.get('updated')=='23.09.2026', d; print('$f', 'cars', len(d.get('cars',[])))"
           done
       - name: Commit and push
         run: |
