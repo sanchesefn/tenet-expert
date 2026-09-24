@@ -673,6 +673,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
     let qDeadline = 0;
     let stockFilter = "all";
     let stockStatus = "all";
+    let stockSort = "trim";
+    let stockSortDir = 1;
+    let stockOpen = {};
 
     function load(){
       try { return Object.assign({surname:"",display:"",model:"t4l",history:[],locks:{},unlock:{},seenStudy:{},seenTrain:{},runs:{}}, JSON.parse(localStorage.getItem(KEY)||"{}")); }
@@ -1790,6 +1793,13 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
       });
       document.querySelectorAll("[data-stock]").forEach(b=>b.onclick=()=>{ stockFilter=b.dataset.stock; render(); });
       document.querySelectorAll("[data-stock-st]").forEach(b=>b.onclick=()=>{ stockStatus=b.dataset.stockSt; render(); });
+      document.querySelectorAll("[data-stock-sort]").forEach(b=>b.onclick=()=>{
+        const key=b.dataset.stockSort;
+        if(stockSort===key) stockSortDir=stockSortDir===1?-1:1;
+        else { stockSort=key; stockSortDir=(key==="year")?-1:1; }
+        render();
+      });
+      document.querySelectorAll("details[data-acc]").forEach(d=>{ d.ontoggle=()=>{ stockOpen[d.dataset.acc]=d.open; }; });
       const cPreset=document.getElementById("cPreset");
       if(cPreset) cPreset.onchange=()=>{
         const p=Number(cPreset.value)||0;

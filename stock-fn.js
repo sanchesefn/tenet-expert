@@ -56,10 +56,63 @@
       if(r.demo) bits.push(`<span class="st demo">ДЕМО</span>`);
       return bits.join(" ");
     }
+    function stockYear(c){
+      const code=(String(c&&c.vin||"")[9]||"").toUpperCase();
+      const vinYear={A:2010,B:2011,C:2012,D:2013,E:2014,F:2015,G:2016,H:2017,J:2018,K:2019,L:2020,M:2021,N:2022,P:2023,R:2024,S:2025,T:2026,V:2027,W:2028,X:2029,Y:2030};
+      if(vinYear[code]) return vinYear[code];
+      const prod=String(c&&c.prod||"");
+      const m=prod.match(/(20\d{2})/);
+      return m?Number(m[1]):0;
+    }
+    function stockTrimRank(t){
+      const s=String(t||"").toLowerCase();
+      let r=50;
+      if(s.includes("актив")||s.includes("active")) r=10;
+      else if(s.includes("прайм")||s.includes("prime")) r=20;
+      else if(s.includes("ультра")||s.includes("ultra")) r=30;
+      if(s.includes("4wd")) r+=3;
+      else if(s.includes("2wd")) r+=1;
+      if(s.includes("7 мест")) r+=1;
+      return r;
+    }
+    function stockCmp(a,b){
+      const dir=(typeof stockSortDir==="number"?stockSortDir:1)||1;
+      const key=(typeof stockSort==="string"&&stockSort)||"trim";
+      let d=0;
+      if(key==="price") d=stockRrc(a)-stockRrc(b);
+      else if(key==="color") d=String(a.color||"").localeCompare(String(b.color||""),"ru");
+      else if(key==="year") d=stockYear(a)-stockYear(b);
+      else d=stockTrimRank(a.trim)-stockTrimRank(b.trim)||String(a.trim||"").localeCompare(String(b.trim||""),"ru");
+      if(!d) d=String(a.color||"").localeCompare(String(b.color||""),"ru");
+      if(!d) d=String(a.vin||"").localeCompare(String(b.vin||""));
+      return d*dir;
+    }
+    function stockTrimGroups(rows){
+      const map={};
+      rows.forEach(r=>{
+        const t=String(r.trim||"").trim()||"Без комплектации";
+        (map[t]=map[t]||[]).push(r);
+      });
+      const groups=Object.keys(map).map(trim=>({trim, rows:map[trim].slice().sort(stockCmp)}));
+      const dir=(typeof stockSortDir==="number"?stockSortDir:1)||1;
+      const key=(typeof stockSort==="string"&&stockSort)||"trim";
+      groups.sort((A,B)=>{
+        if(key==="price") return (Math.min.apply(null,A.rows.map(stockRrc))-Math.min.apply(null,B.rows.map(stockRrc)))*dir;
+        if(key==="year") return (Math.max.apply(null,A.rows.map(stockYear))-Math.max.apply(null,B.rows.map(stockYear)))*dir;
+        if(key==="color") return String((A.rows[0]&&A.rows[0].color)||"").localeCompare(String((B.rows[0]&&B.rows[0].color)||""),"ru")*dir;
+        return (stockTrimRank(A.trim)-stockTrimRank(B.trim)||A.trim.localeCompare(B.trim,"ru"))*dir;
+      });
+      return groups;
+    }
+    function stockOpened(key, fallback){
+      if(typeof stockOpen==="object" && stockOpen && Object.prototype.hasOwnProperty.call(stockOpen, key)) return !!stockOpen[key];
+      return !!fallback;
+    }
     function stockCard(r){
       const salon=salonLabel(r.salon);
       const price=stockRrc(r);
-      const meta=[r.trim, r.color, salon, r.prod].filter(Boolean).join(" · ");
+      const year=stockYear(r);
+      const meta=[r.color, year?String(year):"", salon].filter(Boolean).join(" · ");
       const reservedCls=r.reserved?" is-reserved":"";
       const reservedBadge=r.reserved?`<span class="st reserved st-reserved-mid">Забронирован</span>`:"";
       return `<article class="st-row${reservedCls}${r.invoice?" is-invoice":""}">
@@ -77,6 +130,9 @@
     }
     function stock(){
       if(needAuth()) return login();
+      if(typeof stockSort!=="string") stockSort="trim";
+      if(typeof stockSortDir!=="number") stockSortDir=1;
+      if(typeof stockOpen!=="object" || !stockOpen) stockOpen={};
       const meta=typeof STOCK_META==="object"?STOCK_META:{updated:"11.09.2026"};
       const sale=(typeof STOCK!=="undefined"?STOCK:[]);
       const list=sale.filter(x=>{
@@ -91,6 +147,12 @@
       list.forEach(r=>{ (byModel[r.model]=byModel[r.model]||[]).push(r); });
       const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];
       const ids=modelOrder.filter(id=>byModel[id]);
+      const sorts=[["price","Цена"],["color","Цвет"],["year","Год"],["trim","Комплектация"]];
+      const sortBtns=sorts.map(([k,lab])=>{
+        const on=stockSort===k;
+        const arrow=on?(stockSortDir<0?" ↓":" ↑"):"";
+        return `<button type="button" class="chip ${on?"on":""}" data-stock-sort="${k}">${lab}${arrow}</button>`;
+      }).join("");
       const body = list.length
         ? ids.map(id=>{
             const titles={t4:["TENET","T4"],t4l:["TENET","T4L"],t7:["TENET","T7"],t8:["TENET","T8"],tt9:["TENET","T9"],t9:["CHERY","Tiggo 9"],t7l:["CHERY","Tiggo 7 L"],ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};
@@ -103,22 +165,40 @@
             const bits=[];
             if(inn) bits.push(inn+" в наличии");
             if(way) bits.push(way+" в пути");
-            const opened = stockFilter===id || ids.length===1;
-            return `<details class="st-acc" ${opened?"open":""}>
+            const opened = stockOpened("m:"+id, stockFilter===id || ids.length===1);
+            const groups=stockTrimGroups(rows);
+            const trims=groups.map(g=>{
+              const prices=g.rows.map(stockRrc).filter(Boolean);
+              const from=prices.length?Math.min.apply(null,prices):0;
+              const tkey="t:"+id+"|"+g.trim;
+              const tOpen=stockOpened(tkey, groups.length===1);
+              return `<details class="st-trim" data-acc="${escape(tkey)}" ${tOpen?"open":""}>
+                <summary>
+                  <b>${escape(g.trim)}</b>
+                  <span class="st-count">${g.rows.length}${from?" · от "+rub(from)+" ₽":""}</span>
+                </summary>
+                <div class="st-list">${g.rows.map(stockCard).join("")}</div>
+              </details>`;
+            }).join("");
+            return `<details class="st-acc" data-acc="m:${id}" ${opened?"open":""}>
               <summary>
                 <span><small>${escape(m.brand)}</small><b>${escape(m.name)}</b></span>
                 <span class="st-count">${rows.length}${bits.length?" · "+bits.join(" · "):""}</span>
               </summary>
-              <div class="st-list">${rows.map(stockCard).join("")}</div>
+              <div class="st-trims">${trims}</div>
             </details>`;
           }).join("")
         : `<div class="card" style="margin-top:12px"><p>По этому фильтру машин нет.</p></div>`;
       return banner("Склад", `Logicstars · ${meta.updated}`, "TENET")+`
-        <p class="lead">Нажмите модель, чтобы раскрыть список. В наличии — у дилера. В пути — завод или Домодедово.</p>
+        <p class="lead">Сначала модель, внутри — комплектация. Сортировка меняет порядок машин и групп.</p>
         <div class="study-pick st-filters">
           <button class="chip ${stockStatus==="all"?"on":""}" data-stock-st="all">Все · ${scoped.length}</button>
           <button class="chip ${stockStatus==="in"?"on":""}" data-stock-st="in">В наличии · ${nIn}</button>
           <button class="chip ${stockStatus==="way"?"on":""}" data-stock-st="way">В пути · ${nWay}</button>
+        </div>
+        <div class="study-pick st-filters st-sorts">
+          <span class="st-sort-lab">Сортировка</span>
+          ${sortBtns}
         </div>
         ${body}`;
     }
