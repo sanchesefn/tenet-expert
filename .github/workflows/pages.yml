@@ -124,6 +124,7 @@ jobs:
           if [ -f patch_km_row.py ]; then python3 patch_km_row.py || true; fi
           if [ -f patch_km_pv.py ]; then python3 patch_km_pv.py || true; fi
           if [ -f patch_km_line.py ]; then python3 patch_km_line.py || true; fi
+          if [ -f patch_km_fin.py ]; then python3 patch_km_fin.py || true; fi
           if [ -f patch_tt9.py ]; then python3 patch_tt9.py || true; fi
           if [ -f patch_demo.py ]; then python3 patch_demo.py || true; fi
           if [ -f patch_js_heal.py ]; then python3 patch_js_heal.py || true; fi

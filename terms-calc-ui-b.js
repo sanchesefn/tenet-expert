@@ -85,6 +85,7 @@
       const _pgTrim=(typeof pangoOf==="function")?pangoOf(m.id):null;
       if(_pgTrim && !useLoan) pack=150000;
       const extras=(useLoan||_pgTrim)?(addons+(pack||0)+fee):0;
+      const finDelta=(addons-70000)+((useLoan||_pgTrim)?((pack||0)-150000):0);
       const downMode=kmStr("cDownMode","pct");
       const months=kmVal("cMonths", 60);
       let downPct=kmVal("cDownPct", 20);
@@ -117,11 +118,11 @@
       const MPT_EXTRA=200000;
       const downMptShow=Math.max(0, Math.min(priceMpt, down));
       const downMptCar=Math.max(0, downMptShow-MPT_EXTRA);
-      const creditMpt=Math.max(0, priceMpt-downMptCar);
+      const creditMpt=Math.max(0, priceMpt-downMptCar+finDelta);
       const mptTermMax=84;
       const mptTerm=Math.min(Math.max(1, months), mptTermMax);
       const mptRate=19.2;
-      const payMptOne=calcPay(priceMpt, downMptCar, mptTerm, mptRate);
+      const payMptOne=calcPay(priceMpt+finDelta, downMptCar, mptTerm, mptRate);
       const overMptOne=payMptOne*mptTerm-creditMpt;
       const banksMpt=[{id:"sovcom", name:"Совкомбанк", rate:mptRate, term:mptTerm, capped:mptTerm!==months, payMpt:payMptOne, overMpt:overMptOne}];
       const mptBreak=`<div class="mpt-break">
@@ -134,6 +135,7 @@
                 <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(downMptShow)}</span></div>
                 <div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(Math.min(MPT_EXTRA, downMptShow))}</span></div>
                 <div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(downMptCar)}</span></div>
+                ${finDelta?`<div class="bank-row"><span>Д/О и каско сверх нормы</span><span class="pay">${finDelta>0?"+":"−"} ${rub(Math.abs(finDelta))}</span></div>`:""}
                 <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
               </div>`;
       const banks=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
@@ -166,7 +168,7 @@
         pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
         const yNum=Number(pYearsLabel);
         pYearsWord=(yNum===1)?"год":(yNum>1&&yNum<5&&Math.abs(yNum-Math.round(yNum))<0.05?"года":"лет");
-        pBase=Math.max(0, pFix-pDownP)+pBundle;
+        pBase=Math.max(0, pFix-pDownP)+pBundle+finDelta;
         pNss=Math.round(pBase*pNssRate*pYears);
         pCreditB=pBase+pNss;
         pPayA=calcPay(pBase+pDownP, pDownP, months, pRateA);
@@ -269,6 +271,7 @@
               <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
               <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
               <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
+              ${finDelta?`<div class="bank-row"><span>Д/О и каско сверх нормы</span><span class="pay">${finDelta>0?"+":"−"} ${rub(Math.abs(finDelta))}</span></div>`:""}
               <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
             </details>
           </div>`:""}</div></div>`: `<div class="km-right">
