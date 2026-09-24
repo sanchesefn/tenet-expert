@@ -769,18 +769,23 @@
       return v||def;
     }
     function kmChipGroups(active){
-      const rows=[["T4","T4L"],["T7","Tiggo 7 L"],["T8"],["Tiggo 9","TENET T9"],["Arrizo 8","TENET A8"]];
       const groups={};
       KM_MODELS.forEach(x=>{
         const g=kmLineOf(x.id);
         (groups[g]=groups[g]||[]).push(x);
       });
-      const line=(g,tone)=>`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`;
-      return rows.map(pair=>{
-        const present=pair.filter(g=>groups[g]&&groups[g].length);
-        if(!present.length) return "";
-        return `<div class="km-pair${present.length>1?" is-2":""}">${present.map((g,i)=>line(g,i?"b":"a")).join("")}</div>`;
-      }).join("");
+      const line=(g,tone)=>groups[g]&&groups[g].length?`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`:"";
+      const slot=(cls,html)=>html?`<div class="km-slot ${cls}">${html}</div>`:"";
+      return `<div class="km-board"><span class="km-brand tenet">TENET</span><span class="km-brand chery">CHERY</span>`
+        +slot("s-t4",`<div class="km-pair is-2">${line("T4","a")}${line("T4L","a")}</div>`)
+        +slot("s-t7",line("T7","a"))
+        +slot("s-c7",line("Tiggo 7 L","b"))
+        +slot("s-t8",line("T8","a"))
+        +slot("s-t9",line("TENET T9","a"))
+        +slot("s-c9",line("Tiggo 9","b"))
+        +slot("s-a8",line("TENET A8","a"))
+        +slot("s-ca",line("Arrizo 8","b"))
+        +`</div>`;
     }
     function kmPrioRecRows(cur, carPrice, downPct, months, extras){
       const list=typeof STOCK!=="undefined"?STOCK:[];

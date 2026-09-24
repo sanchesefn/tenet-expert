@@ -13,28 +13,48 @@ OLD_FN = '''    function kmChipGroups(active){
     }'''
 
 NEW_FN = '''    function kmChipGroups(active){
-      const rows=[["T4","T4L"],["T7","Tiggo 7 L"],["T8"],["Tiggo 9","TENET T9"],["Arrizo 8","TENET A8"]];
       const groups={};
       KM_MODELS.forEach(x=>{
         const g=kmLineOf(x.id);
         (groups[g]=groups[g]||[]).push(x);
       });
-      const line=(g,tone)=>`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`;
-      return rows.map(pair=>{
-        const present=pair.filter(g=>groups[g]&&groups[g].length);
-        if(!present.length) return "";
-        return `<div class="km-pair${present.length>1?" is-2":""}">${present.map((g,i)=>line(g,i?"b":"a")).join("")}</div>`;
-      }).join("");
+      const line=(g,tone)=>groups[g]&&groups[g].length?`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`:"";
+      const slot=(cls,html)=>html?`<div class="km-slot ${cls}">${html}</div>`:"";
+      return `<div class="km-board"><span class="km-brand tenet">TENET</span><span class="km-brand chery">CHERY</span>`
+        +slot("s-t4",`<div class="km-pair is-2">${line("T4","a")}${line("T4L","a")}</div>`)
+        +slot("s-t7",line("T7","a"))
+        +slot("s-c7",line("Tiggo 7 L","b"))
+        +slot("s-t8",line("T8","a"))
+        +slot("s-t9",line("TENET T9","a"))
+        +slot("s-c9",line("Tiggo 9","b"))
+        +slot("s-a8",line("TENET A8","a"))
+        +slot("s-ca",line("Arrizo 8","b"))
+        +`</div>`;
     }'''
 
 CSS = '''
-.km-chips{display:flex;flex-direction:column;gap:10px}
+.km-chips{display:flex;flex-direction:column;gap:10px;margin:4px 0 32px}
+.km-board{display:flex;flex-direction:column;gap:10px;min-width:0}
+.km-brand{display:none}
+.km-slot{min-width:0}
 .km-pair{display:grid;gap:10px;min-width:0}
-.km-pair > .km-line{margin:0;padding:8px 10px 10px;border-radius:14px;min-width:0}
+.km-pair > .km-line,.km-slot > .km-line{margin:0;padding:8px 10px 10px;border-radius:14px;min-width:0}
 .km-line.tone-a{background:#f4efe6;border:1px solid #e3d5c2;border-left:3px solid #c4a574}
 .km-line.tone-b{background:#e8eef3;border:1px solid #d0dbe3;border-left:3px solid #7f97ab}
-.km-pair > .km-line .stock-h{margin:2px 2px 8px}
+.km-pair > .km-line .stock-h,.km-slot > .km-line .stock-h{margin:2px 2px 8px}
 @media(min-width:1100px){
+  .km-board{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-items:start}
+  .km-brand{display:block;margin:0 2px 0;font-size:13px;font-weight:800;letter-spacing:.18em}
+  .km-brand.tenet{grid-column:1;grid-row:1;color:#8a6840}
+  .km-brand.chery{grid-column:2;grid-row:1;color:#3e5870}
+  .km-slot.s-t4{grid-column:1;grid-row:2}
+  .km-slot.s-t7{grid-column:1;grid-row:3}
+  .km-slot.s-c7{grid-column:2;grid-row:3}
+  .km-slot.s-t8{grid-column:1 / -1;grid-row:4}
+  .km-slot.s-t9{grid-column:1;grid-row:5}
+  .km-slot.s-c9{grid-column:2;grid-row:5}
+  .km-slot.s-a8{grid-column:1;grid-row:6}
+  .km-slot.s-ca{grid-column:2;grid-row:6}
   .km-pair.is-2{grid-template-columns:1fr 1fr;align-items:start}
 }
 '''
@@ -52,10 +72,10 @@ def patch_pages(text):
 
 def patch_text(text):
     n = 0
-    if "km-pair" not in text and OLD_FN in text:
+    if "km-brand" not in text and OLD_FN in text:
         text = text.replace(OLD_FN, NEW_FN, 1)
         n += 1
-    if ".km-pair{" not in text and "</style>" in text:
+    if ".km-brand{" not in text and "</style>" in text:
         text = text.replace("</style>", CSS + "\n</style>", 1)
         n += 1
     return text, n
