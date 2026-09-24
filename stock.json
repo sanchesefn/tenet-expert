@@ -141,7 +141,7 @@
       "model": "t4l",
       "name": "T4L",
       "trim": "Актив",
-      "color": "Чёрный",
+      "color": "Красный",
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2329000
@@ -578,7 +578,8 @@
       "note": "В салоне · с 20.09.2026",
       "rrc": 3299000,
       "mpt": true,
-      "corp": true
+      "corp": true,
+      "reserved": true
     },
     {
       "vin": "EDEFB32B3TE114786",
