@@ -59,6 +59,11 @@ def classify_t9(car):
     if vin.startswith("EDXDC24"):
         car["model"] = "ta8"
         car["name"] = "A8"
+        if vin == "EDXDC24B0TG040024":
+            car["invoice"] = False
+            car["demo"] = True
+            car["mpt"] = False
+            car["corp"] = False
         return car
     if vin.startswith("EDEHD24"):
         car["model"] = "tt9"
