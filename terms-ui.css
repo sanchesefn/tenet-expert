@@ -183,5 +183,7 @@
   .km-pair.is-2{grid-template-columns:1fr 1fr;align-items:start}
   .km-slot.s-t4 .km-pair.is-2{grid-template-columns:minmax(168px,.58fr) minmax(0,1.42fr)}
   .km-slot.s-t4 .km-line:last-child .km-grid{grid-template-columns:1fr 1fr}
+  .km-slot.s-t7 .km-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .km-slot.s-t7 .chip{min-width:0}
 }
 
