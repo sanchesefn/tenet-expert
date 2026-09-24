@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import json, os, random, urllib.parse, urllib.request
+import json, os, random, urllib.error, urllib.parse, urllib.request
 from datetime import datetime, timezone
 
 CLOUD_ID = "o6nq7rki"
@@ -124,7 +124,20 @@ def push(lst):
 
 
 def tg(method, payload):
-    return req(f"https://api.telegram.org/bot{TOKEN}/{method}", payload)
+    url = f"https://api.telegram.org/bot{TOKEN}/{method}"
+    try:
+        return req(url, payload)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")
+        print("tg", method, e.code, body[:240])
+        if e.code == 409 and method == "getUpdates":
+            try:
+                req(f"https://api.telegram.org/bot{TOKEN}/deleteWebhook", {"drop_pending_updates": False})
+                print("webhook cleared")
+            except Exception as err:
+                print("deleteWebhook", err)
+            return req(url, payload)
+        raise
 
 
 def send(chat_id, text):
