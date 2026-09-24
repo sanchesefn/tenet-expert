@@ -186,5 +186,6 @@
   .km-slot.s-t7 .km-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
   .km-slot.s-t7 .chip{min-width:0;padding-left:8px;padding-right:8px}
   .km-slot.s-t7 .chip small{white-space:nowrap}
+  body:has(.km-board) .wrap{max-width:1680px !important}
 }
 
