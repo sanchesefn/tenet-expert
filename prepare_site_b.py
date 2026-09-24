@@ -85,6 +85,8 @@ html=html.replace(
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}</td>',
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}</td>'
 )
+if ".st-list{display:grid" not in html:
+    html=html.replace("</style>", "@media(min-width:900px){.st-list{display:grid;grid-template-columns:1fr 1fr}.st-row{align-items:center;border-top:0;border-bottom:1px solid #f3eadc}.st-list>.st-row:nth-child(odd){box-shadow:inset -1px 0 0 #f3eadc}}\n</style>", 1)
 if ".st.mpt{" not in html:
     html=html.replace("</style>", ".st.mpt{background:#cfe8d1;color:#1b5e20;}\n</style>", 1)
 if ".stock-car.mpt{" not in html:

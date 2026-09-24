@@ -93,7 +93,10 @@
       const ids=modelOrder.filter(id=>byModel[id]);
       const body = list.length
         ? ids.map(id=>{
-            const m=MODELS[id]||{id,brand:"TENET",name:id.toUpperCase()};
+            const titles={t4:["TENET","T4"],t4l:["TENET","T4L"],t7:["TENET","T7"],t8:["TENET","T8"],tt9:["TENET","T9"],t9:["CHERY","Tiggo 9"],t7l:["CHERY","Tiggo 7 L"],ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};
+            const known=titles[id];
+            const base=MODELS[id]||{id,brand:"TENET",name:id.toUpperCase()};
+            const m=known?Object.assign({},base,{brand:known[0],name:known[1]}):base;
             const rows=byModel[id];
             const inn=rows.filter(x=>x.status==="in").length;
             const way=rows.filter(x=>x.status==="way").length;
