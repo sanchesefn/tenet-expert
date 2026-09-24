@@ -195,25 +195,48 @@
         +slot("s-ca",line("Arrizo 8","b"))
         +`</div>`;
     }
-    function kmPrioRecRows(cur, carPrice, downPct, months, extras){
+    function kmPrioRecRows(cur, carPrice, downPct, months, extras, deal){
       const list=typeof STOCK!=="undefined"?STOCK:[];
       const price0=Number(carPrice)|| (cur&&cur.rrc)||0;
       const pct=Number(downPct)||20;
       const term=Number(months)||60;
       const extra=Number(extras)||0;
+      const d=deal||{};
+      const useTi=!!d.useTi;
+      const spec=Math.max(0, Number(d.spec)||0);
+      const dcTi=d.useDcTi?Math.max(0, Number(d.dcTi)||0):0;
+      const dcCr=d.useDcCr?Math.max(0, Number(d.dcCr)||0):0;
+      const downSum=d.downMode==="sum"?Math.max(0, Number(d.down)||0):null;
+      const finDelta=d.useLoan?Number(d.finDelta)||0:0;
       const refPay=typeof calcPay==="function"?calcPay(price0+extra, Math.round(price0*pct/100), term, 10):0;
       return list.filter(c=>PRIO_VINS.has(c.vin) && c.vin!==kmVin && !(typeof stockIsDemo==="function"?stockIsDemo(c):c.demo)).map(c=>{
         const id=typeof kmIdFromCar==="function"?kmIdFromCar(c):"";
         const mm=KM_MODELS.find(x=>x.id===id);
-        const price=mm?mm.rrc:price0;
+        const rrc=mm?mm.rrc:(Number(c.price)||price0);
+        const tiAmt=useTi?(mm&&mm.ti||0):0;
+        const crAmt=mm&&mm.cr||0;
+        const discount=tiAmt+spec+dcTi+dcCr+crAmt;
+        const sale=Math.max(0, rrc-discount);
+        const down=downSum!=null?Math.max(0, Math.min(sale, downSum)):Math.round(sale*Math.max(0,pct)/100);
+        const pctUsed=sale>0?Math.round(down*1000/sale)/10:pct;
         const group=typeof kmRateGroup==="function"?kmRateGroup(mm||cur):"t4l_t7";
-        const look=typeof kmBankRate==="function"?kmBankRate("sber", group, term, pct):{rate:10, term};
-        const down=Math.round(price*Math.max(0,pct)/100);
-        const pay=typeof calcPay==="function"?calcPay(price+extra, down, look.term||term, look.rate):0;
-        return {c, mm, price, pay, d:Math.abs(price-price0)+Math.abs(pay-refPay)};
+        const look=typeof kmBankRate==="function"?kmBankRate("sber", group, term, pctUsed):{rate:10, term};
+        const pay=typeof calcPay==="function"?calcPay(sale+extra, down, look.term||term, look.rate):0;
+        const f=mm && typeof fleetOf==="function"?fleetOf(mm.id):null;
+        const canSub=!!(f && (f.sub||0)>0 && mm && mm.id!=="tt9p" && mm.id!=="tt9u" && mm.stock!=="tt9");
+        let priceSub=0, paySub=0;
+        if(canSub){
+          const tiFleet=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
+          priceSub=Math.max(0, (f.tidy||f.rrc)-tiFleet-(f.sub||0));
+          const downShow=Math.max(0, Math.min(priceSub, down));
+          const downCar=Math.max(0, downShow-200000);
+          const subTerm=Math.min(Math.max(1, term), 84);
+          paySub=typeof calcPay==="function"?calcPay(priceSub+finDelta, downCar, subTerm, 19.2):0;
+        }
+        return {c, mm, price:sale, pay, paySub, priceSub, crAmt, d:Math.abs(sale-price0)+Math.abs(pay-refPay)};
       }).sort((a,b)=>a.d-b.d).slice(0,4);
     }
-    function kmSideList(m, carPrice, downPct, months, extras){
+    function kmSideList(m, carPrice, downPct, months, extras, deal){
       const cars=kmStockCars(m).slice().sort((a,b)=>{
         const pa=PRIO_VINS.has(a.vin)?0:1;
         const pb=PRIO_VINS.has(b.vin)?0:1;
@@ -223,7 +246,7 @@
       });
       const inn=cars.filter(c=>c.status==="in");
       const way=cars.filter(c=>c.status==="way");
-      const recs=kmPrioRecRows(m, carPrice!=null?carPrice:m.rrc, downPct!=null?downPct:20, months!=null?months:60, extras||0);
+      const recs=kmPrioRecRows(m, carPrice!=null?carPrice:m.rrc, downPct!=null?downPct:20, months!=null?months:60, extras||0, deal);
       const hereVins=new Set(cars.map(c=>c.vin));
       const recVins=new Set(recs.map(r=>r.c.vin));
       const recOther=recs.filter(r=>!hereVins.has(r.c.vin));
@@ -248,7 +271,8 @@
             <b>${escape((r.mm&&r.mm.name)||r.c.name)} · ${escape(r.c.color||"—")}</b>
             ${(typeof carIsMpt==="function"?carIsMpt(r.c):r.c.mpt)?`<span class="mpt-tag">Доступна гос программа −20%</span>`:""}${(typeof carIsCorp==="function"?carIsCorp(r.c):r.c.corp)?`<span class="mpt-tag corp-tag">Корп · лизинг</span>`:""}
             <span class="vin">${escape(r.c.vin)} · ${escape(r.c.trim||"")} · ${st}</span>
-            <span class="stock-meta">РРЦ ${rub(r.price)} · платёж ~${rub(Math.round(r.pay))} ₽ · приоритет</span>
+            <span class="stock-meta">Со скидками ${rub(r.price)}${r.crAmt?` · прямая ${rub(r.crAmt)}`:""} · платёж ~${rub(Math.round(r.pay))} ₽</span>
+            ${r.paySub?`<span class="stock-meta">Корп. матрица + субсидия ${rub(r.priceSub)} · платёж ~${rub(Math.round(r.paySub))} ₽</span>`:""}
           </button>`;
         }).join("");
       const recCard=recBlock?`<div class="card stock-rec"><p class="eyebrow">Рекомендуем</p>${recBlock}</div>`:"";
