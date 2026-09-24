@@ -154,7 +154,7 @@
         return `<button type="button" class="chip ${on?"on":""}" data-stock-sort="${k}">${lab}${arrow}</button>`;
       }).join("");
       const body = list.length
-        ? ids.map(id=>{
+        ? `<div class="st-board">`+ids.map(id=>{
             const titles={t4:["TENET","T4"],t4l:["TENET","T4L"],t7:["TENET","T7"],t8:["TENET","T8"],tt9:["TENET","T9"],t9:["CHERY","Tiggo 9"],t7l:["CHERY","Tiggo 7 L"],ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};
             const known=titles[id];
             const base=MODELS[id]||{id,brand:"TENET",name:id.toUpperCase()};
@@ -175,19 +175,20 @@
               return `<details class="st-trim" data-acc="${escape(tkey)}" ${tOpen?"open":""}>
                 <summary>
                   <b>${escape(g.trim)}</b>
-                  <span class="st-count">${g.rows.length}${from?" · от "+rub(from)+" ₽":""}</span>
+                  <span class="st-meta"><span class="st-count">${g.rows.length}${from?" · от "+rub(from)+" ₽":""}</span><i class="st-chev" aria-hidden="true"></i></span>
                 </summary>
                 <div class="st-list">${g.rows.map(stockCard).join("")}</div>
               </details>`;
             }).join("");
-            return `<details class="st-acc" data-acc="m:${id}" ${opened?"open":""}>
+            const tone=m.brand==="CHERY"?" chery":"";
+            return `<details class="st-acc${tone}" data-acc="m:${id}" ${opened?"open":""}>
               <summary>
-                <span><small>${escape(m.brand)}</small><b>${escape(m.name)}</b></span>
-                <span class="st-count">${rows.length}${bits.length?" · "+bits.join(" · "):""}</span>
+                <span class="st-id"><small>${escape(m.brand)}</small><b>${escape(m.name)}</b></span>
+                <span class="st-meta"><span class="st-count">${rows.length}${bits.length?" · "+bits.join(" · "):""}</span><i class="st-chev" aria-hidden="true"></i></span>
               </summary>
               <div class="st-trims">${trims}</div>
             </details>`;
-          }).join("")
+          }).join("")+`</div>`
         : `<div class="card" style="margin-top:12px"><p>По этому фильтру машин нет.</p></div>`;
       return banner("Склад", `Logicstars · ${meta.updated}`, "TENET")+`
         <p class="lead">Сначала модель, внутри — комплектация. Сортировка меняет порядок машин и групп.</p>
