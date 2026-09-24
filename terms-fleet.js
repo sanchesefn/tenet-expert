@@ -257,7 +257,7 @@
             </div>
         <div class="km-bottom">
           <div class="card dc-result ok">
-            <p class="eyebrow">Доходность ДЦ · КМ без НДС · флит BFS</p>
+            <p class="eyebrow">КМ без НДС · флит BFS</p>
             <div class="calc-out">${rub(f.km)} ₽</div>
             <p class="calc-note">КМ с листа «Флит», блок BFS. Пауза банка, ориентир 21.09.</p>
           </div>

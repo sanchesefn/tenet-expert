@@ -97,7 +97,7 @@ PANGO_JS = r'''      const _pg=(selected && selected.invoice && typeof pangoOf==
         </div>
         ${kmSideList(m, pFix, pPct, months, pBundle)}
         <div class="card dc-result ${pOk?"ok":"bad"}">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС · спеццена</p>
+          <p class="eyebrow">КМ без НДС · спеццена</p>
           <div class="calc-out">${rub(Math.round(pKm))} ₽</div>
           <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${pKmK.toFixed(1)} тыс. · ${pOk?"в коридоре":"вне коридора"}</p>
           <div class="note-box">Цена авто <b>${rub(pFix)} ₽</b> · скидка от РРЦ ${rub(pDiscount)}<br/>Маржа 1С ${rub(Math.round(pMargin))} · бонус ${rub(Math.round(pBonus))} · доход на железе ${rub(Math.round(pIron))}<br/>Каско 80 000 + GAP/ДМС ${rub(pCard)} внутри PANGO${useTi?" · возмещение трейд-ин "+rub(pTiBack):""}${prio?" · приоритет":""}</div>

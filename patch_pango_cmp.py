@@ -234,11 +234,11 @@ def patch_text(text):
         text = text.replace(old_side, new_side, 1)
         n += 1
     old_km = '''        <div class="card dc-result ${ok?"ok":"bad"}">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС</p>
+          <p class="eyebrow">КМ без НДС</p>
           <div class="calc-out">${rub(Math.round(km))} ₽</div>
           <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${kmK.toFixed(1)} тыс. · ${ok?"в коридоре":"вне коридора"}</p>'''
     new_km = '''        <div class="card dc-result ${(selected&&selected.invoice&&_pg?pOk:ok)?"ok":"bad"}">
-          <p class="eyebrow">Доходность ДЦ · КМ без НДС${selected&&selected.invoice&&_pg?" · спеццена":""}</p>
+          <p class="eyebrow">КМ без НДС${selected&&selected.invoice&&_pg?" · спеццена":""}</p>
           <div class="calc-out">${rub(Math.round(selected&&selected.invoice&&_pg?pKm:km))} ₽</div>
           <p class="calc-note">Коридор ${lo} … ${hi} тыс. · сейчас ${(selected&&selected.invoice&&_pg?pKmK:kmK).toFixed(1)} тыс. · ${(selected&&selected.invoice&&_pg?pOk:ok)?"в коридоре":"вне коридора"}</p>'''
     if old_km in text:
