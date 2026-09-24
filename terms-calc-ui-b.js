@@ -86,14 +86,11 @@
       if(_pgTrim && !useLoan) pack=150000;
       const extras=(useLoan||_pgTrim)?(addons+(pack||0)+fee):0;
       const finDelta=(addons-70000)+((useLoan||_pgTrim)?((pack||0)-150000):0);
-      const downMode=kmStr("cDownMode","pct");
       const months=kmVal("cMonths", 60);
-      let downPct=kmVal("cDownPct", 20);
-      let down=kmVal("cDown", Math.round(price*0.2));
-      if(fresh){ downPct=20; down=Math.round(price*0.2); }
-      if(downMode==="pct") down=Math.round(price*Math.max(0,downPct)/100);
-      else downPct=price>0?Math.round(down*1000/price)/10:0;
-      down=Math.max(0, Math.min(price, down));
+      const _down=kmDownRead(price, fresh);
+      const downMode=_down.downMode;
+      let downPct=_down.downPct;
+      let down=_down.down;
       const credit=Math.max(0,price-down+extras);
       const rateGroup=typeof kmRateGroup==="function"?kmRateGroup(m):"t4l_t7";
       const stockCars=typeof kmStockCars==="function"?kmStockCars(m):[];

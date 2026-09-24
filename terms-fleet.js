@@ -78,14 +78,12 @@
       const cutLabel=isSub?"Субсидия бренда":"МПТ −10%";
       const headLabel=isSub?"Субсидия бренда · Совкомбанк 19,2%":"Гос. программа · МПТ · Совкомбанк 19,2%";
 
-      const downMode=(typeof kmStr==="function"?kmStr("cDownMode","sum"):"sum");
-      const months=typeof kmVal==="function"?kmVal("cMonths", 84):84;
-      let downPct=typeof kmVal==="function"?kmVal("cDownPct", 20):20;
       const priceMpt=Math.round(price);
-      let down=typeof kmVal==="function"?kmVal("cDown", Math.round(priceMpt*0.2)):Math.round(priceMpt*0.2);
-      if(downMode==="pct") down=Math.round(priceMpt*Math.max(0,downPct)/100);
-      else downPct=priceMpt>0?Math.round(down*1000/priceMpt)/10:0;
-      down=Math.max(0,Math.min(priceMpt,down));
+      const _down=typeof kmDownRead==="function"?kmDownRead(priceMpt, false, false):null;
+      const downMode=_down?_down.downMode:(typeof kmStr==="function"?kmStr("cDownMode","sum"):"sum");
+      const months=typeof kmVal==="function"?kmVal("cMonths", 84):84;
+      let downPct=_down?_down.downPct:20;
+      let down=_down?_down.down:Math.round(priceMpt*0.2);
       const MPT_EXTRA=200000;
       const downMptShow=down;
       const downMptCar=Math.max(0, downMptShow-MPT_EXTRA);

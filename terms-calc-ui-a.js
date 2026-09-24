@@ -141,6 +141,39 @@
       const v=String(el.value||"").trim();
       return v||def;
     }
+    let kmDownKeep={sum:null,pct:null,price:null};
+    function kmDownRead(price, fresh, persist){
+      const downMode=kmStr("cDownMode","pct");
+      const priceN=Math.max(0, Number(price)||0);
+      const pctEl=document.getElementById("cDownPct");
+      const sumEl=document.getElementById("cDown");
+      const keep=kmDownKeep;
+      let downPct, down, exactSum=false;
+      if(fresh){
+        downPct=20;
+        down=Math.round(priceN*0.2);
+      }else if(sumEl && !pctEl){
+        down=kmVal("cDown", keep.sum!=null?keep.sum:Math.round(priceN*0.2));
+        exactSum=keep.sum===down && keep.pct!=null && keep.price===priceN;
+        downPct=exactSum?keep.pct:(priceN>0?Math.round(down*1000/priceN)/10:0);
+      }else if(pctEl && !sumEl){
+        downPct=kmVal("cDownPct", keep.pct!=null?keep.pct:20);
+        exactSum=keep.pct===downPct && keep.sum!=null && keep.price===priceN;
+        down=exactSum?keep.sum:Math.round(priceN*Math.max(0,downPct)/100);
+      }else if(downMode==="pct"){
+        downPct=keep.pct!=null?keep.pct:20;
+        exactSum=keep.pct===downPct && keep.sum!=null && keep.price===priceN;
+        down=exactSum?keep.sum:Math.round(priceN*Math.max(0,downPct)/100);
+      }else{
+        down=keep.sum!=null?keep.sum:Math.round(priceN*0.2);
+        exactSum=keep.sum===down && keep.price===priceN && keep.pct!=null;
+        downPct=exactSum?keep.pct:(priceN>0?Math.round(down*1000/priceN)/10:0);
+      }
+      down=Math.max(0, Math.min(priceN, down));
+      if(exactSum) down=keep.sum;
+      if(persist!==false) kmDownKeep={sum:down, pct:downPct, price:priceN};
+      return {downMode, down, downPct};
+    }
     function kmChipGroups(active){
       const groups={};
       KM_MODELS.forEach(x=>{
