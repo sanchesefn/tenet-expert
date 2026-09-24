@@ -769,13 +769,18 @@
       return v||def;
     }
     function kmChipGroups(active){
-      const order=["T4","T4L","T7","T8","TENET T9","TENET A8","Tiggo 9","Arrizo 8","Tiggo 7 L"];
+      const rows=[["T4","T4L"],["T7","Tiggo 7 L"],["T8"],["Tiggo 9","TENET T9"],["Arrizo 8","TENET A8"]];
       const groups={};
       KM_MODELS.forEach(x=>{
         const g=kmLineOf(x.id);
         (groups[g]=groups[g]||[]).push(x);
       });
-      return order.filter(g=>groups[g]).map(g=>`<div class="km-line"><p class="stock-h">${g}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`).join("");
+      const line=(g,tone)=>`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`;
+      return rows.map(pair=>{
+        const present=pair.filter(g=>groups[g]&&groups[g].length);
+        if(!present.length) return "";
+        return `<div class="km-pair${present.length>1?" is-2":""}">${present.map((g,i)=>line(g,i?"b":"a")).join("")}</div>`;
+      }).join("");
     }
     function kmPrioRecRows(cur, carPrice, downPct, months, extras){
       const list=typeof STOCK!=="undefined"?STOCK:[];
