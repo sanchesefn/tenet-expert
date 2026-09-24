@@ -104,6 +104,30 @@
       });
       return groups;
     }
+    function stockIds(byModel){
+      const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];
+      const ids=modelOrder.filter(id=>byModel[id]);
+      const key=(typeof stockSort==="string"&&stockSort)||"trim";
+      const dir=(typeof stockSortDir==="number"?stockSortDir:1)||1;
+      if(key==="trim") return ids;
+      const nums=(id,fn,how)=>{
+        const vals=(byModel[id]||[]).map(fn).filter(v=>v||v===0);
+        if(!vals.length) return how==="max"?-1:1e15;
+        return how==="max"?Math.max.apply(null,vals):Math.min.apply(null,vals);
+      };
+      return ids.slice().sort((a,b)=>{
+        let d=0;
+        if(key==="price") d=nums(a,stockRrc,"min")-nums(b,stockRrc,"min");
+        else if(key==="year") d=nums(a,stockYear,"max")-nums(b,stockYear,"max");
+        else if(key==="color"){
+          const ca=((byModel[a]||[]).slice().sort(stockCmp)[0]||{}).color||"";
+          const cb=((byModel[b]||[]).slice().sort(stockCmp)[0]||{}).color||"";
+          d=String(ca).localeCompare(String(cb),"ru");
+        }
+        if(!d) d=modelOrder.indexOf(a)-modelOrder.indexOf(b);
+        return d*dir;
+      });
+    }
     function stockOpened(key, fallback){
       if(typeof stockOpen==="object" && stockOpen && Object.prototype.hasOwnProperty.call(stockOpen, key)) return !!stockOpen[key];
       return !!fallback;
@@ -145,8 +169,7 @@
       const nWay=scoped.filter(x=>x.status==="way").length;
       const byModel={};
       list.forEach(r=>{ (byModel[r.model]=byModel[r.model]||[]).push(r); });
-      const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];
-      const ids=modelOrder.filter(id=>byModel[id]);
+      const ids=stockIds(byModel);
       const sorts=[["price","Цена"],["color","Цвет"],["year","Год"],["trim","Комплектация"]];
       const sortBtns=sorts.map(([k,lab])=>{
         const on=stockSort===k;
@@ -165,6 +188,16 @@
             const bits=[];
             if(inn) bits.push(inn+" в наличии");
             if(way) bits.push(way+" в пути");
+            if(stockSort==="price"){
+              const prices=rows.map(stockRrc).filter(Boolean);
+              if(prices.length) bits.unshift("от "+rub(Math.min.apply(null,prices))+" ₽");
+            }else if(stockSort==="year"){
+              const years=rows.map(stockYear).filter(Boolean);
+              if(years.length) bits.unshift(String(Math.max.apply(null,years)));
+            }else if(stockSort==="color"){
+              const color=((rows.slice().sort(stockCmp)[0])||{}).color;
+              if(color) bits.unshift(color);
+            }
             const opened = stockOpened("m:"+id, stockFilter===id || ids.length===1);
             const groups=stockTrimGroups(rows);
             const trims=groups.map(g=>{
