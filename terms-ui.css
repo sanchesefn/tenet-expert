@@ -168,7 +168,7 @@
 .km-line.tone-b{background:#e8eef3;border:1px solid #d0dbe3;border-left:3px solid #7f97ab}
 .km-pair > .km-line .stock-h,.km-slot > .km-line .stock-h{margin:2px 2px 8px}
 @media(min-width:1100px){
-  .km-board{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;align-items:start}
+  .km-board{display:grid;grid-template-columns:minmax(600px,1.32fr) minmax(440px,1fr);gap:10px 12px;align-items:start}
   .km-brand{display:block;margin:0 2px 0;font-size:13px;font-weight:800;letter-spacing:.18em}
   .km-brand.tenet{grid-column:1;grid-row:1;color:#8a6840}
   .km-brand.chery{grid-column:2;grid-row:1;color:#3e5870}
@@ -184,6 +184,7 @@
   .km-slot.s-t4 .km-pair.is-2{grid-template-columns:minmax(168px,.58fr) minmax(0,1.42fr)}
   .km-slot.s-t4 .km-line:last-child .km-grid{grid-template-columns:1fr 1fr}
   .km-slot.s-t7 .km-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .km-slot.s-t7 .chip{min-width:0}
+  .km-slot.s-t7 .chip{min-width:0;padding-left:8px;padding-right:8px}
+  .km-slot.s-t7 .chip small{white-space:nowrap}
 }
 
