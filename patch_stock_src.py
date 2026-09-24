@@ -49,11 +49,17 @@ for c in cars:
     uniq.append(c)
 
 DEMO_VINS = {"EDXGD34B2TE109064", "EDXGB32B0TE110108"}
-uniq = [c for c in uniq if c.get("vin") not in DEMO_VINS and not c.get("demo")]
+uniq = [c for c in uniq if c.get("vin") not in DEMO_VINS]
 
 def classify_t9(car):
     vin = str(car.get("vin") or "").upper()
     t = str(car.get("trim") or "").lower()
+    if vin == "EDEHD24B9TE092948":
+        car["demo"] = True
+    if vin.startswith("EDXDC24"):
+        car["model"] = "ta8"
+        car["name"] = "A8"
+        return car
     if vin.startswith("EDEHD24"):
         car["model"] = "tt9"
         car["name"] = "T9"

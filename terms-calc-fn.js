@@ -676,6 +676,8 @@
       if(id==="t8u4") return t.includes("ультра");
       if(id==="tt9p") return t.includes("прайм");
       if(id==="tt9u") return t.includes("ультра");
+      if(id==="ta8p") return (t.includes("прайм") || t.includes("1.6")) && !t.includes("ultra") && !t.includes("ультра") && !t.includes("2.0");
+      if(id==="ta8u") return t.includes("ультра") || t.includes("ultra") || t.includes("2.0");
       if(id==="t9p") return t.includes("прайм");
       if(id==="t9u") return t.includes("ультра");
       if(id==="a8a") return t.includes("актив");
@@ -702,6 +704,7 @@
       }
       if(car.model==="tt9" || String(car.vin||"").toUpperCase().indexOf("EDEHD24")===0) return t.includes("прайм")?"tt9p":"tt9u";
       if(car.model==="t9") return t.includes("прайм")?"t9p":"t9u";
+      if(car.model==="ta8" || String(car.vin||"").toUpperCase().indexOf("EDXDC24")===0) return (t.includes("ultra")||t.includes("ультра")||t.includes("2.0"))?"ta8u":"ta8p";
       if(car.model==="a8"){
         if(t.includes("ультра")) return "a8u";
         if(t.includes("актив")) return "a8a";
@@ -724,7 +727,7 @@
     }
     function kmStockCars(m){
       const list=typeof STOCK!=="undefined"?STOCK:[];
-      return list.filter(c=>!(typeof stockIsDemo==="function"?stockIsDemo(c):c.demo) && c.model===m.stock && kmTrimFit(m,c));
+      return list.filter(c=>c.model===m.stock && kmTrimFit(m,c));
     }
     function terms(){
       if(needAuth()) return login();

@@ -13,6 +13,7 @@
       ["EDEFB32","t7"],["EDXFB32","t7"],["EDEFD32","t7"],["EDXFD32","t7"],
       ["EDXGB32","t8"],["EDXGD34","t8"],
       ["EDEHD24","tt9"],["EDEDD24","t9"],
+      ["EDXDC24","ta8"],
       ["LVVDC21","a8"]
     ];
     function eptsCleanVin(v){

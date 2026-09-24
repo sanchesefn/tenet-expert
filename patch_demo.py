@@ -6,7 +6,7 @@ DEMO_VINS = {"EDXGD34B2TE109064", "EDXGB32B0TE110108"}
 def drop(stock):
     if not isinstance(stock, list):
         return stock, 0
-    keep = [x for x in stock if str(x.get("vin") or "") not in DEMO_VINS and not x.get("demo")]
+    keep = [x for x in stock if str(x.get("vin") or "") not in DEMO_VINS]
     return keep, len(stock) - len(keep)
 
 def strip_json(path: Path):
