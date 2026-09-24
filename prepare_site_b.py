@@ -322,4 +322,12 @@ if 'querySelectorAll("[data-review]")' not in html:
 Path("_site").mkdir(exist_ok=True)
 Path("_site/index.html").write_text(html)
 Path("_site/pins.json").write_text(json.dumps(pins, ensure_ascii=False))
+root = Path("index.html")
+if pins and root.exists():
+    src = root.read_text(encoding="utf-8")
+    baked = "const LOGIN_PINS = " + json.dumps(pins, ensure_ascii=False, separators=(", ", ": ")) + ";"
+    src2, n = re.subn(r"const LOGIN_PINS = \{.*?\};", baked, src, count=1, flags=re.S)
+    if n:
+        root.write_text(src2, encoding="utf-8")
+        print("root pins", len(pins))
 print("wrote site", len(html))
