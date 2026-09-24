@@ -105,12 +105,14 @@
         `<div class="terms-col">`+
         `<p class="lead">Клиенту называть рекомендованную цену. Максимум с выгодами — после расчёта РОП. КМ — коридор доходности без НДС, тыс. руб.</p>`+
         `<div class="note-box">Скидки импортёра не обещать, если их нет в прайсе. Цифры внутренние.</div>`+
-        `<h2>Доходность</h2>`+
-        `<div class="terms-cards">`+termGroup(KM_CORRIDOR,"km")+`</div>`+
-        `<h2>Бонусы</h2>`+
-        `<div class="terms-cards">`+termGroup(TERMS_BONUS,"bonus")+`</div>`+
-        `<h2>Спец инвойс</h2>`+
-        `<div class="terms-cards">`+TERMS_INV.map(r=>termCard(r.model+" · "+r.trim, escape(r.price), "")).join("")+`</div>`+
+        `<div class="terms-top">`+
+        `<section><h2>Доходность</h2>`+
+        `<div class="terms-cards">`+termGroup(KM_CORRIDOR,"km")+`</div></section>`+
+        `<section><h2>Бонусы</h2>`+
+        `<div class="terms-cards">`+termGroup(TERMS_BONUS,"bonus")+`</div></section>`+
+        `<section><h2>Спец инвойс</h2>`+
+        `<div class="terms-cards">`+TERMS_INV.map(r=>termCard(r.model+" · "+r.trim, escape(r.price), "")).join("")+`</div></section>`+
+        `</div>`+
         `<h2>МПТ / субсидия TENET</h2>`+
         `<div class="terms-cards">`+TERMS_MPT.map(g=>`<article class="term-card"><b>${escape(g.line)}</b>`+g.rows.map(r=>`<small>${escape(r[0])} · <b>${escape(r[1])}</b></small>`).join("")+`</article>`).join("")+`</div>`+
         `<h2>Приоритет · ${TERMS_PRIO.length} авто</h2>`+

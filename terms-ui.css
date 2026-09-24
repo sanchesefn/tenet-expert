@@ -1,5 +1,11 @@
 .terms-col{max-width:1080px}
 .terms-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:8px 0 22px}
+.terms-top{display:block}
+.terms-top h2{margin-top:0}
+@media(min-width:900px){
+  .terms-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start}
+  .terms-top .terms-cards{grid-template-columns:1fr}
+}
 .term-card{border:1px solid var(--border);background:#fff;border-radius:12px;padding:12px 14px;box-shadow:var(--shadow)}
 .term-card b{display:block;font-size:15px;letter-spacing:-.02em}
 .term-card .num{font-weight:800;margin-top:6px;font-variant-numeric:tabular-nums}

@@ -85,6 +85,8 @@ html=html.replace(
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}</td>',
     '${r.invoice?` <span class="st inv">Спец инвойс</span>`:""}${r.mpt?` <span class="st mpt">МПТ</span>`:""}</td>'
 )
+if ".terms-top{" not in html:
+    html=html.replace("</style>", ".terms-top{display:block}.terms-top h2{margin-top:0}@media(min-width:900px){.terms-top{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;align-items:start}.terms-top .terms-cards{grid-template-columns:1fr}}\n</style>", 1)
 if ".st-trim>summary" not in html:
     html=html.replace("</style>", """.st-sorts{margin-top:8px}.st-sort-lab{font-size:12px;color:#6d6458;align-self:center}.st-trims{border-top:1px solid #f0e6d8}.st-trim{border-bottom:1px solid #f3eadc;background:#fff}.st-trim:last-child{border-bottom:0}.st-trim>summary{list-style:none;padding:9px 14px 9px 22px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer;background:#fbf7f1}.st-trim>summary::-webkit-details-marker{display:none}.st-trim>summary b{font-size:14px}.st-trim>summary b::before{content:"\\25B8  ";font-size:11px;color:#8a7560}.st-trim[open]>summary b::before{content:"\\25BE  "}.st-trim .st-list{border-top:1px solid #f0e6d8}
 </style>""", 1)
