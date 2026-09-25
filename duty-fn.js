@@ -447,138 +447,133 @@
       const c=document.createElement("canvas");
       c.width=W; c.height=H;
       const ctx=c.getContext("2d");
-      ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,W,H);
-      const pad=40;
-      const inner=W-pad*2;
-      function roundRect(x,y,w,h,r){
+      ctx.fillStyle="#f4f1ea";
+      ctx.fillRect(0,0,W,H);
+      const pad=36, gap=14;
+      function rr(x,y,w,h,r){
+        const rad=Math.max(0, Math.min(r, w/2, h/2));
         ctx.beginPath();
-        ctx.moveTo(x+r,y);
-        ctx.arcTo(x+w,y,x+w,y+h,r);
-        ctx.arcTo(x+w,y+h,x,y+h,r);
-        ctx.arcTo(x,y+h,x,y,r);
-        ctx.arcTo(x,y,x+w,y,r);
+        ctx.moveTo(x+rad,y);
+        ctx.arcTo(x+w,y,x+w,y+h,rad);
+        ctx.arcTo(x+w,y+h,x,y+h,rad);
+        ctx.arcTo(x,y+h,x,y,rad);
+        ctx.arcTo(x,y,x+w,y,rad);
         ctx.closePath();
       }
-      function tick(x,y,state){
-        const st=state==="bad"?"bad":(state==="ok"||state===true?"ok":"");
-        if(st==="bad"){
-          ctx.fillStyle="#ff8a80";
-          ctx.fillRect(x-8, y-22, 280, 30);
-        }
-        ctx.lineWidth=1.6;
-        ctx.strokeStyle="#2e7d32";
-        ctx.strokeRect(x, y-15, 16, 16);
-        if(st==="ok"){
-          ctx.fillStyle="#1b5e20";
-          ctx.fillRect(x, y-15, 16, 16);
+      function panel(x,y,w,h){
+        ctx.save();
+        ctx.shadowColor="rgba(80,55,20,.08)";
+        ctx.shadowBlur=18;
+        ctx.shadowOffsetY=8;
+        ctx.fillStyle="#ffffff";
+        rr(x,y,w,h,18); ctx.fill();
+        ctx.shadowColor="transparent";
+        ctx.lineWidth=1; ctx.strokeStyle="#eadfcf";
+        rr(x,y,w,h,18); ctx.stroke();
+        ctx.restore();
+      }
+      function mark(x,y,kind,on){
+        rr(x,y,18,18,4);
+        if(on){
+          ctx.fillStyle=kind==="ok"?"#2e7d32":"#c62828";
+          ctx.fill();
           ctx.fillStyle="#fff";
           ctx.font="800 13px Inter, Arial, sans-serif";
-          ctx.fillText("✓", x+2, y-2);
-        }
-        ctx.strokeStyle="#c62828";
-        ctx.strokeRect(x+20, y-15, 16, 16);
-        if(st==="bad"){
-          ctx.fillStyle="#b71c1c";
-          ctx.fillRect(x+20, y-15, 16, 16);
-          ctx.fillStyle="#fff";
-          ctx.font="800 13px Inter, Arial, sans-serif";
-          ctx.fillText("×", x+22, y-2);
+          ctx.fillText(kind==="ok"?"✓":"×", x+(kind==="ok"?3:4), y+14);
+        }else{
+          ctx.strokeStyle=kind==="ok"?"#2e7d32":"#c62828";
+          ctx.lineWidth=1.4;
+          ctx.stroke();
         }
       }
-      ctx.fillStyle="#c81e2b";
-      ctx.fillRect(pad, pad, 32, 32);
-      ctx.fillStyle="#fff";
-      ctx.font="800 18px Inter, Arial, sans-serif";
-      ctx.fillText("T", pad+9, pad+23);
-      ctx.fillStyle="#111";
-      ctx.font="800 30px Inter, Arial, sans-serif";
-      ctx.fillText("Чек-лист дежурного", pad+46, pad+26);
-      ctx.font="600 17px Inter, Arial, sans-serif";
-      ctx.fillStyle="#5c5346";
-      ctx.fillText((d.manager||"—")+"  ·  "+(d.date||dutyToday())+"  ·  "+pct+"%  ·  "+p.on+" из "+p.tot, pad+46, pad+52);
-      let y=pad+78;
-      DUTY_CARS.forEach((car)=>{
-        const carNote=String(d[car.id+"_note"]||"");
-        const carH=carNote?176:156;
-        ctx.fillStyle="#f7f1e7";
-        roundRect(pad, y, inner, carH, 14);
-        ctx.fill();
-        ctx.strokeStyle="#eadfcf"; ctx.lineWidth=1;
-        roundRect(pad, y, inner, carH, 14);
-        ctx.stroke();
-        ctx.fillStyle="#111"; ctx.font="800 22px Inter, Arial, sans-serif";
-        ctx.fillText(car.title, pad+20, y+34);
-        const rows=[
-          ["Омывающая", dutyTri(d[car.id+"_wash"])],
-          ["Коврики и пороги", dutyTri(d[car.id+"_mats"])],
-          ["Нет ошибок", dutyTri(d[car.id+"_err"])],
-          ["Нет пыли", dutyTri(d[car.id+"_dust"])],
-          ["Багажник", dutyTri(d[car.id+"_trunk"])],
-          ["Кузов", dutyTri(d[car.id+"_body"])],
-        ];
-        rows.forEach((row,ri)=>{
-          const col=ri%2;
-          const line=Math.floor(ri/2);
-          const cx=pad+20+col*((inner-40)/2);
-          const cy=y+56+line*28;
-          tick(cx, cy, row[1]);
-          ctx.fillStyle=row[1]==="bad"?"#7f0000":"#111"; ctx.font="500 17px Inter, Arial, sans-serif";
-          ctx.fillText(row[0], cx+44, cy);
-        });
-        ctx.fillStyle="#5c5346"; ctx.font="600 16px Inter, Arial, sans-serif";
-        const kmText="Пробег: "+(d[car.id+"_km"]||"—");
-        ctx.fillText(kmText, pad+20, y+146);
-        const fuelNum=Number(d[car.id+"_fuel"]);
-        const fuelLow=!Number.isNaN(fuelNum) && d[car.id+"_fuel"]!=="" && d[car.id+"_fuel"]!=null && fuelNum<=50;
-        const fuelText="Топливо: "+(d[car.id+"_fuel"]!=null&&d[car.id+"_fuel"]!==""?d[car.id+"_fuel"]+"%":"—");
-        const fuelX=pad+20+ctx.measureText(kmText).width+28;
-        if(fuelLow){
-          const fw=ctx.measureText(fuelText).width+18;
-          ctx.fillStyle="#e53935";
-          ctx.fillRect(fuelX-8, y+130, fw, 22);
-          ctx.fillStyle="#fff";
-        }else ctx.fillStyle="#5c5346";
-        ctx.fillText(fuelText, fuelX, y+146);
-        if(carNote){
-          ctx.fillStyle="#5c5346";
-          ctx.font="500 14px Inter, Arial, sans-serif";
-          ctx.fillText("Заметка: "+carNote.slice(0,80), pad+20, y+166);
+      function item(x,y,w,label,raw){
+        const st=dutyTri(raw);
+        if(st){
+          ctx.fillStyle=st==="bad"?"#ff8a80":"#e8f5e9";
+          rr(x,y,w,24,7); ctx.fill();
         }
-        y+=carH+12;
+        ctx.fillStyle=st==="bad"?"#7f0000":"#1c1a17";
+        ctx.font="500 13px Inter, Arial, sans-serif";
+        ctx.fillText(label, x+8, y+16);
+        mark(x+w-46, y+3, "ok", st==="ok");
+        mark(x+w-24, y+3, "bad", st==="bad");
+      }
+      const hw=W-pad*2;
+      panel(pad,28,hw,112);
+      ctx.fillStyle="#c81e2b"; rr(pad+18,46,36,36,10); ctx.fill();
+      ctx.fillStyle="#fff"; ctx.font="800 20px Inter, Arial, sans-serif"; ctx.fillText("T", pad+28, 71);
+      ctx.fillStyle="#8a6840"; ctx.font="700 12px Inter, Arial, sans-serif"; ctx.fillText("TENET  ·  ОТДЕЛ ПРОДАЖ", pad+66, 52);
+      ctx.fillStyle="#161618"; ctx.font="800 28px Inter, Arial, sans-serif"; ctx.fillText("Чек-лист дежурного", pad+66, 86);
+      ctx.textAlign="right";
+      ctx.fillStyle="#1c1a17"; ctx.font="700 16px Inter, Arial, sans-serif";
+      ctx.fillText(d.manager||"—", W-pad-22, 56);
+      ctx.fillStyle="#6d6458"; ctx.font="500 14px Inter, Arial, sans-serif";
+      ctx.fillText(d.date||dutyToday(), W-pad-22, 76);
+      ctx.textAlign="left";
+      const bx=W-pad-200, by=90, bw=178, bh=8;
+      ctx.fillStyle="#6d6458"; ctx.font="700 12px Inter, Arial, sans-serif";
+      ctx.fillText(pct+"%", bx-40, by+8);
+      ctx.fillStyle="#efe6d8"; rr(bx,by,bw,bh,8); ctx.fill();
+      ctx.fillStyle="#2e7d32"; rr(bx,by,Math.max(bh,bw*pct/100),bh,8); ctx.fill();
+      let y=154;
+      const colW=(hw-gap*2)/3;
+      const carH=348;
+      DUTY_CARS.forEach((car,i)=>{
+        const col=i%3, row=Math.floor(i/3);
+        const x=pad+col*(colW+gap);
+        const cy=y+row*(carH+gap);
+        panel(x,cy,colW,carH);
+        ctx.fillStyle="#161618"; ctx.font="800 16px Inter, Arial, sans-serif";
+        ctx.fillText(car.title, x+16, cy+30);
+        let iy=cy+44;
+        const iw=colW-28;
+        [["Омывающая",car.id+"_wash"],["Коврики и пороги",car.id+"_mats"],["Нет ошибок",car.id+"_err"],["Нет пыли",car.id+"_dust"],["Багажник",car.id+"_trunk"],["Кузов",car.id+"_body"]].forEach(pair=>{
+          item(x+14, iy, iw, pair[0], d[pair[1]]);
+          iy+=28;
+        });
+        iy+=4;
+        ctx.fillStyle="#7a7166"; ctx.font="500 12px Inter, Arial, sans-serif";
+        ctx.fillText("Пробег", x+16, iy+14);
+        ctx.textAlign="right"; ctx.fillStyle="#1c1a17"; ctx.font="700 14px Inter, Arial, sans-serif";
+        ctx.fillText(String(d[car.id+"_km"]||"—"), x+colW-16, iy+14);
+        ctx.textAlign="left";
+        iy+=24;
+        const fuelN=Number(d[car.id+"_fuel"]);
+        const n=Number.isNaN(fuelN)?0:Math.max(0,Math.min(100,fuelN));
+        const low=n<=50;
+        ctx.fillStyle=low?"#ff8a80":"#f7f1e8";
+        rr(x+14, iy, iw, 34, 9); ctx.fill();
+        ctx.fillStyle=low?"#7f0000":"#6d6458"; ctx.font="600 12px Inter, Arial, sans-serif";
+        ctx.fillText("Топливо", x+24, iy+22);
+        ctx.textAlign="right"; ctx.fillStyle=low?"#7f0000":"#1c1a17"; ctx.font="800 14px Inter, Arial, sans-serif";
+        ctx.fillText(n+"%", x+14+iw-10, iy+22);
+        ctx.textAlign="left";
+        const trackX=x+108, trackW=iw-108-52;
+        ctx.fillStyle=low?"#f6c7c1":"#efe6d8";
+        rr(trackX, iy+14, trackW, 7, 7); ctx.fill();
+        ctx.fillStyle=low?"#c62828":"#2e7d32";
+        rr(trackX, iy+14, Math.max(6, trackW*n/100), 7, 7); ctx.fill();
+        iy+=44;
+        const note=String(d[car.id+"_note"]||"").replace(/\s+/g," ").trim();
+        ctx.fillStyle="#7a7166"; ctx.font="500 12px Inter, Arial, sans-serif";
+        ctx.fillText(note?("Заметка: "+note.slice(0,46)):"Заметка —", x+16, iy+8);
       });
-      function block(title, keys){
-        const rows=Math.ceil(keys.length/3);
-        const h=42+rows*32;
-        ctx.fillStyle="#f7f1e7";
-        roundRect(pad, y, inner, h, 14); ctx.fill();
-        ctx.strokeStyle="#eadfcf"; ctx.lineWidth=1;
-        roundRect(pad, y, inner, h, 14); ctx.stroke();
-        ctx.fillStyle="#111"; ctx.font="800 20px Inter, Arial, sans-serif";
-        ctx.fillText(title, pad+20, y+32);
-        keys.forEach((pair,i)=>{
-          const col=i%3;
-          const line=Math.floor(i/3);
-          const cx=pad+20+col*((inner-40)/3);
-          const cy=y+50+line*30;
-          tick(cx, cy, dutyTri(d[pair[0]]));
-          ctx.fillStyle=dutyTri(d[pair[0]])==="bad"?"#7f0000":"#111"; ctx.font="500 16px Inter, Arial, sans-serif";
-          ctx.fillText(pair[1], cx+44, cy);
-        });
-        y+=h+12;
+      y+=Math.ceil(DUTY_CARS.length/3)*(carH+gap);
+      const footW=(hw-gap)/2, footH=268;
+      function box(x,title,keys,note){
+        panel(x,y,footW,footH);
+        ctx.fillStyle="#161618"; ctx.font="800 16px Inter, Arial, sans-serif";
+        ctx.fillText(title, x+16, y+30);
+        let iy=y+44;
+        keys.forEach(pair=>{ item(x+14, iy, footW-28, pair[1], d[pair[0]]); iy+=28; });
+        const t=String(note||"").replace(/\s+/g," ").trim();
+        ctx.fillStyle="#7a7166"; ctx.font="500 12px Inter, Arial, sans-serif";
+        ctx.fillText(t?("Заметка: "+t.slice(0,78)):"Заметка —", x+16, y+footH-16);
       }
-      block("Дилерский центр",[
-        ["dc_light","Свет"],["dc_music","Музыка"],
-        ["dc_price_hold","Прайсхолдеры"],["dc_desk","Столы"]
-      ]);
-      block("Шоурум",[
-        ["dm_body","Кузов"],["dm_mats","Коврики"],["dm_trunk","Багажник"],
-        ["dm_dust","Нет пыли"],["dm_wheel","Колёса"],["dm_bat","АКБ"]
-      ]);
-      ctx.fillStyle="#5c5346"; ctx.font="500 16px Inter, Arial, sans-serif";
-      ctx.fillText("ДЦ: "+(d.dc_note||"—"), pad, y+8);
-      ctx.fillText("Шоурум: "+(d.note||"—"), pad, y+32);
-      ctx.fillStyle="#9a9186"; ctx.font="500 13px Inter, Arial, sans-serif";
-      ctx.fillText("TENET · Отдел продаж · Эксперт Авто Самара", pad, H-28);
+      box(pad,"Дилерский центр",[["dc_light","Свет"],["dc_music","Музыка"],["dc_price_hold","Прайсхолдеры"],["dc_desk","Столы"]], d.dc_note);
+      box(pad+footW+gap,"Шоурум",[["dm_body","Кузов"],["dm_mats","Коврики"],["dm_trunk","Багажник"],["dm_dust","Нет пыли"],["dm_wheel","Колёса"],["dm_bat","АКБ"]], d.note);
+      ctx.fillStyle="#9a9186"; ctx.font="500 12px Inter, Arial, sans-serif";
+      ctx.fillText("TENET · Отдел продаж · Эксперт Авто Самара", pad, H-22);
       dutyFileSave(c, d);
     }
     window.__dutyPagePdf=dutyPdf;
