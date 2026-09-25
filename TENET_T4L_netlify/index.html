@@ -340,9 +340,25 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 @media(max-width:720px){.cl-cars{grid-template-columns:1fr}}
 .cl-car{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:12px 12px 10px}
 .cl-car h3{margin:0 0 8px;font-size:15px}
-.cl-item{display:flex!important;align-items:center;justify-content:flex-start;gap:8px;padding:3px 0;font-size:13px;cursor:pointer}
-.cl input[type=checkbox]{width:16px!important;height:16px!important;min-height:0!important;padding:0!important;margin:0!important;flex:0 0 16px!important;border-radius:4px!important;accent-color:#1b5e20}
-.cl-mark{display:none}
+.cl-item{display:flex!important;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;margin:2px 0;border-radius:8px;font-size:13px}
+.cl-lab{flex:1;min-width:0}
+.cl-pair{display:flex;gap:6px;flex:none}
+.cl-sq{width:22px;height:22px;padding:0;margin:0;border-radius:4px;border:1.5px solid #cfc6ba;background:#fff;color:transparent;font:800 14px/1 Inter,Arial,sans-serif;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.cl-sq.ok{border-color:#2e7d32}
+.cl-sq.bad{border-color:#c62828}
+.cl-sq.ok.on{background:#2e7d32;border-color:#2e7d32;color:#fff}
+.cl-sq.bad.on{background:#c62828;border-color:#c62828;color:#fff}
+.cl-item.is-ok{background:#e8f5e9}
+.cl-item.is-bad{background:#ff8a80;box-shadow:inset 0 0 0 1.5px #b71c1c}
+.cl-chips .cl-item{flex:1 1 180px;background:#fbf7f1;border:1px solid #eadfcf}
+.cl-chips .cl-item.is-ok{background:#e8f5e9;border-color:#a5d6a7}
+.cl-chips .cl-item.is-bad{background:#ff8a80;border-color:#b71c1c}
+@media print{
+  .cl-item.is-bad{background:#e53935 !important;color:#fff !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cl-item.is-bad .cl-lab{color:#fff !important}
+  .cl-sq.ok.on{background:#2e7d32 !important;color:#fff !important;border-color:#2e7d32 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cl-sq.bad.on{background:#7f0000 !important;color:#fff !important;border-color:#7f0000 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 .cl-nums{display:flex;gap:8px;margin-top:6px}
 .cl-nums label{flex:1;display:flex;flex-direction:column;gap:3px;font-size:11px;color:#7a7166}
 .cl-nums input,.cl-car select{width:100%;min-height:32px;padding:6px 8px;border:1px solid #eadfcf;border-radius:8px;background:#fff}

@@ -42,14 +42,20 @@
       {id:"t7",title:"TENET T7"},
       {id:"t9",title:"Tiggo 9"}
     ];
+    function dutyTri(v){
+      if(v==="ok" || v==="bad") return v;
+      if(v===true || v==="true") return "ok";
+      if(v==="no") return "bad";
+      return "";
+    }
+    function dutyOk(v){ return dutyTri(v)==="ok"; }
     function dutyCount(d){
       let tot=0, on=0;
       DUTY_CARS.forEach(car=>{
-        ["_wash","_mats","_err","_dust","_trunk"].forEach(s=>{ tot++; if(d[car.id+s]) on++; });
-        tot++; if((d[car.id+"_body"]||"ok")!=="no") on++;
+        ["_wash","_mats","_err","_dust","_trunk","_body"].forEach(s=>{ tot++; if(dutyOk(d[car.id+s])) on++; });
         tot+=2; if(d[car.id+"_km"]) on++; if(d[car.id+"_fuel"]) on++;
       });
-      ["dc_light","dc_avito","dc_music","dc_price_avito","dc_price_hold","dc_desk","dc_trash","dm_body","dm_mats","dm_trunk","dm_dust","dm_wheel","dm_bat"].forEach(k=>{ tot++; if(d[k]) on++; });
+      ["dc_light","dc_avito","dc_music","dc_price_avito","dc_price_hold","dc_desk","dc_trash","dm_body","dm_mats","dm_trunk","dm_dust","dm_wheel","dm_bat"].forEach(k=>{ tot++; if(dutyOk(d[k])) on++; });
       return {on, tot};
     }
     function dutyPaintProg(){
@@ -60,8 +66,17 @@
       if(bar) bar.style.width=pct+"%";
       if(lab) lab.textContent=pct+"%";
     }
-    function dutyItem(k, label, on){
-      return `<label class="cl-item"><input type="checkbox" data-duty="${k}" ${on?"checked":""} /><span class="cl-mark">✓</span><span>${label}</span></label>`;
+    function dutyItem(k, label, raw){
+      const st=dutyTri(raw);
+      const cls=st==="bad"?" is-bad":(st==="ok"?" is-ok":"");
+      return `<div class="cl-item${cls}">
+        <span class="cl-lab">${label}</span>
+        <span class="cl-pair">
+          <button type="button" class="cl-sq ok${st==="ok"?" on":""}" data-duty-pick="${k}" data-val="ok" aria-label="Норма">✓</button>
+          <button type="button" class="cl-sq bad${st==="bad"?" on":""}" data-duty-pick="${k}" data-val="bad" aria-label="Проблема">✕</button>
+        </span>
+        <input type="hidden" data-duty="${k}" value="${st}" />
+      </div>`;
     }
     function duty(){
       if(needAuth()) return login();
@@ -72,7 +87,6 @@
       const prog=dutyCount(d);
       const pct=prog.tot?Math.round(prog.on*100/prog.tot):0;
       const cards=DUTY_CARS.map(car=>{
-        const body=d[car.id+"_body"]||"ok";
         return `<article class="cl-car">
           <h3>${car.title}</h3>
           ${dutyItem(car.id+"_wash","Омывающая", d[car.id+"_wash"])}
@@ -80,13 +94,7 @@
           ${dutyItem(car.id+"_err","Нет ошибок", d[car.id+"_err"])}
           ${dutyItem(car.id+"_dust","Нет пыли", d[car.id+"_dust"])}
           ${dutyItem(car.id+"_trunk","Багажник", d[car.id+"_trunk"])}
-          <label class="cl-item" style="display:block">Кузов
-            <select data-duty="${car.id}_body">
-              <option value="ok" ${body==="ok"?"selected":""}>чистый</option>
-              <option value="pm" ${body==="pm"?"selected":""}>±</option>
-              <option value="no" ${body==="no"?"selected":""}>грязный</option>
-            </select>
-          </label>
+          ${dutyItem(car.id+"_body","Кузов", d[car.id+"_body"])}
           <div class="cl-nums">
             <label>Пробег<input data-duty="${car.id}_km" inputmode="numeric" value="${escape(d[car.id+"_km"]||"")}" /></label>
             <label>Топливо %<input data-duty="${car.id}_fuel" inputmode="numeric" value="${escape(d[car.id+"_fuel"]||"")}" /></label>
@@ -311,6 +319,22 @@
         document.querySelectorAll("[data-duty]").forEach(el=>{
           el.addEventListener("change", persist);
           el.addEventListener("input", persist);
+        });
+        document.querySelectorAll("[data-duty-pick]").forEach(btn=>{
+          btn.addEventListener("click", ()=>{
+            const row=btn.closest(".cl-item");
+            if(!row) return;
+            const k=btn.getAttribute("data-duty-pick");
+            const val=btn.getAttribute("data-val");
+            const hid=row.querySelector('input[type="hidden"]');
+            const cur=hid?hid.value:"";
+            const next=cur===val?"":val;
+            if(hid) hid.value=next;
+            row.classList.toggle("is-ok", next==="ok");
+            row.classList.toggle("is-bad", next==="bad");
+            row.querySelectorAll(".cl-sq").forEach(b=>b.classList.toggle("on", b.getAttribute("data-val")===next));
+            persist();
+          });
         });
         dutyPaintProg();
       }
