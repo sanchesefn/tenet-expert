@@ -118,7 +118,7 @@
             <input data-duty="date" readonly value="${escape(d.date||dutyToday())}" style="width:96px" />
             <div class="cl-prog"><i style="width:${pct}%"></i><span>${pct}%</span></div>
             <button type="button" class="btn ivory" id="dutySave">Сохранить</button>
-            <button type="button" class="btn ghost" id="dutyPrint">На рабочий стол</button>
+            <button type="button" class="btn ghost" id="dutyPrint">Скачать</button>
             <button type="button" class="btn ghost" id="dutyClear">Сброс</button>
           </div>
           <div class="cl-cars">${cards}</div>
