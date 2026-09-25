@@ -47,7 +47,7 @@ else:
       return `<ol class="prio-list">`+TERMS_PRIO.map((r,i)=>{
         const sold=!!r.sold;
         const n=r.seller?soldBy[r.seller]||0:0;
-        const mark=sold&&r.seller?`<span class="sold-mark"><em>Продано</em> ${escape(r.seller)} <i>${n>=2?"2":"1"}</i></span>`:"";
+        const mark=sold?(r.seller?`<span class="sold-mark"><em>Продано</em> ${escape(r.seller)} <i>${n>=2?"2":"1"}</i></span>`:`<span class="sold-mark"><em>Продано</em></span>`):"";
         const go=!sold?`<button type="button" class="btn ivory prio-go" data-prio-go="${escape(r.vin)}">Перейти к расчету цены и кредита</button>`:"";
         const extra=r.extra?` · ${escape(r.extra)}`:"";
         return `<li class="prio-item${sold?" sold":""}">
