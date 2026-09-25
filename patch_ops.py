@@ -67,10 +67,16 @@ CSS = """
 .st-flags{margin-top:6px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}
 .study-pick{flex-wrap:wrap}
 @media print{
-  header,nav,.who-line,.hub-grid,.cl-bar .btn{display:none!important}
-  .cl-item input{appearance:none!important;border:1.4px solid #000!important;background:#fff!important}
-  .cl-item input:checked + .cl-mark{color:#000!important}
-  .cl-mark{color:#000}
+  @page{size:A4 portrait;margin:6mm}
+  header,nav,.who-line,.hub-grid,.cl-bar .btn,.banner,.bot,.cl-log,.cl-prog{display:none!important}
+  .cl-cars{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:2.5mm!important}
+  .cl-foot{display:grid!important;grid-template-columns:1fr 1fr!important}
+  .cl-car,.cl-box{break-inside:avoid;padding:2mm!important}
+  .cl-item{font-size:8px!important;padding:0.3mm 1mm!important;margin:0!important}
+  .cl-sq{width:3.2mm!important;height:3.2mm!important}
+  .cl-ticks{display:none!important}
+  .cl-note{height:7mm!important;min-height:0!important;max-height:7mm!important;overflow:hidden!important}
+  .cl-item.is-bad{background:#e53935!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .st-acc{break-inside:avoid}
 }
 """ + HUB_CSS
