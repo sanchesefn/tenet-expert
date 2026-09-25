@@ -328,6 +328,29 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
   .mpt-break .bank-row > span:first-child{flex:none;max-width:none;min-width:0;padding-right:0;font-size:11px;letter-spacing:.06em;text-transform:uppercase}
   .mpt-break .bank-row .pay,.mpt-break .bank-row > span:last-child{text-align:left;flex:none}
 }
+.cl{display:flex;flex-direction:column;gap:12px}
+.cl-bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.cl-bar input{width:auto!important;flex:1 1 180px;max-width:280px;min-height:38px;padding:8px 10px!important}
+.cl-bar input[data-duty="date"]{flex:0 0 118px;max-width:118px}
+.cl-prog{flex:1 1 140px;height:8px;background:#efe6d8;border-radius:99px;position:relative;min-width:120px}
+.cl-prog i{display:block;height:100%;background:#2e7d32;border-radius:99px}
+.cl-prog span{position:absolute;left:0;top:-16px;font-size:12px;color:#6d6458}
+.cl-cars{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:1100px){.cl-cars{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.cl-cars{grid-template-columns:1fr}}
+.cl-car{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:12px 12px 10px}
+.cl-car h3{margin:0 0 8px;font-size:15px}
+.cl-item{display:flex!important;align-items:center;justify-content:flex-start;gap:8px;padding:3px 0;font-size:13px;cursor:pointer}
+.cl input[type=checkbox]{width:16px!important;height:16px!important;min-height:0!important;padding:0!important;margin:0!important;flex:0 0 16px!important;border-radius:4px!important;accent-color:#1b5e20}
+.cl-mark{display:none}
+.cl-nums{display:flex;gap:8px;margin-top:6px}
+.cl-nums label{flex:1;display:flex;flex-direction:column;gap:3px;font-size:11px;color:#7a7166}
+.cl-nums input,.cl-car select{width:100%;min-height:32px;padding:6px 8px;border:1px solid #eadfcf;border-radius:8px;background:#fff}
+.cl-foot{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:720px){.cl-foot{grid-template-columns:1fr}}
+.cl-box{background:#fff;border:1px solid #eadfcf;border-radius:14px;padding:12px}
+.cl-box b{display:block;margin-bottom:6px;font-size:13px}
+.cl-chips{display:flex;flex-wrap:wrap;gap:4px 14px}
 
 </style>
 </head>
