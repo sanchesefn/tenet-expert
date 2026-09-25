@@ -309,18 +309,19 @@
     }
     function gibdd(){
       if(needAuth()) return login();
-      const g=gibddLoad();
+      const links=[
+        ["Реестр залогов","Проверка VIN","https://www.reestr-zalogov.ru/search/index"],
+        ["ФССП","Исполнительные производства","https://fssp.gov.ru/iss/ip"],
+        ["Реестр банкротов","Федресурс","https://fedresurs.ru/bankrupts"],
+        ["Банкроты","Старый реестр","https://bankrot.fedresurs.ru/"]
+      ];
       return banner("Проверки ГИБДД","Залог · ФССП · банкроты","TENET")+`
-        <p class="lead">Дата — ДД.ММ.ГГГГ. «Открыть» передаёт VIN / ФИО / дату в ссылку реестра.</p>
-        <div class="card">
-          <div class="cl-bar">
-            <label class="field" style="max-width:none"><span>VIN</span><input id="gVin" value="${escape(g.vin||"")}" placeholder="X7L…" /></label>
-            <label class="field" style="max-width:none"><span>ФИО</span><input id="gFio" value="${escape(g.fio||"")}" placeholder="Иванов Иван Иванович" /></label>
-            <label class="field" style="width:180px"><span>Дата рождения</span><input id="gDob" inputmode="numeric" maxlength="10" value="${escape(g.dob||"")}" placeholder="ДД.ММ.ГГГГ" /></label>
-          </div>
-          <div class="who-line"><button type="button" class="btn ivory" id="gRun">Проверить</button></div>
-        </div>
-        <div id="gOut"></div>`;
+        <div class="gibdd-links">${links.map(([title,note,href])=>`
+          <a href="${href}" target="_blank" rel="noopener" style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 16px;margin:0 0 8px;background:#fff;border:1px solid #eadfcf;border-radius:14px;text-decoration:none;color:#1c1a17">
+            <span><b style="display:block;font-size:16px">${title}</b><small style="color:#7a7166">${note}</small></span>
+            <span style="color:#8a6840;font-weight:700">открыть</span>
+          </a>`).join("")}
+        </div>`;
     }
     function dutyBind(){
       if(view==="duty"){
