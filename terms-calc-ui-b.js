@@ -104,7 +104,8 @@
       const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):!!(fMpt&&(fMpt.sub||0)>0&&m.id!=="tt9p"&&m.id!=="tt9u");
       const showMpt=pickMpt || (!selected && hasMpt);
       const showSub=!showMpt && canSub;
-      const showSplit=showMpt || showSub;
+      const showFleet=!showMpt && !showSub && !!fMpt && (m.stock==="tt9" || m.id==="tt9p" || m.id==="tt9u");
+      const showSplit=showMpt || showSub || showFleet;
       const mptSample=mptCars[0]||(pickMpt&&selected?selected:null);
       const mptRrc=fMpt&&fMpt.rrc?fMpt.rrc:price;
       const mptTidy=fMpt&&fMpt.tidy?fMpt.tidy:mptRrc;
@@ -112,7 +113,7 @@
       const tiMpt=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
       const beforeMptPct=Math.max(0, mptTidy-tiMpt);
       const subAmt=(fMpt&&fMpt.sub)||0;
-      const priceMpt=showSub?Math.max(0, beforeMptPct-subAmt):Math.round(beforeMptPct*0.9);
+      const priceMpt=showSub?Math.max(0, beforeMptPct-subAmt):(showFleet?beforeMptPct:Math.round(beforeMptPct*0.9));
       const MPT_EXTRA=200000;
       const downMptShow=Math.max(0, Math.min(priceMpt, down));
       const downMptCar=Math.max(0, downMptShow-MPT_EXTRA);
@@ -141,6 +142,14 @@
         const term=look.term||months;
         const pay=calcPay(price+extras, down, term, look.rate);
         return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-credit});
+      });
+      const fleetBase=showFleet?priceMpt:price;
+      const creditFleet=Math.max(0, fleetBase-down+extras);
+      const banksFleet=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
+        const look=typeof kmBankRate==="function"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};
+        const term=look.term||months;
+        const pay=calcPay(fleetBase+extras, down, term, look.rate);
+        return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-creditFleet});
       });
       function kmPayRows(list, payKey, overKey){
         return list.map(b=>{
@@ -245,14 +254,14 @@
             ${kmPayRows(banks,"pay","over")}
             <p class="calc-note">Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
           </div>
-          <div class="pay-col ${showSub?"sub":"mpt"} km-pay">
-            <p class="eyebrow">${showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
-            ${kmPayRows(banksMpt,"payMpt","overMpt")}
-            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
+          <div class="pay-col ${showFleet?"std":showSub?"sub":"mpt"} km-pay">
+            <p class="eyebrow">${showFleet?"Флит":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+            ${showFleet?kmPayRows(banksFleet,"pay","over"):kmPayRows(banksMpt,"payMpt","overMpt")}
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(showFleet?creditFleet:creditMpt)}</span></div>
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
-              <p class="calc-note">${showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
-              ${mptBreak}
+              <p class="calc-note">${showFleet?"Цена флита "+rub(priceMpt)+" · ПВ "+rub(down)+" · обычные ставки банков, не субсидия.":showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
+              ${showFleet?"":mptBreak}
             </details>
           </div>
           ${pShow?`<div class="pay-col pango km-pay">
@@ -276,15 +285,15 @@
             ${useLoan?`<div class="card">
               <p class="eyebrow">Кредит · ${escape(m.name)}</p>
               <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.${pickMpt?" Выбран VIN с меткой МПТ.":""}</p>
-              ${showMpt||showSub?`<p class="eyebrow" style="margin-top:16px">${showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
-              ${kmPayRows(banksMpt,"payMpt","overMpt")}
-              <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
+              ${showMpt||showSub||showFleet?`<p class="eyebrow" style="margin-top:16px">${showFleet?"Флит":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+              ${showFleet?kmPayRows(banksFleet,"pay","over"):kmPayRows(banksMpt,"payMpt","overMpt")}
+              <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(showFleet?creditFleet:creditMpt)}</span></div>
               <details class="calc-more"><summary>Подробности расчёта</summary>
               <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О.</p>
               ${mptBreak}</details>`
               :`<p class="eyebrow" style="margin-top:16px">Платёж в месяц</p>
               ${kmPayRows(banks,"pay","over")}`}
-              <p class="calc-note">${showMpt?"МПТ. ":showSub?"Субсидия бренда. ":""}Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
+              <p class="calc-note">${showMpt?"МПТ. ":showSub?"Субсидия бренда. ":showFleet?"Флит. ":""}Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
             </div>`:`<div class="card"><p class="eyebrow">Кредит</p><p class="lead" style="max-width:none">Включите галочку «Кредит», чтобы открыть расчёт платежа${hasMpt?" и сравнение с МПТ":canSub?" и сравнение с субсидией бренда":""}.</p></div>`}
             ${kmSideList(m, price, downPct, months, extras, {useTi, spec, useDcTi, dcTi, useDcCr, dcCr, downMode, down, finDelta, useLoan})}
           </div>`}
