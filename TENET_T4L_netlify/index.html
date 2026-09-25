@@ -204,9 +204,9 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
 .doc-mini b{font-size:13px;}
 .doc-mini span{color:var(--muted);}
 .doc-mini a{font-weight:700;border-bottom:1px solid var(--border);}
-.hub-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-top:22px;}
-@media(min-width:640px){.hub-grid{grid-template-columns:1fr 1fr;}}
-@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,1fr);}}
+.hub-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+@media(min-width:720px){.hub-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}}
 .hub-card{
   position:relative;
   display:flex;
@@ -222,7 +222,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
   content:"";
   display:block;
   width:100%;
-  aspect-ratio:16/10;
+  aspect-ratio:16/6;
   background-color:#efeae0;
   background-repeat:no-repeat;
   background-position:center center;
@@ -962,7 +962,7 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         }
         if(!MODELS[model]) model="t4l";
         nav(view==="play"?"quiz":view);
-        const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,terms,calc,stock,docs};
+        const map={login,hub,home,study,quiz:brief,play,rate,hist:rate,terms,calc,stock,docs,epts,duty,gibdd,offer};
         const fn=map[view]||hub;
         const root=document.getElementById("app");
         if(root) root.innerHTML=fn();
@@ -993,7 +993,11 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
         ["terms","₽","Торговые условия","Прайс 01.09.2026, трейд-ин и кредит T7"],
         ["calc","%","Калькулятор","Ежемесячный платёж с выбранной комплектации"],
         ["stock","S","Склад","В наличии и в пути — T4L, T7, T8"],
-        ["docs","D","Документы","Прайсы, PDF и материалы моделей"]
+        ["docs","D","Документы","Прайсы, PDF и материалы моделей"],
+        ["epts","Э","Заказ ЭПТС","Гарантийное письмо: VIN, PDF и отправка"],
+        ["duty","Ч","Чек-лист дежурного","Тест-драйв, ДЦ и демо"],
+        ["gibdd","Г","Проверки ГИБДД","ФССП, залоги, банкроты"],
+        ["offer","КП","Коммерческое предложение","Новый а/м, сервис и лизинг"]
       ];
       return banner("Кабинет отдела продаж","TENET · Отдел продаж", state.display)+`
         <p class="lead">${hi}, <b>${escape(state.display)}</b>. ${examHint} Разделы ниже — рабочее пространство салона.</p>

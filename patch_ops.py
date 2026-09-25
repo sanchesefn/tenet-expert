@@ -8,12 +8,13 @@ JS = ROOT / "duty-fn.js"
 STOCK_JS = ROOT / "stock-fn.js"
 
 HUB_CSS = """
-.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
-@media(min-width:900px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}}
-.hub-card::before{aspect-ratio:16/8!important;}
-.hub-card .txt{padding:10px 12px 12px!important;}
-.hub-card h3{font-size:16px!important;margin:0 0 4px!important;}
-.hub-card p{font-size:12px!important;line-height:1.35!important;}
+.hub-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
+@media(min-width:720px){.hub-grid{grid-template-columns:1fr 1fr;}}
+@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}}
+.hub-card::before{aspect-ratio:16/6!important;}
+.hub-card .txt{padding:8px 12px 10px!important;}
+.hub-card h3{font-size:16px!important;margin:0 0 2px!important;}
+.hub-card p{font-size:12px!important;line-height:1.3!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 .hub-mark{width:28px!important;height:28px!important;font-size:11px!important;top:8px!important;left:8px!important;border-radius:8px!important;}
 @media(max-width:720px){
   .hub-card::before{aspect-ratio:16/9!important;}
@@ -78,7 +79,7 @@ def patch(html: str) -> str:
     js = JS.read_text(encoding="utf-8") if JS.exists() else ""
     if js:
         if "function stockBlob(c){" in html:
-            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?(?=    function login\(\)\{)", js, count=1)
+            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?(?=    function login\(\)\{)", lambda m, body=js: body, html, count=1)
             print("duty fn replaced")
         elif "    function login(){" in html:
             html = html.replace("    function login(){", js + "    function login(){", 1)
@@ -87,7 +88,7 @@ def patch(html: str) -> str:
     if stock_js and "function stock(){" in html:
         new_html, n = re.subn(
             r"    function salonLabel\(s\)\{[\s\S]*?\n    function stock\(\)\{[\s\S]*?\n    function ",
-            stock_js + "    function ",
+            lambda m, body=stock_js: body + "    function ",
             html,
             count=1,
         )
@@ -97,7 +98,7 @@ def patch(html: str) -> str:
         else:
             new_html, n = re.subn(
                 r"    function stock\(\)\{[\s\S]*?\n    function ",
-                stock_js + "    function ",
+                lambda m, body=stock_js: body + "    function ",
                 html,
                 count=1,
             )
@@ -131,7 +132,7 @@ def patch(html: str) -> str:
     html = html.replace("terms,calc,stock,docs}", "terms,calc,stock,docs,epts,duty,gibdd}")
     html = html.replace(
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС"};',
-        'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД"};',
+        'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД",offer:"КП"};',
     )
     if 'if(typeof dutyBind==="function") dutyBind();' not in html:
         html = html.replace(
