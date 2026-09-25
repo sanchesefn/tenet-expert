@@ -132,6 +132,17 @@ if ".st-board{" not in html:
   .st-list>.st-row:nth-child(odd){box-shadow:inset -1px 0 0 #f3eadc}
 }
 </style>""", 1)
+if ".st-row.tone-black" not in html:
+    html=html.replace("</style>", """.st-row.tone-black:not(.is-reserved):not(.is-invoice){background:#f2f2f3;border-left:3px solid #6a6a6e}
+.st-row.tone-white:not(.is-reserved):not(.is-invoice){background:#fffdf9;border-left:3px solid #e4ddd2}
+.st-row.tone-red:not(.is-reserved):not(.is-invoice){background:#fdf3f3;border-left:3px solid #d98989}
+.st-row.tone-green:not(.is-reserved):not(.is-invoice){background:#f2f6f2;border-left:3px solid #7d9e84}
+.st-row.tone-blue:not(.is-reserved):not(.is-invoice){background:#f2f6fb;border-left:3px solid #86a9c6}
+.st-row.tone-silver:not(.is-reserved):not(.is-invoice){background:#f4f5f6;border-left:3px solid #b4bac1}
+.st-row.tone-bamboo:not(.is-reserved):not(.is-invoice){background:#f4f5f0;border-left:3px solid #a3ad90}
+.st-row.tone-light:not(.is-reserved):not(.is-invoice){background:#f5f6f7;border-left:3px solid #c5c9ce}
+.st-row.tone-gray:not(.is-reserved):not(.is-invoice){background:#f1f2f3;border-left:3px solid #9ea3a8}
+</style>""", 1)
 if ".st.mpt{" not in html:
     html=html.replace("</style>", ".st.mpt{background:#cfe8d1;color:#1b5e20;}\n</style>", 1)
 if ".stock-car.mpt{" not in html:

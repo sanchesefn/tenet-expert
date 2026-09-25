@@ -132,6 +132,19 @@
       if(typeof stockOpen==="object" && stockOpen && Object.prototype.hasOwnProperty.call(stockOpen, key)) return !!stockOpen[key];
       return !!fallback;
     }
+    function stockTone(color){
+      const c=String(color||"").toLowerCase().replace(/ё/g,"е");
+      if(c.includes("черн")) return "tone-black";
+      if(c.includes("бел")) return "tone-white";
+      if(c.includes("крас")) return "tone-red";
+      if(c.includes("зелен")) return "tone-green";
+      if(c.includes("голуб")||c.includes("син")) return "tone-blue";
+      if(c.includes("сереб")) return "tone-silver";
+      if(c.includes("bamboo")||c.includes("бамбу")) return "tone-bamboo";
+      if(c.includes("светл")) return "tone-light";
+      if(c.includes("сер")) return "tone-gray";
+      return "";
+    }
     function stockCard(r){
       const salon=salonLabel(r.salon);
       const price=stockRrc(r);
@@ -139,7 +152,8 @@
       const meta=[r.color, year?String(year):"", salon].filter(Boolean).join(" · ");
       const reservedCls=r.reserved?" is-reserved":"";
       const reservedBadge=r.reserved?`<span class="st reserved st-reserved-mid">Забронирован</span>`:"";
-      return `<article class="st-row${reservedCls}${r.invoice?" is-invoice":""}">
+      const tone=stockTone(r.color);
+      return `<article class="st-row${tone?" "+tone:""}${reservedCls}${r.invoice?" is-invoice":""}">
         <div>
           <b>${escape(r.name||"")}</b>
           <small>${escape(meta)}</small>
