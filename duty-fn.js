@@ -118,7 +118,7 @@
             <input data-duty="date" readonly value="${escape(d.date||dutyToday())}" style="width:96px" />
             <div class="cl-prog"><i style="width:${pct}%"></i><span>${pct}%</span></div>
             <button type="button" class="btn ivory" id="dutySave">Сохранить</button>
-            <button type="button" class="btn ghost" id="dutyPrint">Печать</button>
+            <button type="button" class="btn ghost" id="dutyPrint">На рабочий стол</button>
             <button type="button" class="btn ghost" id="dutyClear">Сброс</button>
           </div>
           <div class="cl-cars">${cards}</div>
@@ -367,6 +367,221 @@
         });
       }
     }
+    function dutyFileName(d){
+      const date=(d&&d.date)||dutyToday();
+      const who=String((d&&d.manager)||"чек-лист").trim().replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g," ").slice(0,40);
+      return "Чек-лист "+date+" "+who+".pdf";
+    }
+    function dutyJpegPdf(jpeg,w,h){
+      const pageW=595, pageH=842;
+      const enc=new TextEncoder();
+      const objects=[];
+      const add=b=>{ objects.push(b); return objects.length; };
+      add(enc.encode("<< /Type /Catalog /Pages 2 0 R >>"));
+      add(enc.encode("<< /Type /Pages /Kids [3 0 R] /Count 1 >>"));
+      add(enc.encode("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 "+pageW+" "+pageH+"] /Contents 4 0 R /Resources << /XObject << /Im0 5 0 R >> >> >>"));
+      const content=enc.encode("q "+pageW+" 0 0 "+pageH+" 0 0 cm /Im0 Do Q\n");
+      const h1=enc.encode("<< /Length "+content.length+" >>\nstream\n");
+      const t1=enc.encode("\nendstream");
+      const stream1=new Uint8Array(h1.length+content.length+t1.length);
+      stream1.set(h1,0); stream1.set(content,h1.length); stream1.set(t1,h1.length+content.length);
+      add(stream1);
+      const imgHead=enc.encode("<< /Type /XObject /Subtype /Image /Width "+w+" /Height "+h+" /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length "+jpeg.length+" >>\nstream\n");
+      const imgTail=enc.encode("\nendstream");
+      const imgBody=new Uint8Array(imgHead.length+jpeg.length+imgTail.length);
+      imgBody.set(imgHead,0); imgBody.set(jpeg,imgHead.length); imgBody.set(imgTail,imgHead.length+jpeg.length);
+      add(imgBody);
+      const header=enc.encode("%PDF-1.4\n");
+      const parts=[header];
+      let offset=header.length;
+      const xref=[0];
+      objects.forEach((body,i)=>{
+        xref.push(offset);
+        const o=enc.encode((i+1)+" 0 obj\n");
+        const e=enc.encode("\nendobj\n");
+        parts.push(o, body, e);
+        offset+=o.length+body.length+e.length;
+      });
+      let xrefStr="xref\n0 "+(objects.length+1)+"\n0000000000 65535 f \n";
+      xref.slice(1).forEach(off=>{ xrefStr+=String(off).padStart(10,"0")+" 00000 n \n"; });
+      xrefStr+="trailer << /Size "+(objects.length+1)+" /Root 1 0 R >>\nstartxref\n"+offset+"\n%%EOF";
+      parts.push(enc.encode(xrefStr));
+      let total=0; parts.forEach(p=>total+=p.length);
+      const out=new Uint8Array(total);
+      let p=0; parts.forEach(b=>{ out.set(b,p); p+=b.length; });
+      return out;
+    }
+    function dutyFileSave(canvas, d){
+      const dataUrl=canvas.toDataURL("image/jpeg",0.86);
+      const bin=atob(dataUrl.split(",")[1]);
+      const jpeg=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) jpeg[i]=bin.charCodeAt(i);
+      const pdf=(typeof eptsJpegToPdf==="function")?eptsJpegToPdf(jpeg, canvas.width, canvas.height):dutyJpegPdf(jpeg, canvas.width, canvas.height);
+      const blob=new Blob([pdf],{type:"application/pdf"});
+      const name=dutyFileName(d);
+      const fallback=()=>{
+        const a=document.createElement("a");
+        a.href=URL.createObjectURL(blob);
+        a.download=name;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+      };
+      if(window.showSaveFilePicker){
+        showSaveFilePicker({suggestedName:name, startIn:"desktop", types:[{description:"PDF", accept:{"application/pdf":[".pdf"]}}]}).then(async handle=>{
+          const w=await handle.createWritable();
+          await w.write(blob);
+          await w.close();
+        }).catch(e=>{ if(!e || e.name!=="AbortError") fallback(); });
+        return;
+      }
+      fallback();
+    }
+    function dutyPdf(src){
+      const d=src||dutyRead();
+      const p=dutyCount(d);
+      const pct=p.tot?Math.round(p.on*100/p.tot):0;
+      const W=1240, H=1754;
+      const c=document.createElement("canvas");
+      c.width=W; c.height=H;
+      const ctx=c.getContext("2d");
+      ctx.fillStyle="#ffffff"; ctx.fillRect(0,0,W,H);
+      const pad=40;
+      const inner=W-pad*2;
+      function roundRect(x,y,w,h,r){
+        ctx.beginPath();
+        ctx.moveTo(x+r,y);
+        ctx.arcTo(x+w,y,x+w,y+h,r);
+        ctx.arcTo(x+w,y+h,x,y+h,r);
+        ctx.arcTo(x,y+h,x,y,r);
+        ctx.arcTo(x,y,x+w,y,r);
+        ctx.closePath();
+      }
+      function tick(x,y,state){
+        const st=state==="bad"?"bad":(state==="ok"||state===true?"ok":"");
+        if(st==="bad"){
+          ctx.fillStyle="#ff8a80";
+          ctx.fillRect(x-8, y-22, 280, 30);
+        }
+        ctx.lineWidth=1.6;
+        ctx.strokeStyle="#2e7d32";
+        ctx.strokeRect(x, y-15, 16, 16);
+        if(st==="ok"){
+          ctx.fillStyle="#1b5e20";
+          ctx.fillRect(x, y-15, 16, 16);
+          ctx.fillStyle="#fff";
+          ctx.font="800 13px Inter, Arial, sans-serif";
+          ctx.fillText("✓", x+2, y-2);
+        }
+        ctx.strokeStyle="#c62828";
+        ctx.strokeRect(x+20, y-15, 16, 16);
+        if(st==="bad"){
+          ctx.fillStyle="#b71c1c";
+          ctx.fillRect(x+20, y-15, 16, 16);
+          ctx.fillStyle="#fff";
+          ctx.font="800 13px Inter, Arial, sans-serif";
+          ctx.fillText("×", x+22, y-2);
+        }
+      }
+      ctx.fillStyle="#c81e2b";
+      ctx.fillRect(pad, pad, 32, 32);
+      ctx.fillStyle="#fff";
+      ctx.font="800 18px Inter, Arial, sans-serif";
+      ctx.fillText("T", pad+9, pad+23);
+      ctx.fillStyle="#111";
+      ctx.font="800 30px Inter, Arial, sans-serif";
+      ctx.fillText("Чек-лист дежурного", pad+46, pad+26);
+      ctx.font="600 17px Inter, Arial, sans-serif";
+      ctx.fillStyle="#5c5346";
+      ctx.fillText((d.manager||"—")+"  ·  "+(d.date||dutyToday())+"  ·  "+pct+"%  ·  "+p.on+" из "+p.tot, pad+46, pad+52);
+      let y=pad+78;
+      DUTY_CARS.forEach((car)=>{
+        const carNote=String(d[car.id+"_note"]||"");
+        const carH=carNote?176:156;
+        ctx.fillStyle="#f7f1e7";
+        roundRect(pad, y, inner, carH, 14);
+        ctx.fill();
+        ctx.strokeStyle="#eadfcf"; ctx.lineWidth=1;
+        roundRect(pad, y, inner, carH, 14);
+        ctx.stroke();
+        ctx.fillStyle="#111"; ctx.font="800 22px Inter, Arial, sans-serif";
+        ctx.fillText(car.title, pad+20, y+34);
+        const rows=[
+          ["Омывающая", dutyTri(d[car.id+"_wash"])],
+          ["Коврики и пороги", dutyTri(d[car.id+"_mats"])],
+          ["Нет ошибок", dutyTri(d[car.id+"_err"])],
+          ["Нет пыли", dutyTri(d[car.id+"_dust"])],
+          ["Багажник", dutyTri(d[car.id+"_trunk"])],
+          ["Кузов", dutyTri(d[car.id+"_body"])],
+        ];
+        rows.forEach((row,ri)=>{
+          const col=ri%2;
+          const line=Math.floor(ri/2);
+          const cx=pad+20+col*((inner-40)/2);
+          const cy=y+56+line*28;
+          tick(cx, cy, row[1]);
+          ctx.fillStyle=row[1]==="bad"?"#7f0000":"#111"; ctx.font="500 17px Inter, Arial, sans-serif";
+          ctx.fillText(row[0], cx+44, cy);
+        });
+        ctx.fillStyle="#5c5346"; ctx.font="600 16px Inter, Arial, sans-serif";
+        const kmText="Пробег: "+(d[car.id+"_km"]||"—");
+        ctx.fillText(kmText, pad+20, y+146);
+        const fuelNum=Number(d[car.id+"_fuel"]);
+        const fuelLow=!Number.isNaN(fuelNum) && d[car.id+"_fuel"]!=="" && d[car.id+"_fuel"]!=null && fuelNum<=50;
+        const fuelText="Топливо: "+(d[car.id+"_fuel"]!=null&&d[car.id+"_fuel"]!==""?d[car.id+"_fuel"]+"%":"—");
+        const fuelX=pad+20+ctx.measureText(kmText).width+28;
+        if(fuelLow){
+          const fw=ctx.measureText(fuelText).width+18;
+          ctx.fillStyle="#e53935";
+          ctx.fillRect(fuelX-8, y+130, fw, 22);
+          ctx.fillStyle="#fff";
+        }else ctx.fillStyle="#5c5346";
+        ctx.fillText(fuelText, fuelX, y+146);
+        if(carNote){
+          ctx.fillStyle="#5c5346";
+          ctx.font="500 14px Inter, Arial, sans-serif";
+          ctx.fillText("Заметка: "+carNote.slice(0,80), pad+20, y+166);
+        }
+        y+=carH+12;
+      });
+      function block(title, keys){
+        const rows=Math.ceil(keys.length/3);
+        const h=42+rows*32;
+        ctx.fillStyle="#f7f1e7";
+        roundRect(pad, y, inner, h, 14); ctx.fill();
+        ctx.strokeStyle="#eadfcf"; ctx.lineWidth=1;
+        roundRect(pad, y, inner, h, 14); ctx.stroke();
+        ctx.fillStyle="#111"; ctx.font="800 20px Inter, Arial, sans-serif";
+        ctx.fillText(title, pad+20, y+32);
+        keys.forEach((pair,i)=>{
+          const col=i%3;
+          const line=Math.floor(i/3);
+          const cx=pad+20+col*((inner-40)/3);
+          const cy=y+50+line*30;
+          tick(cx, cy, dutyTri(d[pair[0]]));
+          ctx.fillStyle=dutyTri(d[pair[0]])==="bad"?"#7f0000":"#111"; ctx.font="500 16px Inter, Arial, sans-serif";
+          ctx.fillText(pair[1], cx+44, cy);
+        });
+        y+=h+12;
+      }
+      block("Дилерский центр",[
+        ["dc_light","Свет"],["dc_music","Музыка"],
+        ["dc_price_hold","Прайсхолдеры"],["dc_desk","Столы"]
+      ]);
+      block("Шоурум",[
+        ["dm_body","Кузов"],["dm_mats","Коврики"],["dm_trunk","Багажник"],
+        ["dm_dust","Нет пыли"],["dm_wheel","Колёса"],["dm_bat","АКБ"]
+      ]);
+      ctx.fillStyle="#5c5346"; ctx.font="500 16px Inter, Arial, sans-serif";
+      ctx.fillText("ДЦ: "+(d.dc_note||"—"), pad, y+8);
+      ctx.fillText("Шоурум: "+(d.note||"—"), pad, y+32);
+      ctx.fillStyle="#9a9186"; ctx.font="500 13px Inter, Arial, sans-serif";
+      ctx.fillText("TENET · Отдел продаж · Эксперт Авто Самара", pad, H-28);
+      dutyFileSave(c, d);
+    }
+    window.__dutyPagePdf=dutyPdf;
+
     if(!window.__dutyClick){
       window.__dutyClick=true;
       document.addEventListener("click", function(ev){
@@ -377,7 +592,7 @@
         if(t.id==="gRun"){ ev.preventDefault(); gibddRun(); }
         if(t.id==="gPdf" || t.id==="gPdfLast"){ ev.preventDefault(); gibddPdf(window.__gibddLast); }
         if(t.id==="dutySave"){ ev.preventDefault(); dutySave(dutyRead()); dutyPaintProg(); t.textContent="Ок"; setTimeout(()=>t.textContent="Сохранить",900); }
-        if(t.id==="dutyPrint"){ ev.preventDefault(); dutySave(dutyRead()); window.print(); }
+        if(t.id==="dutyPrint"){ ev.preventDefault(); const cur=dutyRead(); dutySave(cur); dutyPdf(cur); }
         if(t.id==="dutyClear"){ ev.preventDefault(); localStorage.removeItem("tenet-duty-v1"); if(typeof render==="function") render(); }
       });
     }
