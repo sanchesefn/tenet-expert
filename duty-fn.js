@@ -371,7 +371,7 @@
     function dutyFileName(d){
       const date=(d&&d.date)||dutyToday();
       const who=String((d&&d.manager)||"чек-лист").trim().replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g," ").slice(0,40);
-      return "Чек-лист "+date+" "+who+".pdf";
+      return "Чек-лист "+date+" "+who+".png";
     }
     function dutyJpegPdf(jpeg,w,h){
       const pageW=595, pageH=842;
@@ -413,12 +413,11 @@
       return out;
     }
     function dutyFileSave(canvas, d){
-      const dataUrl=canvas.toDataURL("image/jpeg",0.86);
+      const dataUrl=canvas.toDataURL("image/png");
       const bin=atob(dataUrl.split(",")[1]);
-      const jpeg=new Uint8Array(bin.length);
-      for(let i=0;i<bin.length;i++) jpeg[i]=bin.charCodeAt(i);
-      const pdf=(typeof eptsJpegToPdf==="function")?eptsJpegToPdf(jpeg, canvas.width, canvas.height):dutyJpegPdf(jpeg, canvas.width, canvas.height);
-      const blob=new Blob([pdf],{type:"application/pdf"});
+      const bytes=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++) bytes[i]=bin.charCodeAt(i);
+      const blob=new Blob([bytes],{type:"image/png"});
       const name=dutyFileName(d);
       const fallback=()=>{
         const a=document.createElement("a");
@@ -430,7 +429,7 @@
         setTimeout(()=>URL.revokeObjectURL(a.href),2000);
       };
       if(window.showSaveFilePicker){
-        showSaveFilePicker({suggestedName:name, startIn:"desktop", types:[{description:"PDF", accept:{"application/pdf":[".pdf"]}}]}).then(async handle=>{
+        showSaveFilePicker({suggestedName:name, startIn:"desktop", types:[{description:"PNG", accept:{"image/png":[".png"]}}]}).then(async handle=>{
           const w=await handle.createWritable();
           await w.write(blob);
           await w.close();
