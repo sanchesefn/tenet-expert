@@ -379,11 +379,16 @@ input,textarea{width:100%;background:#fff;border:1px solid var(--border);color:v
   .cl-item.is-bad .cl-lab{color:#fff!important}
   .cl-sq.ok.on{background:#2e7d32!important;color:#fff!important;border-color:#2e7d32!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .cl-sq.bad.on{background:#7f0000!important;color:#fff!important;border-color:#7f0000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cl-fuel.is-low{background:#e53935!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .cl-fuel.is-low .cl-fuel-top,.cl-fuel.is-low b{color:#fff!important}
 }
 .cl-nums{display:flex;gap:8px;margin-top:6px}
 .cl-nums label{flex:1;display:flex;flex-direction:column;gap:3px;font-size:11px;color:#7a7166}
 .cl-nums input,.cl-car select{width:100%;min-height:32px;padding:6px 8px;border:1px solid #eadfcf;border-radius:8px;background:#fff}
-.cl-fuel{margin-top:8px}
+.cl-fuel{margin-top:8px;padding:6px 8px;border-radius:8px}
+.cl-fuel.is-low{background:#ff8a80}
+.cl-fuel.is-low .cl-fuel-top,.cl-fuel.is-low b{color:#7f0000}
+.cl-fuel.is-low input[type=range]{accent-color:#b71c1c}
 .cl-fuel-top{display:flex;justify-content:space-between;font-size:12px;color:#6d6458}
 .cl-fuel-top b{color:#1c1a17}
 .cl-fuel input[type=range]{width:100%;margin:4px 0 0;padding:0!important;height:22px;background:transparent;border:0;accent-color:#1b5e20}

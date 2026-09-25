@@ -82,7 +82,7 @@
       const num=Number(raw);
       const n=raw===""||raw==null||Number.isNaN(num)?0:Math.max(0,Math.min(100,Math.round(num/10)*10));
       const ticks=[0,10,20,30,40,50,60,70,80,90,100].map(x=>`<i>${x}</i>`).join("");
-      return `<div class="cl-fuel"><div class="cl-fuel-top"><span>Топливо</span><b>${n}%</b></div><input type="range" min="0" max="100" step="10" data-duty="${id}_fuel" value="${n}" /><div class="cl-ticks">${ticks}</div></div>`;
+      return `<div class="cl-fuel${n<=50?" is-low":""}"><div class="cl-fuel-top"><span>Топливо</span><b>${n}%</b></div><input type="range" min="0" max="100" step="10" data-duty="${id}_fuel" value="${n}" /><div class="cl-ticks">${ticks}</div></div>`;
     }
     function duty(){
       if(needAuth()) return login();
@@ -347,8 +347,10 @@
         });
         document.querySelectorAll(".cl-fuel input").forEach(el=>{
           el.addEventListener("input", ()=>{
-            const b=el.parentElement && el.parentElement.querySelector("b");
+            const box=el.closest(".cl-fuel");
+            const b=box && box.querySelector("b");
             if(b) b.textContent=el.value+"%";
+            if(box) box.classList.toggle("is-low", Number(el.value)<=50);
           });
         });
         dutyPaintProg();
