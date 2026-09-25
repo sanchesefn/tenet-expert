@@ -87,9 +87,10 @@
     function duty(){
       if(needAuth()) return login();
       const d=dutyLoad();
-      if(!d.date) d.date=dutyToday();
+      d.date=dutyToday();
       const who=(typeof state!=="undefined" && state && state.display)?state.display:"";
-      if(!d.manager && who) d.manager=who;
+      const name=String(d.manager||who||"").trim().split(/\s+/).filter(Boolean).filter((p,i,a)=>a.findIndex(x=>x.toLowerCase()===p.toLowerCase())===i).join(" ");
+      d.manager=name;
       const prog=dutyCount(d);
       const pct=prog.tot?Math.round(prog.on*100/prog.tot):0;
       const cards=DUTY_CARS.map(car=>{
@@ -114,8 +115,7 @@
         <div class="cl">
           <div class="cl-bar">
             <input data-duty="manager" placeholder="Менеджер" value="${escape(d.manager||"")}" />
-            <input data-duty="date" value="${escape(d.date||"")}" style="width:96px" />
-            <input data-duty="sign" placeholder="Подпись" value="${escape(d.sign||d.manager||"")}" />
+            <input data-duty="date" readonly value="${escape(d.date||dutyToday())}" style="width:96px" />
             <div class="cl-prog"><i style="width:${pct}%"></i><span>${pct}%</span></div>
             <button type="button" class="btn ivory" id="dutySave">Сохранить</button>
             <button type="button" class="btn ghost" id="dutyPrint">Печать</button>
