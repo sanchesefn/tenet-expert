@@ -160,8 +160,8 @@
       "color": "Чёрный",
       "status": "way",
       "note": "Калуга · заявка",
-      "salon": "Brown",
-      "rrc": 4299000
+      "rrc": 4299000,
+      "salon": "Brown"
     },
     {
       "vin": "EDELB31B3TE119457",
@@ -381,8 +381,8 @@
       "color": "Серый",
       "status": "way",
       "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
+      "rrc": 2785000,
+      "invoice": true
     },
     {
       "vin": "EDEFB32B8TE122298",
@@ -392,8 +392,8 @@
       "color": "Серый",
       "status": "way",
       "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
+      "rrc": 2785000,
+      "invoice": true
     },
     {
       "vin": "EDEFB32B8TE122317",
@@ -403,8 +403,8 @@
       "color": "Серый",
       "status": "way",
       "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
+      "rrc": 2785000,
+      "invoice": true
     },
     {
       "vin": "EDEFB32B7TE122325",
@@ -414,7 +414,27 @@
       "color": "Серый",
       "status": "way",
       "note": "Калуга · заявка",
-      "invoice": true,
+      "rrc": 2785000,
+      "invoice": true
+    },
+    {
+      "vin": "EDEFB32B1TE123423",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Голубой",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2785000
+    },
+    {
+      "vin": "EDEFB32B0TE123428",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Голубой",
+      "status": "way",
+      "note": "Калуга · заявка",
       "rrc": 2785000
     },
     {
@@ -425,8 +445,8 @@
       "color": "Bamboo Gray",
       "status": "way",
       "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 3499000
+      "rrc": 3499000,
+      "invoice": true
     },
     {
       "vin": "EDXGD34B8TE050862",
@@ -436,8 +456,8 @@
       "color": "Белый",
       "status": "way",
       "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXGD34B7TE052294",
@@ -447,8 +467,8 @@
       "color": "Чёрный",
       "status": "way",
       "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXGD34B7TE034443",
@@ -458,8 +478,8 @@
       "color": "Чёрный",
       "status": "way",
       "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXFB32B2TE041658",
@@ -481,8 +501,8 @@
       "color": "Светло-серый",
       "status": "in",
       "note": "В салоне · с 07.09.2026",
-      "salon": "Brown",
       "rrc": 2985000,
+      "salon": "Brown",
       "mpt": true,
       "corp": true
     },
@@ -519,16 +539,6 @@
       "note": "В салоне · с 15.09.2026",
       "rrc": 3299000,
       "demo": true
-    },
-    {
-      "vin": "EDEFB32B5TE109881",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 11.09.2026",
-      "rrc": 2785000
     },
     {
       "vin": "EDXGB32B1TE110196",
@@ -580,16 +590,6 @@
       "reserved": true
     },
     {
-      "vin": "EDEFB32B3TE114786",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 15.09.2026",
-      "rrc": 2785000
-    },
-    {
       "vin": "EDEFB32B7TE114791",
       "model": "t7",
       "name": "T7",
@@ -639,8 +639,8 @@
       "color": "Светло-серый",
       "status": "in",
       "note": "В салоне · с 24.09.2026",
-      "salon": "Brown",
-      "rrc": 4299000
+      "rrc": 4299000,
+      "salon": "Brown"
     },
     {
       "vin": "EDELB31B0TE116709",
