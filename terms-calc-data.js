@@ -1,4 +1,4 @@
-    const TERMS_DATE = "26.09.2026";
+    const TERMS_DATE = "27.09.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -102,7 +102,7 @@
       sovcom:[12,24,36,48,60,72,84],
       alfa:[12,24,36,48,60,72,84,96],
       tbank:[12,24,36,48,60,72,84,96]
-    };
+    ];
     const KM_BANK_RATES = {
       sber:{
         t4l_t7:{
