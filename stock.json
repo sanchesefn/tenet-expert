@@ -3,6 +3,26 @@
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
+      "vin": "EDELB31BXTE119925",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 30.09.2026",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B3TE119930",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 30.09.2026",
+      "rrc": 2329000
+    },
+    {
       "vin": "EDELB31B8TE119776",
       "model": "t4l",
       "name": "T4L",
@@ -61,6 +81,17 @@
       "status": "in",
       "note": "В салоне · с 28.09.2026",
       "rrc": 2329000
+    },
+    {
+      "vin": "EDXDC24B0TG040024",
+      "model": "a8",
+      "name": "A8",
+      "trim": "2.0T 8AT Ultra",
+      "color": "Bamboo Gray",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "invoice": true,
+      "rrc": 3499000
     },
     {
       "vin": "EDEHD24B5TE115142",
@@ -129,26 +160,6 @@
       "name": "T4L",
       "trim": "Актив",
       "color": "Красный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31BXTE119925",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31B3TE119930",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2329000
@@ -376,17 +387,6 @@
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2785000
-    },
-    {
-      "vin": "EDXDC24B0TG040024",
-      "model": "a8",
-      "name": "A8",
-      "trim": "2.0T 8AT Ultra",
-      "color": "Bamboo Gray",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 3499000
     },
     {
       "vin": "EDXGD34B8TE050862",
