@@ -23,6 +23,26 @@
       "rrc": 2329000
     },
     {
+      "vin": "EDELB31B7TE119977",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDEFB32B0TE120903",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Голубой",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2985000
+    },
+    {
       "vin": "EDXDC24B0TG040024",
       "model": "a8",
       "name": "A8",
@@ -30,8 +50,52 @@
       "color": "Bamboo Gray",
       "status": "in",
       "note": "В салоне · с 01.10.2026",
-      "invoice": true,
-      "rrc": 3499000
+      "rrc": 3499000,
+      "invoice": true
+    },
+    {
+      "vin": "EDEFB32B7TE122342",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Серый",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2785000,
+      "invoice": true
+    },
+    {
+      "vin": "EDEFB32B8TE122298",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Серый",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2785000,
+      "invoice": true
+    },
+    {
+      "vin": "EDEFB32B8TE122317",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Серый",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2785000,
+      "invoice": true
+    },
+    {
+      "vin": "EDEFB32B7TE122325",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Серый",
+      "status": "in",
+      "note": "В салоне · с 01.10.2026",
+      "rrc": 2785000,
+      "invoice": true
     },
     {
       "vin": "EDEHD24B5TE115142",
@@ -71,8 +135,8 @@
       "color": "Чёрный",
       "status": "way",
       "note": "Калуга · заявка",
-      "salon": "Brown",
-      "rrc": 4299000
+      "rrc": 4299000,
+      "salon": "Brown"
     },
     {
       "vin": "EDELB31B3TE119457",
@@ -115,16 +179,6 @@
       "rrc": 2329000
     },
     {
-      "vin": "EDELB31B7TE119977",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
       "vin": "EDELB31B7TE120188",
       "model": "t4l",
       "name": "T4L",
@@ -133,16 +187,6 @@
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2329000
-    },
-    {
-      "vin": "EDEFB32B0TE120903",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Голубой",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
     },
     {
       "vin": "EDEFB32B8TE120616",
@@ -265,50 +309,6 @@
       "rrc": 2479000
     },
     {
-      "vin": "EDEFB32B7TE122342",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
-    },
-    {
-      "vin": "EDEFB32B8TE122298",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
-    },
-    {
-      "vin": "EDEFB32B8TE122317",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
-    },
-    {
-      "vin": "EDEFB32B7TE122325",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "invoice": true,
-      "rrc": 2785000
-    },
-    {
       "vin": "EDEFB32B1TE123423",
       "model": "t7",
       "name": "T7",
@@ -336,8 +336,8 @@
       "color": "Белый",
       "status": "way",
       "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXGD34B7TE052294",
@@ -347,8 +347,8 @@
       "color": "Чёрный",
       "status": "way",
       "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXGD34B7TE034443",
@@ -357,9 +357,9 @@
       "trim": "Ультра 7 мест 4WD",
       "color": "Чёрный",
       "status": "way",
-      "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "note": "Калуга · заявка",
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXFB32B2TE041658",
@@ -381,8 +381,8 @@
       "color": "Светло-серый",
       "status": "in",
       "note": "В салоне · с 07.09.2026",
-      "salon": "Brown",
       "rrc": 2985000,
+      "salon": "Brown",
       "mpt": true,
       "corp": true
     },
@@ -519,8 +519,8 @@
       "color": "Светло-серый",
       "status": "in",
       "note": "В салоне · с 24.09.2026",
-      "salon": "Brown",
-      "rrc": 4299000
+      "rrc": 4299000,
+      "salon": "Brown"
     },
     {
       "vin": "EDELB31B0TE116709",
