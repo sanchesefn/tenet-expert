@@ -757,8 +757,8 @@
       "status": "in",
       "note": "В салоне · с 25.08.2026",
       "rrc": 2985000,
-      "prod": "15.08.2026",
-      "salon": "Brown"
+      "salon": "Brown",
+      "prod": "15.08.2026"
     },
     {
       "vin": "EDEFB32B3TE114786",
@@ -811,8 +811,8 @@
       "status": "in",
       "note": "В салоне · с 22.08.2026",
       "rrc": 2985000,
-      "prod": "15.08.2026",
-      "salon": "Brown"
+      "salon": "Brown",
+      "prod": "15.08.2026"
     },
     {
       "vin": "EDEFB32B8TE105355",
@@ -845,8 +845,8 @@
       "status": "in",
       "note": "В салоне · с 23.08.2026",
       "rrc": 3190000,
-      "prod": "18.08.2026",
-      "salon": "Brown"
+      "salon": "Brown",
+      "prod": "18.08.2026"
     },
     {
       "vin": "EDEFD32B5TE102360",
@@ -1193,8 +1193,8 @@
       "status": "in",
       "note": "В салоне · с 25.07.2026",
       "rrc": 3885000,
-      "prod": "16.05.2026",
-      "salon": "Brown"
+      "salon": "Brown",
+      "prod": "16.05.2026"
     },
     {
       "vin": "EDXGD34B3TE031815",
@@ -1205,8 +1205,8 @@
       "status": "in",
       "note": "В салоне · с 12.06.2026",
       "rrc": 3885000,
-      "prod": "26.03.2026",
-      "salon": "Brown"
+      "salon": "Brown",
+      "prod": "26.03.2026"
     },
     {
       "vin": "EDXGD34B5TE082040",
