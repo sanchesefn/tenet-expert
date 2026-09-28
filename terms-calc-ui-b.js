@@ -113,7 +113,7 @@
       const tiMpt=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
       const beforeMptPct=Math.max(0, mptTidy-tiMpt);
       const subAmt=(fMpt&&fMpt.sub)||0;
-      const priceMpt=showSub?Math.max(0, beforeMptPct-subAmt):Math.round(beforeMptPct*0.9);
+      const priceMpt=(showSub||showFleet)?Math.max(0, beforeMptPct-subAmt):Math.round(beforeMptPct*0.9);
       const MPT_EXTRA=200000;
       const downMptShow=Math.max(0, Math.min(priceMpt, down));
       const downMptCar=Math.max(0, downMptShow-MPT_EXTRA);
@@ -130,7 +130,7 @@
                 <div class="bank-row"><span>РРЦ</span><span class="pay">${rub(mptRrc)}</span></div>
                 <div class="bank-row"><span>Флит</span><span class="pay">${rub(mptTidy)}</span></div>
                 ${useTi?`<div class="bank-row"><span>Трейд-ин</span><span class="pay">− ${rub(tiMpt)}</span></div>`:""}
-                <div class="bank-row"><span>${showSub?"Субсидия бренда −"+rub(subAmt):showFleet?"Флит −10%":"МПТ −10%"}</span><span class="pay">${rub(priceMpt)}</span></div>
+                <div class="bank-row"><span>${(showSub||showFleet)?(subAmt?"Субсидия бренда −"+rub(subAmt):"Субсидии нет"):"МПТ −10%"}</span><span class="pay">${rub(priceMpt)}</span></div>
                 <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(downMptShow)}</span></div>
                 <div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(Math.min(MPT_EXTRA, downMptShow))}</span></div>
                 <div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(downMptCar)}</span></div>
@@ -252,7 +252,7 @@
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
-              <p class="calc-note">${showFleet?"Как МПТ: цена флита −10%, Совкомбанк 19,2%. ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О.":showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
+              <p class="calc-note">${showFleet?"Не МПТ: без −10%. Субсидия бренда "+rub(subAmt)+". Совкомбанк 19,2%. ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О.":showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
               ${mptBreak}
             </details>
           </div>
