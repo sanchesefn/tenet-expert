@@ -113,7 +113,7 @@
       const tiMpt=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
       const beforeMptPct=Math.max(0, mptTidy-tiMpt);
       const subAmt=(fMpt&&fMpt.sub)||0;
-      const priceMpt=showSub?Math.max(0, beforeMptPct-subAmt):(showFleet?beforeMptPct:Math.round(beforeMptPct*0.9));
+      const priceMpt=showSub?Math.max(0, beforeMptPct-subAmt):Math.round(beforeMptPct*0.9);
       const MPT_EXTRA=200000;
       const downMptShow=Math.max(0, Math.min(priceMpt, down));
       const downMptCar=Math.max(0, downMptShow-MPT_EXTRA);
@@ -130,7 +130,7 @@
                 <div class="bank-row"><span>РРЦ</span><span class="pay">${rub(mptRrc)}</span></div>
                 <div class="bank-row"><span>Флит</span><span class="pay">${rub(mptTidy)}</span></div>
                 ${useTi?`<div class="bank-row"><span>Трейд-ин</span><span class="pay">− ${rub(tiMpt)}</span></div>`:""}
-                <div class="bank-row"><span>${showSub?"Субсидия бренда −"+rub(subAmt):"МПТ −10%"}</span><span class="pay">${rub(priceMpt)}</span></div>
+                <div class="bank-row"><span>${showSub?"Субсидия бренда −"+rub(subAmt):showFleet?"Флит −10%":"МПТ −10%"}</span><span class="pay">${rub(priceMpt)}</span></div>
                 <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(downMptShow)}</span></div>
                 <div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(Math.min(MPT_EXTRA, downMptShow))}</span></div>
                 <div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(downMptCar)}</span></div>
@@ -142,14 +142,6 @@
         const term=look.term||months;
         const pay=calcPay(price+extras, down, term, look.rate);
         return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-credit});
-      });
-      const fleetBase=showFleet?priceMpt:price;
-      const creditFleet=Math.max(0, fleetBase-down+extras);
-      const banksFleet=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
-        const look=typeof kmBankRate==="function"?kmBankRate(b.id, rateGroup, months, downPct):{rate:b.rate||0, term:months, capped:false};
-        const term=look.term||months;
-        const pay=calcPay(fleetBase+extras, down, term, look.rate);
-        return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-creditFleet});
       });
       function kmPayRows(list, payKey, overKey){
         return list.map(b=>{
@@ -230,7 +222,7 @@
               ${downMode==="sum"
                 ?`<label class="field" style="max-width:none"><span>Первый взнос, ₽</span><input id="cDown" inputmode="numeric" value="${down}" /></label>`
                 :`<label class="field" style="max-width:none"><span>Первый взнос, %</span><input id="cDownPct" inputmode="decimal" value="${downPct}" /></label>`}
-              <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub)?` · ${showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
+              <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub||showFleet)?` · ${showFleet?"флит":showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
               <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>`:""}
           </div>
           ${(useLoan&&showSplit)||pShow?`<div class="km-credit"><div class="card km-pv">
@@ -246,7 +238,7 @@
             <label class="field"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
           </div>
           <input type="hidden" id="cDownMode" value="${downMode==="sum"?"sum":"pct"}" />
-          <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub)?` · ${showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
+          <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub||showFleet)?` · ${showFleet?"флит":showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
         </div><div class="km-pays">
           <div class="pay-col std km-pay">
             <p class="eyebrow">Стандартный кредит</p>
@@ -254,14 +246,14 @@
             ${kmPayRows(banks,"pay","over")}
             <p class="calc-note">Ставки TENET ФИНАНС, ИП 1890/И. Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
           </div>
-          <div class="pay-col ${showFleet?"std":showSub?"sub":"mpt"} km-pay">
-            <p class="eyebrow">${showFleet?"Флит":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
-            ${showFleet?kmPayRows(banksFleet,"pay","over"):kmPayRows(banksMpt,"payMpt","overMpt")}
-            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(showFleet?creditFleet:creditMpt)}</span></div>
+          <div class="pay-col ${showSub?"sub":"mpt"} km-pay">
+            <p class="eyebrow">${showFleet?"Флит · Совкомбанк 19,2%":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+            ${kmPayRows(banksMpt,"payMpt","overMpt")}
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
-              <p class="calc-note">${showFleet?"Цена флита "+rub(priceMpt)+" · ПВ "+rub(down)+" · обычные ставки банков, не субсидия.":showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
-              ${showFleet?"":mptBreak}
+              <p class="calc-note">${showFleet?"Как МПТ: цена флита −10%, Совкомбанк 19,2%. ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О.":showSub?"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%.":"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
+              ${mptBreak}
             </details>
           </div>
           ${pShow?`<div class="pay-col pango km-pay">
@@ -285,9 +277,9 @@
             ${useLoan?`<div class="card">
               <p class="eyebrow">Кредит · ${escape(m.name)}</p>
               <p class="calc-note">ПВ от цены авто ${rub(price)} ₽, без Д/О и каско. В кредит входят авто − ПВ, Д/О, каско расширенное и комиссия банка.${pickMpt?" Выбран VIN с меткой МПТ.":""}</p>
-              ${showMpt||showSub||showFleet?`<p class="eyebrow" style="margin-top:16px">${showFleet?"Флит":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
-              ${showFleet?kmPayRows(banksFleet,"pay","over"):kmPayRows(banksMpt,"payMpt","overMpt")}
-              <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(showFleet?creditFleet:creditMpt)}</span></div>
+              ${showMpt||showSub||showFleet?`<p class="eyebrow" style="margin-top:16px">${showFleet?"Флит · Совкомбанк 19,2%":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
+              ${kmPayRows(banksMpt,"payMpt","overMpt")}
+              <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
               <details class="calc-more"><summary>Подробности расчёта</summary>
               <p class="calc-note">ПВ ${rub(downMptShow)} · из них ${rub(Math.min(MPT_EXTRA, downMptShow))} на каско и Д/О.</p>
               ${mptBreak}</details>`
