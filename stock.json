@@ -3,6 +3,26 @@
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
+      "vin": "EDELB31B3TE119457",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Красный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31BXTE119522",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Красный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2329000
+    },
+    {
       "vin": "EDELB31BXTE119925",
       "model": "t4l",
       "name": "T4L",
@@ -33,6 +53,16 @@
       "rrc": 2329000
     },
     {
+      "vin": "EDELB31B7TE120188",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Светло-серый",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2329000
+    },
+    {
       "vin": "EDEFB32B0TE120903",
       "model": "t7",
       "name": "T7",
@@ -40,6 +70,26 @@
       "color": "Голубой",
       "status": "in",
       "note": "В салоне · с 01.10.2026",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32B8TE120616",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32B8TE120762",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Светло-серый",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
       "rrc": 2985000
     },
     {
@@ -52,6 +102,16 @@
       "note": "В салоне · с 01.10.2026",
       "rrc": 3499000,
       "invoice": true
+    },
+    {
+      "vin": "EDELB31B4TE121993",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Красный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2479000
     },
     {
       "vin": "EDEFB32B7TE122342",
@@ -139,27 +199,7 @@
       "salon": "Brown"
     },
     {
-      "vin": "EDELB31B3TE119457",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Красный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
       "vin": "EDELB31B9TE119432",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Красный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31BXTE119522",
       "model": "t4l",
       "name": "T4L",
       "trim": "Актив",
@@ -177,36 +217,6 @@
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31B7TE120188",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDEFB32B8TE120616",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
-    },
-    {
-      "vin": "EDEFB32B8TE120762",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
     },
     {
       "vin": "EDEFB32B4TE120600",
@@ -290,16 +300,6 @@
     },
     {
       "vin": "EDELB31B4TE122030",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Красный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2479000
-    },
-    {
-      "vin": "EDELB31B4TE121993",
       "model": "t4l",
       "name": "T4L",
       "trim": "Прайм",
@@ -470,26 +470,6 @@
       "reserved": true
     },
     {
-      "vin": "EDEFB32B7TE114791",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 15.09.2026",
-      "rrc": 2785000
-    },
-    {
-      "vin": "EDEFB32B6TE114782",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 15.09.2026",
-      "rrc": 2785000
-    },
-    {
       "vin": "EDXGB32BXTE087470",
       "model": "t8",
       "name": "T8",
@@ -534,16 +514,6 @@
     },
     {
       "vin": "EDELB31B0TE116838",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "in",
-      "note": "В салоне · с 24.09.2026",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31B5TE116835",
       "model": "t4l",
       "name": "T4L",
       "trim": "Актив",
