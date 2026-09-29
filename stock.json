@@ -1,5 +1,5 @@
 {
-  "updated": "28.09.2026",
+  "updated": "29.09.2026",
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
@@ -627,28 +627,6 @@
       "rrc": 3060000
     },
     {
-      "vin": "LVVDC21B0SD594112",
-      "model": "a8",
-      "name": "A8",
-      "trim": "Прайм",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 04.05.2026",
-      "rrc": 3060000,
-      "reserved": true
-    },
-    {
-      "vin": "LVVDC21B2SDJ34062",
-      "model": "a8",
-      "name": "A8",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "in",
-      "note": "В салоне · с 23.06.2026",
-      "rrc": 3060000,
-      "reserved": true
-    },
-    {
       "vin": "EDEEB31B8TE003261",
       "model": "t4",
       "name": "T4",
@@ -1240,6 +1218,38 @@
       "prod": "07.07.2026"
     },
     {
+      "vin": "EDEHD24B9TE092948",
+      "model": "t9",
+      "name": "T9",
+      "trim": "Ультра 4WD",
+      "color": "Белый",
+      "status": "in",
+      "note": "В салоне · с 21.09.2026",
+      "rrc": 4299000
+    },
+    {
+      "vin": "EDXGB32B0TE110108",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 5 мест 2WD",
+      "color": "Белый",
+      "status": "in",
+      "note": "В салоне · с 15.09.2026",
+      "rrc": 3299000,
+      "demo": true
+    },
+    {
+      "vin": "EDXGD34B2TE109064",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 7 мест 4WD",
+      "color": "Тёмно-зелёный",
+      "status": "in",
+      "note": "В салоне · с 15.09.2026",
+      "rrc": 3630000,
+      "demo": true
+    },
+    {
       "vin": "EDEDB21B7SD723791",
       "model": "t7l",
       "name": "T7L",
@@ -1268,7 +1278,30 @@
       "color": "Белый",
       "status": "in",
       "note": "В салоне · с 15.08.2026",
-      "rrc": 4640000
+      "rrc": 4640000,
+      "reserved": true
+    },
+    {
+      "vin": "LVVDC21B0SD594112",
+      "model": "a8",
+      "name": "A8",
+      "trim": "Прайм",
+      "color": "Белый",
+      "status": "in",
+      "note": "В салоне · с 04.05.2026",
+      "rrc": 3060000,
+      "reserved": true
+    },
+    {
+      "vin": "LVVDC21B2SDJ34062",
+      "model": "a8",
+      "name": "A8",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 23.06.2026",
+      "rrc": 3060000,
+      "reserved": true
     }
   ]
 }
