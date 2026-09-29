@@ -96,9 +96,10 @@
 .pay-col.plus{background:#f7f4ef;border:1.5px solid #d7c8b0;box-shadow:inset 4px 0 0 #8a6840}
 .pay-col.plus .eyebrow{color:#8a6840}
 .pay-col.plus select{width:100%;margin:0 0 6px;padding:8px 10px;border:1px solid #e3d5c2;border-radius:10px;background:#fff;font:inherit;color:inherit}
-.plus-alt{margin-top:14px;padding-top:12px;border-top:1px dashed #c28b2a}
-.plus-alt .eyebrow{color:#8a5a10}
-.plus-alt .chip{margin-top:8px}
+.plus-alt{margin:18px 0 2px;padding:12px 12px 10px;border:1.5px solid #c28b2a;border-radius:12px;background:#fff;box-shadow:inset 3px 0 0 #c28b2a}
+.pay-col .plus-alt .eyebrow{color:#8a5a10;margin:0 0 6px}
+.plus-alt .chip{margin-top:10px}
+.pay-col .plus-alt .bank-row{border-bottom-color:rgba(194,139,42,.28)}
 .pay-col.pango-nss{background:#fdecee;border:1.5px solid #e3a0a8;box-shadow:inset 4px 0 0 #c81e2b}
 .pay-col.pango-nss .eyebrow{color:#9a1b28}
 
