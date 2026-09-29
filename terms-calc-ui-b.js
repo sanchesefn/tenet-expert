@@ -184,11 +184,54 @@
         pKmK=pKm/1000;
         pOk=pKmK+0.05>=lo && pKmK-0.05<=hi;
       }
+      const plusList=(typeof PLUS_CARS!=="undefined"&&PLUS_CARS.length)?PLUS_CARS:[
+        {id:"l4s",name:"L4 Style",line:"L4",rrc:2540000,bfs:2235200,sub:100000},
+        {id:"l4e",name:"L4 Elegant",line:"L4",rrc:2690000,bfs:2313400,sub:100000},
+        {id:"l6e",name:"L6 Elegant",line:"L6",rrc:2890000,bfs:2456500,sub:150000},
+        {id:"l6u",name:"L6 Ultra",line:"L6",rrc:3040000,bfs:2584000,sub:150000}
+      ];
+      const plusId=typeof kmStr==="function"?kmStr("plusTrim","l4s"):"l4s";
+      const plus=plusList.find(x=>x.id===plusId)||plusList[0];
+      const plusPrice=plus.rrc;
+      const plusDown=Math.max(0, Math.min(plusPrice, down));
+      const plusPct=plusPrice>0?Math.round(plusDown*1000/plusPrice)/10:0;
+      const plusGroup=plus.line==="L6"?"plusL6":"plusL4";
+      const plusCredit=Math.max(0, plusPrice-plusDown+extras);
+      const plusBanks=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
+        const look=typeof kmBankRate==="function"?kmBankRate(b.id, plusGroup, months, plusPct):{rate:0, term:months, capped:false};
+        const term=look.term||months;
+        const pay=calcPay(plusPrice+extras, plusDown, term, look.rate);
+        return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-plusCredit});
+      });
+      const plusTi=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
+      const plusFleetPrice=Math.max(0, plus.bfs-plusTi-(plus.sub||0));
+      const plusDownShow=Math.max(0, Math.min(plusFleetPrice, down));
+      const plusExtra=200000;
+      const plusDownCar=Math.max(0, plusDownShow-plusExtra);
+      const plusFleetCredit=Math.max(0, plusFleetPrice-plusDownCar+finDelta);
+      const plusTerm=Math.min(Math.max(1, months), 84);
+      const plusRate=19.2;
+      const plusPay=calcPay(plusFleetPrice+finDelta, plusDownCar, plusTerm, plusRate);
+      const plusOver=plusPay*plusTerm-plusFleetCredit;
+      const plusOpts=plusList.map(x=>`<option value="${x.id}"${x.id===plus.id?" selected":""}>${escape(x.name)} · РРЦ ${rub(x.rrc)}</option>`).join("");
+      const plusCol=`<div class="pay-col plus km-pay">
+            <p class="eyebrow">TENET PLUS</p>
+            <select id="plusTrim">${plusOpts}</select>
+            <p class="eyebrow" style="margin-top:8px">Директ</p>
+            <p class="calc-note">РРЦ ${rub(plusPrice)} · ПВ ${rub(plusDown)} · ${plusPct}% · тело ${rub(plusCredit)}</p>
+            ${kmPayRows(plusBanks,"pay","over")}
+            <p class="calc-note">Без скидок выбранной машины. Кредит = РРЦ − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия. ИП 1938/И.</p>
+            <p class="eyebrow" style="margin-top:10px">Флит · Совкомбанк 19,2%</p>
+            <div class="bank-row"><span><b>Совкомбанк</b><br/><small>${plusRate}% · ${plusTerm} мес.${plusTerm!==months?" · считаем "+plusTerm+" мес.":""} · переплата ~${rub(Math.round(plusOver))}</small></span><span class="pay">${rub(Math.round(plusPay))} ₽</span></div>
+            <div class="bank-row"><span>BFS − субсидия${plusTi?" − трейд-ин":""}</span><span class="pay">${rub(plusFleetPrice)}</span></div>
+            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(plusFleetCredit)}</span></div>
+            <p class="calc-note">Панго нет. BFS ${rub(plus.bfs)} − субсидия ${rub(plus.sub)}${plusTi?" − трейд-ин "+rub(plusTi):""}. ПВ ${rub(plusDownShow)} · из них ${rub(Math.min(plusExtra, plusDownShow))} на каско и Д/О.</p>
+          </div>`;
       return banner("Калькулятор","КМ и платёж · база "+TERMS_DATE,"TENET")+`
-        <p class="lead">${pShow?"Три расчёта рядом: стандартный кредит, "+(showSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":"Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит»."}</p>
-        <div class="km-stage${pShow?" km-4":useLoan&&showSplit?" km-3":""}">
+        <p class="lead">${pShow?"Стандарт, "+(showSub?"флит":"МПТ")+", TENET PLUS и PANGO.":(useLoan&&showSplit?"Стандарт, "+(showFleet?"флит":showSub?"субсидия бренда":"МПТ")+" и TENET PLUS.":"Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит».")}</p>
+        <div class="km-stage${pShow?" km-5":useLoan&&showSplit?" km-4":""}">
         <div class="km-chips">${kmChipGroups(m.id)}</div>
-        <div class="km-layout${pShow?" km-4":useLoan&&showSplit?" km-3":""}">
+        <div class="km-layout${pShow?" km-5":useLoan&&showSplit?" km-4":""}">
           <div class="card km-disc">
             <p class="eyebrow">Калькулятор КМ · ${escape(m.name)}</p>
             <label class="field" style="max-width:none;margin-top:8px"><span>РРЦ, ₽ · из условий ${TERMS_DATE}</span><input id="kmRrc" inputmode="numeric" value="${rrc}" /></label>
@@ -256,6 +299,7 @@
               ${mptBreak}
             </details>
           </div>
+          ${plusCol}
           ${pShow?`<div class="pay-col pango km-pay">
             <p class="eyebrow">Спеццена · PANGO</p>
             <p class="eyebrow" style="margin-top:8px">17,4% без комиссий</p>

@@ -93,6 +93,9 @@
 .pay-col.sub .eyebrow{color:#8a5a10}
 .pay-col.pango{background:#f6f3fb;border:1.5px solid #b79bc7;box-shadow:inset 4px 0 0 #6a3d86}
 .pay-col.pango .eyebrow{color:#5b2d7a}
+.pay-col.plus{background:#f7f4ef;border:1.5px solid #d7c8b0;box-shadow:inset 4px 0 0 #8a6840}
+.pay-col.plus .eyebrow{color:#8a6840}
+.pay-col.plus select{width:100%;margin:0 0 6px;padding:8px 10px;border:1px solid #e3d5c2;border-radius:10px;background:#fff;font:inherit;color:inherit}
 .pay-col.pango-nss{background:#fdecee;border:1.5px solid #e3a0a8;box-shadow:inset 4px 0 0 #c81e2b}
 .pay-col.pango-nss .eyebrow{color:#9a1b28}
 
@@ -137,6 +140,7 @@
   .km-layout.km-4{grid-template-columns:1fr 1fr 1fr 1fr;align-items:start;gap:14px}
   .km-layout.km-4 > .km-disc{grid-column:auto}
   body:has(.km-layout.km-4) .wrap{max-width:1680px}
+  body:has(.km-layout.km-5) .wrap{max-width:1920px}
 }
 .km-bottom{display:grid;gap:14px;margin-top:14px;align-items:start}
 .km-bottom .dc-result{margin-top:0}
@@ -158,12 +162,13 @@
   .km-pv-row{grid-template-columns:1fr}
 }
 @media(min-width:1100px){
-  .km-stage.km-4,.km-stage.km-3{display:block}
-  .km-stage.km-4 > .km-layout,.km-stage.km-3 > .km-layout{display:grid;align-items:start;margin-top:0}
+  .km-stage.km-5,.km-stage.km-4,.km-stage.km-3{display:block}
+  .km-stage.km-5 > .km-layout,.km-stage.km-4 > .km-layout,.km-stage.km-3 > .km-layout{display:grid;align-items:start;margin-top:0}
+  .km-stage.km-5 > .km-layout{grid-template-columns:minmax(200px,.62fr) repeat(4,minmax(0,1fr));gap:12px}
   .km-stage.km-4 > .km-layout{grid-template-columns:1fr 1fr 1fr 1fr;gap:14px}
   .km-stage.km-3 > .km-layout{grid-template-columns:minmax(220px,.7fr) minmax(300px,1.2fr) minmax(300px,1.2fr);gap:16px}
-  .km-stage.km-4 > .km-layout > .km-disc,.km-stage.km-3 > .km-layout > .km-disc{grid-column:1;grid-row:1}
-  .km-stage.km-4 > .km-layout > .km-credit,.km-stage.km-3 > .km-layout > .km-credit{grid-column:2 / -1;grid-row:1}
+  .km-stage.km-5 > .km-layout > .km-disc,.km-stage.km-4 > .km-layout > .km-disc,.km-stage.km-3 > .km-layout > .km-disc{grid-column:1;grid-row:1}
+  .km-stage.km-5 > .km-layout > .km-credit,.km-stage.km-4 > .km-layout > .km-credit,.km-stage.km-3 > .km-layout > .km-credit{grid-column:2 / -1;grid-row:1}
 }
 .km-credit{min-width:0}
 .km-pays{display:grid;gap:14px;margin-top:14px;align-items:start}
@@ -171,6 +176,7 @@
   .km-pays{grid-template-columns:1fr 1fr}
 }
 @media(min-width:1100px){
+  .km-stage.km-5 .km-pays{grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
   .km-stage.km-4 .km-pays{grid-template-columns:1fr 1fr 1fr;gap:14px}
   .km-stage.km-3 .km-pays{grid-template-columns:1fr 1fr;gap:16px}
 }

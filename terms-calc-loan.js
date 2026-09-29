@@ -18,8 +18,11 @@
       const table=(KM_BANK_RATES[bankId]||{})[group]||(KM_BANK_RATES[bankId]||{}).t4l_t7||{};
       const row=table[band]||table[10]||table[20]||[];
       let rate=row[idx];
-      if(!(rate>=0)){
-        for(let i=idx;i>=0;i--){ if(row[i]>=0){ rate=row[i]; break; } }
+      let term=terms[idx];
+      if(rate==null || !(rate>=0)){
+        for(let i=idx;i>=0;i--){
+          if(row[i]!=null && row[i]>=0){ rate=row[i]; term=terms[i]; break; }
+        }
       }
-      return {rate: Number(rate)||0, term: terms[idx], band, capped: terms[idx]!==n};
+      return {rate: Number(rate)||0, term, band, capped: term!==n};
     }
