@@ -3,9 +3,14 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - stock-part1.json
-      - stock-part2.json
-      - .github/workflows/rebuild-stock.yml
+      - 'stock-part1.json'
+      - 'stock-part2.json'
+      - 'manual-reserved.json'
+      - 'scripts/merge_stock.py'
+      - '.github/workflows/rebuild-stock.yml'
+concurrency:
+  group: rebuild-stock
+  cancel-in-progress: false
 jobs:
   rebuild:
     runs-on: ubuntu-latest
@@ -13,32 +18,24 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-      - name: Merge stock-part1/part2 into stock.json
+        with:
+          fetch-depth: 0
+      - name: Merge parts into stock.json + apply manual-reserved.json, commit and push
         run: |
-          python3 << 'PY'
-          import json
-          from pathlib import Path
-          cars, seen, upd, dealer = [], set(), "", "ООО «ЭКСПЕРТ АВТО САМАРА»"
-          for name in ("stock-part1.json", "stock-part2.json"):
-              p = json.loads(Path(name).read_text(encoding="utf-8"))
-              upd = p.get("updated") or upd
-              dealer = p.get("dealer") or dealer
-              for c in p.get("cars") or []:
-                  v = c.get("vin")
-                  if v and v not in seen:
-                      seen.add(v)
-                      cars.append(c)
-          out = {"updated": upd, "dealer": dealer, "cars": cars}
-          Path("stock.json").write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print("wrote stock.json", len(cars), upd)
-          if len(cars) < 40:
-              raise SystemExit("too few cars")
-          PY
-      - name: Commit and push stock.json
-        run: |
+          set -e
           git config user.name "sanchesefn"
           git config user.email "sanchesefn@gmail.com"
-          git add stock.json
-          git diff --staged --quiet && echo "no change" && exit 0
-          git commit -m "склад: rebuild stock.json from parts 17.09.2026 (morning)"
-          git push
+          # Always rebuild from the latest main so a newer parts push is never overwritten.
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            python3 scripts/merge_stock.py --pretty
+            git add stock.json
+            if git diff --staged --quiet; then echo "no change"; exit 0; fi
+            UPD=$(python3 -c "import json;print(json.load(open('stock.json')).get('updated',''))")
+            git commit -m "склад: rebuild stock.json from parts $UPD (+manual-reserved)"
+            if git push origin HEAD:main; then exit 0; fi
+            echo "push retry $i"
+            sleep 3
+          done
+          exit 1

@@ -4,6 +4,25 @@ import json, re, urllib.request
 cars = []
 upd = ""
 
+
+def load_manual_reserved():
+    """manual-reserved.json: manual reservations applied on top of parts (see scripts/merge_stock.py)."""
+    p = Path("manual-reserved.json")
+    if not p.exists():
+        return set()
+    try:
+        d = json.loads(p.read_text(encoding="utf-8"))
+    except Exception as e:
+        print("manual-reserved.json unreadable", e)
+        return set()
+    items = d.get("vins", []) if isinstance(d, dict) else d
+    out = set()
+    for it in items or []:
+        v = it.get("vin") if isinstance(it, dict) else it
+        if isinstance(v, str) and v.strip():
+            out.add(v.strip().upper())
+    return out
+
 def add_payload(payload):
     global upd, cars
     if not isinstance(payload, dict):
@@ -80,6 +99,13 @@ def classify_t9(car):
     return car
 
 uniq = [classify_t9(c) for c in uniq]
+
+# reserved from parts (PISEC) is kept as is; manual-reserved.json VINs are added on top
+MANUAL_RESERVED = load_manual_reserved()
+for c in uniq:
+    if str(c.get("vin") or "").strip().upper() in MANUAL_RESERVED:
+        c["reserved"] = True
+print("reserved in STOCK:", sum(1 for c in uniq if c.get("reserved")), "manual list:", len(MANUAL_RESERVED))
 
 if len(uniq) < 40:
     print("skip stock inject, only", len(uniq), "cars")
