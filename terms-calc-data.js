@@ -87,7 +87,11 @@
       {id:"a8a",brand:"CHERY",name:"Arrizo 8 Active",stock:"a8",rrc:2865000,dealer:2649000,ti:250000,tiBack:230000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"a8p",brand:"CHERY",name:"Arrizo 8 Prime",stock:"a8",rrc:3060000,dealer:2699000,ti:200000,tiBack:180000,cr:261000,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"a8u",brand:"CHERY",name:"Arrizo 8 Ultra Black",stock:"a8",rrc:3275000,dealer:2899000,ti:200000,tiBack:180000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
-      {id:"t7l",brand:"CHERY",name:"Tiggo 7 L Active",stock:"t7l",rrc:2735000,dealer:2620000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:0,kmMax:30,prioMin:0,prioMax:30}
+      {id:"t7l",brand:"CHERY",name:"Tiggo 7 L Active",stock:"t7l",rrc:2735000,dealer:2620000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:0,kmMax:30,prioMin:0,prioMax:30},
+      {id:"l4s",brand:"TENET PLUS",name:"L4 Style",stock:"pl4",rrc:2540000,dealer:2438400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
+      {id:"l4e",brand:"TENET PLUS",name:"L4 Elegant",stock:"pl4",rrc:2690000,dealer:2582400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
+      {id:"l6e",brand:"TENET PLUS",name:"L6 Elegant",stock:"pl6",rrc:2890000,dealer:2745500,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
+      {id:"l6u",brand:"TENET PLUS",name:"L6 Ultra",stock:"pl6",rrc:3040000,dealer:2888000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50}
     ];
     const PRIO_VINS = new Set(["EDEED31B1SE053704", "EDXFB32B4TE041659", "EDXFB32B2TE041658", "EDXFB32B7TE062327", "EDXGD34B1TE022143", "EDXGD34B6TE031162", "EDXGD34B3TE031815", "EDEDD24B2SG003755", "EDEDD24B3SG003926", "EDEDD24B1SG002595", "LVVDC21B7SD594110", "LVVDC21B0SD594112", "LVVDC21B2SDJ34062", "LVTDD24B5RD409189"]);
     const KM_DC_DEF = 100000;
@@ -333,17 +337,13 @@
         }
       }
     };
-    const PLUS_CARS = [
-      {id:"l4s",name:"L4 Style",line:"L4",rrc:2540000,bfs:2235200,sub:100000},
-      {id:"l4e",name:"L4 Elegant",line:"L4",rrc:2690000,bfs:2313400,sub:100000},
-      {id:"l6e",name:"L6 Elegant",line:"L6",rrc:2890000,bfs:2456500,sub:150000},
-      {id:"l6u",name:"L6 Ultra",line:"L6",rrc:3040000,bfs:2584000,sub:150000}
-    ];
     function kmRateGroup(m){
       const s=(m&&m.stock)||"";
       if(s==="t4l"||s==="t7"||s==="t7l") return "t4l_t7";
       if(s==="t4"||s==="t8") return "t4_t8";
       if(s==="a8"||s==="ta8"||s==="t9") return "a8";
+      if(s==="pl4") return "plusL4";
+      if(s==="pl6") return "plusL6";
       return "t4l_t7";
     }
     function kmDownBand(pct){

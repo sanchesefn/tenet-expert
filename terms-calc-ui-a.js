@@ -93,6 +93,8 @@
       if(id==="t9p"||id==="t9u") return "Tiggo 9";
       if(id==="a8a"||id==="a8p"||id==="a8u") return "Arrizo 8";
       if(id==="t7l") return "Tiggo 7 L";
+      if(id==="l4s"||id==="l4e") return "L4";
+      if(id==="l6e"||id==="l6u") return "L6";
       return "Другие";
     }
     function kmStockCars(m){
@@ -186,11 +188,12 @@
       });
       const line=(g,tone)=>groups[g]&&groups[g].length?`<div class="km-line tone-${tone}"><p class="stock-h">${escape(g)}</p><div class="km-grid">${groups[g].map(x=>`<button type="button" class="chip ${x.id===active?"on":""}" data-km-id="${x.id}">${escape(x.name)}<small>${x.brand} · РРЦ ${rub(x.rrc)}</small></button>`).join("")}</div></div>`:"";
       const slot=(cls,html)=>html?`<div class="km-slot ${cls}">${html}</div>`:"";
-      return `<div class="km-board"><span class="km-brand tenet">TENET</span><span class="km-brand chery">CHERY</span>`
+      return `<div class="km-board"><span class="km-brand tenet">TENET</span><span class="km-brand plus">TENET PLUS</span><span class="km-brand chery">CHERY</span>`
         +slot("s-t4",`<div class="km-pair is-2">${line("T4","a")}${line("T4L","a")}</div>`)
         +slot("s-t7",line("T7","a"))
         +slot("s-c7",line("Tiggo 7 L","b"))
         +slot("s-t8",line("T8","a"))
+        +slot("s-plus",`<div class="km-pair">${line("L4","c")}${line("L6","c")}</div>`)
         +slot("s-t9",line("TENET T9","a"))
         +slot("s-c9",line("Tiggo 9","b"))
         +slot("s-a8",line("TENET A8","a"))
