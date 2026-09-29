@@ -99,7 +99,9 @@
 .plus-alt{margin:18px 0 2px;padding:12px 12px 10px;border:1.5px solid #c28b2a;border-radius:12px;background:#fff;box-shadow:inset 3px 0 0 #c28b2a}
 .pay-col .plus-alt .eyebrow{color:#8a5a10;margin:0 0 6px}
 .plus-alt .chip{margin-top:10px}
-.plus-alt.tenet-alt{border-color:#9bb0c7;box-shadow:inset 3px 0 0 #1f4e79}
+.plus-alt-pick{display:flex;align-items:center;gap:10px;margin:14px 0 0;padding:10px 12px;border:1.5px solid #d7c8b0;border-radius:12px;background:#fff}
+.plus-alt-pick span{font-size:13px;font-weight:700;white-space:nowrap}
+.plus-alt-pick select{flex:1;min-width:0;padding:8px 10px;border:1px solid #d7c8b0;border-radius:10px;background:#fff;font:inherit;color:inherit}
 .pay-col .plus-alt.tenet-alt .eyebrow{color:#1f4e79}
 .pay-col .plus-alt.tenet-alt .bank-row{border-bottom-color:rgba(31,78,121,.22)}
 .pay-col.pango-nss{background:#fdecee;border:1.5px solid #e3a0a8;box-shadow:inset 4px 0 0 #c81e2b}

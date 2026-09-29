@@ -185,15 +185,24 @@
         pKmK=pKm/1000;
         pOk=pKmK+0.05>=lo && pKmK-0.05<=hi;
       }
-      let plusAltDirect="", plusAltFleet="";
+      let plusAltDirect="", plusAltFleet="", altPick="";
       if(useLoan && (isPlus || m.brand==="TENET")){
         const wantPlus=!isPlus;
         const alts=(typeof KM_MODELS!=="undefined"?KM_MODELS:[]).filter(x=>x && x.brand===(wantPlus?"TENET PLUS":"TENET"));
-        let alt=null, best=Infinity;
+        if(typeof kmAltFor!=="string") kmAltFor="";
+        if(typeof kmAltPick!=="string") kmAltPick="";
+        if(kmAltFor!==kmId){ kmAltFor=kmId; kmAltPick=""; }
+        else {
+          const picked=typeof kmStr==="function"?kmStr("kmAltId",""):"";
+          if(picked && alts.some(x=>x.id===picked)) kmAltPick=picked;
+        }
+        let alt=null, best=Infinity, auto=null;
         alts.forEach(x=>{
           const d=Math.abs((Number(x.rrc)||0)-(Number(rrc)||0));
-          if(d<best || (d===best && alt && x.rrc<alt.rrc)){ best=d; alt=x; }
+          if(d<best || (d===best && auto && x.rrc<auto.rrc)){ best=d; auto=x; }
         });
+        alt=alts.find(x=>x.id===kmAltPick)||auto;
+        if(alt) kmAltPick=alt.id;
         if(alt){
           const altTiAmt=useTi?(alt.ti||0):0;
           const altCrAmt=useCr?(alt.cr||0):0;
@@ -229,6 +238,8 @@
           const altDisc=altBits.length?altBits.join(" · "):"без скидок комплектации";
           const altKind=wantPlus?"Директ":"Стандартный кредит";
           const altRule=wantPlus?"Скидки этой комплектации PLUS, не суммы "+escape(m.name)+". ИП 1938/И.":"Скидки этой комплектации TENET, не суммы "+escape(m.name)+". ИП 1890/И.";
+          const altOpts=alts.map(x=>`<option value="${x.id}"${x.id===alt.id?" selected":""}>${escape(x.name)} · РРЦ ${rub(x.rrc)}${auto&&x.id===auto.id?" · ближе по цене":""}</option>`).join("");
+          altPick=`<label class="plus-alt-pick"><span>Сравнить с</span><select id="kmAltId">${altOpts}</select></label>`;
           plusAltDirect=`<div class="${altCls}"><p class="eyebrow">${head}</p><p class="calc-note">${altKind} · РРЦ ${rub(alt.rrc)} · ${altDisc} · цена ${rub(altPrice)} · ПВ ${rub(altDown)} · ${altPct}% · тело ${rub(altCredit)}</p>${kmPayRows(altBanks,"pay","over")}<p class="calc-note">Тот же процент взноса и срок. ${altRule}</p><button type="button" class="chip" data-km-id="${alt.id}">Открыть ${escape(alt.name)}</button></div>`;
           plusAltFleet=`<div class="${altCls}"><p class="eyebrow">${head}</p><div class="bank-row"><span><b>Совкомбанк</b><br/><small>${altRate}% · ${altTerm} мес.${altTerm!==months?" · считаем "+altTerm+" мес.":""} · переплата ~${rub(Math.round(altOver))}</small></span><span class="pay">${rub(Math.round(altPay))} ₽</span></div><div class="bank-row"><span>BFS − субсидия ${rub(altSub)}${altTi?" − трейд-ин "+rub(altTi):""}</span><span class="pay">${rub(altFleetPrice)}</span></div><div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(altFleetCredit)}</span></div><p class="calc-note">${wantPlus?"Панго нет. ":""}ПВ ${rub(altDownShow)} · из них ${rub(Math.min(altExtra, altDownShow))} на каско и Д/О.</p></div>`;
         }
@@ -288,7 +299,7 @@
           </div>
           <input type="hidden" id="cDownMode" value="${downMode==="sum"?"sum":"pct"}" />
           <p class="calc-note">${rub(down)} ₽ · ${downPct}% от цены авто${(showMpt||showSub||showFleet)?` · ${showFleet?"флит":showSub?"субс. бренда":"МПТ"}: ${rub(priceMpt)} − ПВ в авто ${rub(downMptCar)} = тело ${rub(creditMpt)}`:""}</p>
-        </div><div class="km-pays">
+        </div>${altPick}<div class="km-pays">
           <div class="pay-col std km-pay">
             <p class="eyebrow">${isPlus?"Директ":"Стандартный кредит"}</p>
             <p class="calc-note">ПВ ${rub(down)} · тело ${rub(credit)}</p>
