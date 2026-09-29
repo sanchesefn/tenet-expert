@@ -93,6 +93,26 @@
       "rrc": 2985000
     },
     {
+      "vin": "EDEFB32B4TE120600",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32BXTE120827",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Голубой",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2985000
+    },
+    {
       "vin": "EDXDC24B0TG040024",
       "model": "a8",
       "name": "A8",
@@ -102,6 +122,46 @@
       "note": "В салоне · с 01.10.2026",
       "rrc": 3499000,
       "invoice": true
+    },
+    {
+      "vin": "EDEFB32BXTE120679",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDELB31B1TE121465",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B4TE121489",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2329000
+    },
+    {
+      "vin": "EDELB31B4TE122030",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Красный",
+      "status": "in",
+      "note": "В салоне · с 02.10.2026",
+      "rrc": 2479000
     },
     {
       "vin": "EDELB31B4TE121993",
@@ -219,47 +279,7 @@
       "rrc": 2329000
     },
     {
-      "vin": "EDEFB32B4TE120600",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
-    },
-    {
-      "vin": "EDEFB32BXTE120827",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Голубой",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
-    },
-    {
-      "vin": "EDEFB32BXTE120679",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2985000
-    },
-    {
       "vin": "EDELB31B7TE121356",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31B1TE121465",
       "model": "t4l",
       "name": "T4L",
       "trim": "Актив",
@@ -279,16 +299,6 @@
       "rrc": 2329000
     },
     {
-      "vin": "EDELB31B4TE121489",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2329000
-    },
-    {
       "vin": "EDELB31B5TE121422",
       "model": "t4l",
       "name": "T4L",
@@ -297,16 +307,6 @@
       "status": "way",
       "note": "Калуга · заявка",
       "rrc": 2329000
-    },
-    {
-      "vin": "EDELB31B4TE122030",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Красный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2479000
     },
     {
       "vin": "EDEFB32B1TE123423",
@@ -388,40 +388,6 @@
       "reserved": true
     },
     {
-      "vin": "EDXFB32B3TE091114",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "in",
-      "note": "В салоне · с 07.09.2026",
-      "rrc": 2985000,
-      "mpt": true,
-      "corp": true
-    },
-    {
-      "vin": "EDXGD34B2TE109064",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 7 мест 4WD",
-      "color": "Тёмно-зелёный",
-      "status": "in",
-      "note": "В салоне · с 15.09.2026",
-      "rrc": 3630000,
-      "demo": true
-    },
-    {
-      "vin": "EDXGB32B0TE110108",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 5 мест 2WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 15.09.2026",
-      "rrc": 3299000,
-      "demo": true
-    },
-    {
       "vin": "EDXGB32B1TE110196",
       "model": "t8",
       "name": "T8",
@@ -458,19 +424,6 @@
       "corp": true
     },
     {
-      "vin": "EDXGB32B1TE104317",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 5 мест 2WD",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 20.09.2026",
-      "rrc": 3299000,
-      "mpt": true,
-      "corp": true,
-      "reserved": true
-    },
-    {
       "vin": "EDXGB32BXTE087470",
       "model": "t8",
       "name": "T8",
@@ -481,16 +434,6 @@
       "rrc": 3099000,
       "mpt": true,
       "corp": true
-    },
-    {
-      "vin": "EDEHD24B9TE092948",
-      "model": "t9",
-      "name": "T9",
-      "trim": "Ультра 4WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 21.09.2026",
-      "rrc": 4299000
     },
     {
       "vin": "EDEHD24B2TE112070",
