@@ -185,6 +185,44 @@
         pKmK=pKm/1000;
         pOk=pKmK+0.05>=lo && pKmK-0.05<=hi;
       }
+      let plusAltDirect="", plusAltFleet="";
+      if(useLoan && !isPlus && m.brand==="TENET"){
+        const alts=(typeof KM_MODELS!=="undefined"?KM_MODELS:[]).filter(x=>x && x.brand==="TENET PLUS");
+        let alt=null, best=Infinity;
+        alts.forEach(x=>{
+          const d=Math.abs((Number(x.rrc)||0)-(Number(rrc)||0));
+          if(d<best || (d===best && alt && x.rrc<alt.rrc)){ best=d; alt=x; }
+        });
+        if(alt){
+          const altPrice=alt.rrc;
+          const altDown=Math.max(0, Math.min(altPrice, Math.round(altPrice*Math.max(0, downPct)/100)));
+          const altPct=altPrice>0?Math.round(altDown*1000/altPrice)/10:0;
+          const altGroup=alt.stock==="pl6"?"plusL6":"plusL4";
+          const altCredit=Math.max(0, altPrice-altDown+extras);
+          const altBanks=(typeof KM_BANKS!=="undefined"?KM_BANKS:[]).map(b=>{
+            const look=typeof kmBankRate==="function"?kmBankRate(b.id, altGroup, months, altPct):{rate:0, term:months, capped:false};
+            const term=look.term||months;
+            const pay=calcPay(altPrice+extras, altDown, term, look.rate);
+            return Object.assign({}, b, {rate:look.rate, term, capped:!!look.capped, pay, over:pay*term-altCredit});
+          });
+          const fAlt=typeof fleetOf==="function"?fleetOf(alt.id):null;
+          const altSub=(fAlt&&fAlt.sub)||0;
+          const altTidy=(fAlt&&fAlt.tidy)||altPrice;
+          const altTi=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;
+          const altFleetPrice=Math.max(0, altTidy-altTi-altSub);
+          const altDownShow=Math.max(0, Math.min(altFleetPrice, altDown));
+          const altExtra=200000;
+          const altDownCar=Math.max(0, altDownShow-altExtra);
+          const altFleetCredit=Math.max(0, altFleetPrice-altDownCar+finDelta);
+          const altTerm=Math.min(Math.max(1, months), 84);
+          const altRate=19.2;
+          const altPay=calcPay(altFleetPrice+finDelta, altDownCar, altTerm, altRate);
+          const altOver=altPay*altTerm-altFleetCredit;
+          const head="TENET PLUS · "+escape(alt.name);
+          plusAltDirect=`<div class="plus-alt"><p class="eyebrow">${head}</p><p class="calc-note">Директ · РРЦ ${rub(altPrice)} · ПВ ${rub(altDown)} · ${altPct}% · тело ${rub(altCredit)}</p>${kmPayRows(altBanks,"pay","over")}<p class="calc-note">Тот же процент взноса и срок. Скидки ${escape(m.name)} сюда не переносятся. ИП 1938/И.</p><button type="button" class="chip" data-km-id="${alt.id}">Открыть ${escape(alt.name)}</button></div>`;
+          plusAltFleet=`<div class="plus-alt"><p class="eyebrow">${head}</p><div class="bank-row"><span><b>Совкомбанк</b><br/><small>${altRate}% · ${altTerm} мес.${altTerm!==months?" · считаем "+altTerm+" мес.":""} · переплата ~${rub(Math.round(altOver))}</small></span><span class="pay">${rub(Math.round(altPay))} ₽</span></div><div class="bank-row"><span>BFS − субсидия ${rub(altSub)}${altTi?" − трейд-ин":""}</span><span class="pay">${rub(altFleetPrice)}</span></div><div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(altFleetCredit)}</span></div><p class="calc-note">Панго нет. ПВ ${rub(altDownShow)} · из них ${rub(Math.min(altExtra, altDownShow))} на каско и Д/О.</p></div>`;
+        }
+      }
       return banner("Калькулятор","КМ и платёж · база "+TERMS_DATE,"TENET")+`
         <p class="lead">${pShow?"Три расчёта рядом: стандартный кредит, "+(showSub?"флит с субсидией бренда":"МПТ")+" и спеццена PANGO.":"Сначала комплектация. Кредит и СЖ открываются галочкой «Кредит»."}</p>
         <div class="km-stage${pShow?" km-4":useLoan&&showSplit?" km-3":""}">
@@ -246,6 +284,7 @@
             <p class="calc-note">ПВ ${rub(down)} · тело ${rub(credit)}</p>
             ${kmPayRows(banks,"pay","over")}
             <p class="calc-note">${isPlus?"Ставки TENET PLUS, ИП 1938/И.":"Ставки TENET ФИНАНС, ИП 1890/И."} Кредит = авто ${rub(price)} − ПВ + Д/О ${rub(addons)} + каско ${rub(pack)} + комиссия банка.</p>
+            ${plusAltDirect}
           </div>
           <div class="pay-col ${showSub?"sub":"mpt"} km-pay">
             <p class="eyebrow">${showFleet||isPlus?"Флит · Совкомбанк 19,2%":showSub?"Флит · субсидия бренда":"Гос. программа · МПТ · Совкомбанк 19,2%"}</p>
@@ -256,6 +295,7 @@
               <p class="calc-note">${showFleet?"Не МПТ: без −10%. Субсидия бренда "+rub(subAmt)+". Совкомбанк 19,2%. ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О.":showSub?(isPlus?"Флит: цена BFS минус субсидия бренда. Совкомбанк 19,2%. Панго нет.":"Машина не проходит под МПТ. Это не стандартный кредит: цена флита минус субсидия бренда (AQ), Совкомбанк 19,2%."):"ПВ "+rub(downMptShow)+" · из них "+rub(Math.min(MPT_EXTRA, downMptShow))+" на каско и Д/О."}</p>
               ${mptBreak}
             </details>
+            ${plusAltFleet}
           </div>
           ${pShow?`<div class="pay-col pango km-pay">
             <p class="eyebrow">Спеццена · PANGO</p>
