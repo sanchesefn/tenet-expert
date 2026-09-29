@@ -248,8 +248,8 @@
     function kmRateGroup(m){
       const s=(m&&m.stock)||"";
       if(s==="t4l"||s==="t7"||s==="t7l") return "t4l_t7";
-      if(s==="t4"||s==="t8"||s==="t9") return "t4_t8";
-      if(s==="a8"||s==="ta8") return "a8";
+      if(s==="t4"||s==="t8") return "t4_t8";
+      if(s==="a8"||s==="ta8"||s==="t9") return "a8";
       return "t4l_t7";
     }
     function kmDownBand(pct){
