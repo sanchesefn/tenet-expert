@@ -78,12 +78,18 @@
       const over=termAfter>0?pay*termAfter-owe:0;
       return {base, sub, price, cap49, maxPv, earlyCap, limited, pv, early, earlyOver, doCasco, pvExtras, pvCar, extrasCredit, credit, term, termAfter, rate, pay, over};
     }
-    function fleetBodyRows(q){
+    function fleetPaid(q){
       const deal=Math.max(0, Math.round((q&&q.credit)||0));
       const paid=Math.max(0, Math.round((q&&q.early)||0)+Math.round((q&&q.earlyOver)||0));
-      const after=Math.max(0, deal-paid);
-      return `<div class="bank-row"><span>Тело с учётом всех денег клиента<br/><small>включая досрочное погашение</small></span><span class="pay">${rub(after)}</span></div>`
-        +`<div class="bank-row"><span>Тело на момент сделки</span><span class="pay">${rub(deal)}</span></div>`;
+      return {deal, after:Math.max(0, deal-paid), pv:Math.max(0, Math.round((q&&q.pv)||0))};
+    }
+    function fleetBodyTop(q){
+      const b=fleetPaid(q);
+      return `<p class="calc-note">ПВ ${rub(b.pv)} · тело ${rub(b.after)} с учётом всех денег</p>`;
+    }
+    function fleetBodyRows(q){
+      const b=fleetPaid(q);
+      return `<div class="bank-row"><span>Тело на момент сделки</span><span class="pay">${rub(b.deal)}</span></div>`;
     }
     function fleetSubBreak(q, o){
       o=o||{};
@@ -100,6 +106,7 @@
       if(q.extrasCredit) rows.push(`<div class="bank-row"><span>Д/О и каско в кредите</span><span class="pay">${rub(q.extrasCredit)}</span></div>`);
       if(q.early) rows.push(`<div class="bank-row"><span>Досрочно · сокращает срок, не платёж</span><span class="pay">${rub(q.early)}</span></div>`);
       if(q.earlyOver) rows.push(`<div class="bank-row"><span>Сверх 25% в программу не входит</span><span class="pay">${rub(q.earlyOver)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>Тело с учётом всех денег клиента</span><span class="pay">${rub(fleetPaid(q).after)}</span></div>`);
       rows.push(fleetBodyRows(q));
       return `<div class="mpt-break">${rows.join("")}</div>`;
     }
@@ -212,13 +219,14 @@
         <p class="calc-note">${rub(down)} ₽ · ${downPct}% · одинаковые ПВ и срок для обоих расчётов</p>
       </div>`;
       const stdCol=`<div class="pay-col std km-pay">
-            <p class="eyebrow">Стандартный кредит</p>
+            <p class="eyebrow">Директ</p>
             <p class="calc-note">Та же комплектация без флита. ПВ ${rub(downReg)} · тело ${rub(creditReg)}</p>
             ${fleetPayRows(banks,"pay","over",months)}
             ${regBreak}
           </div>`;
       const altCol=`<div class="pay-col sub km-pay">
             <p class="eyebrow">${isSub?"Флит · субсидия бренда":"Флит · Совкомбанк 19,2%"}</p>
+            ${fleetBodyTop(q)}
             ${fleetPayRows(banksMpt,"payMpt","overMpt",months)}
             ${fleetBodyRows(q)}
             <details class="calc-more">
