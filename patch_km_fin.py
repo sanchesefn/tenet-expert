@@ -65,6 +65,8 @@ def patch_pages(text):
 
 
 def patch_text(text):
+    if "const finDelta=" in text and "pBundle+finDelta" in text:
+        return text, 0
     if "priceMpt-downMptCar+finDelta" in text and "pBundle+finDelta" in text and "сверх нормы" in text:
         return text, 0
     n = 0
