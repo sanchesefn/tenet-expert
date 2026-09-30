@@ -78,6 +78,13 @@
       const over=termAfter>0?pay*termAfter-owe:0;
       return {base, sub, price, cap49, maxPv, earlyCap, limited, pv, early, earlyOver, doCasco, pvExtras, pvCar, extrasCredit, credit, term, termAfter, rate, pay, over};
     }
+    function fleetBodyRows(q){
+      const deal=Math.max(0, Math.round((q&&q.credit)||0));
+      const paid=Math.max(0, Math.round((q&&q.early)||0)+Math.round((q&&q.earlyOver)||0));
+      const after=Math.max(0, deal-paid);
+      return `<div class="bank-row"><span>Тело с учётом всех денег клиента<br/><small>включая досрочное погашение</small></span><span class="pay">${rub(after)}</span></div>`
+        +`<div class="bank-row"><span>Тело на момент сделки</span><span class="pay">${rub(deal)}</span></div>`;
+    }
     function fleetSubBreak(q, o){
       o=o||{};
       const rows=[];
@@ -93,7 +100,7 @@
       if(q.extrasCredit) rows.push(`<div class="bank-row"><span>Д/О и каско в кредите</span><span class="pay">${rub(q.extrasCredit)}</span></div>`);
       if(q.early) rows.push(`<div class="bank-row"><span>Досрочно · сокращает срок, не платёж</span><span class="pay">${rub(q.early)}</span></div>`);
       if(q.earlyOver) rows.push(`<div class="bank-row"><span>Сверх 25% в программу не входит</span><span class="pay">${rub(q.earlyOver)}</span></div>`);
-      rows.push(`<div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(q.credit)}</span></div>`);
+      rows.push(fleetBodyRows(q));
       return `<div class="mpt-break">${rows.join("")}</div>`;
     }
     function fleetSubNote(q){
@@ -213,7 +220,7 @@
       const altCol=`<div class="pay-col sub km-pay">
             <p class="eyebrow">${isSub?"Флит · субсидия бренда":"Флит · Совкомбанк 19,2%"}</p>
             ${fleetPayRows(banksMpt,"payMpt","overMpt",months)}
-            <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>
+            ${fleetBodyRows(q)}
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
               <p class="calc-note">${fleetSubNote(q)}</p>
