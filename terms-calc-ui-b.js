@@ -294,7 +294,7 @@
             ${typeof fleetBodyTop==="function"?fleetBodyTop(qFleet):""}
             ${kmPayRows(banksMpt,"payMpt","overMpt")}
             ${typeof fleetBodyRows==="function"?fleetBodyRows(qFleet):`<div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>`}
-            ${typeof fleetKeyRow==="function"?fleetKeyRow(qFleet):""}
+            ${typeof fleetClientRow==="function"?fleetClientRow(qFleet):""}
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
               <p class="calc-note">${typeof fleetSubNote==="function"?fleetSubNote(qFleet):""}</p>
@@ -327,7 +327,7 @@
               ${typeof fleetBodyTop==="function"?fleetBodyTop(qFleet):""}
               ${kmPayRows(banksMpt,"payMpt","overMpt")}
               ${typeof fleetBodyRows==="function"?fleetBodyRows(qFleet):`<div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(creditMpt)}</span></div>`}
-              ${typeof fleetKeyRow==="function"?fleetKeyRow(qFleet):""}
+              ${typeof fleetClientRow==="function"?fleetClientRow(qFleet):""}
               <details class="calc-more"><summary>Подробности расчёта</summary>
               <p class="calc-note">${typeof fleetSubNote==="function"?fleetSubNote(qFleet):""}</p>
               ${mptBreak}</details>`

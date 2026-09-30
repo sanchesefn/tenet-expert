@@ -91,6 +91,9 @@
       const b=fleetPaid(q);
       return `<div class="bank-row"><span>Тело на момент сделки</span><span class="pay">${rub(b.deal)}</span></div>`;
     }
+    function fleetClientRow(q){
+      return `<div class="bank-row client"><span>Цена для клиента</span><span class="pay">${rub(Math.max(0, Math.round((q&&q.price)||0)))}</span></div>`;
+    }
     function fleetKeyRow(q){
       const key=Math.max(0, Math.round((q&&q.price)||0)+Math.round((q&&q.doCasco)||0));
       return `<div class="bank-row key"><span>Под ключ</span><span class="pay">${rub(key)}</span></div>`;
@@ -103,7 +106,6 @@
       if(o.rrc!=null) rows.push(`<div class="bank-row"><span>РРЦ</span><span class="pay">${rub(o.rrc)}</span></div>`);
       rows.push(`<div class="bank-row"><span>${o.trade?"Флит + трейд-ин":"Флит"}</span><span class="pay">${rub(q.base)}</span></div>`);
       if(q.sub) rows.push(`<div class="bank-row"><span>Субсидия бренда</span><span class="pay">− ${rub(q.sub)}</span></div>`);
-      rows.push(`<div class="bank-row client"><span>Цена для клиента</span><span class="pay">${rub(q.price)}</span></div>`);
       rows.push(`<div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(q.pv)}</span></div>`);
       rows.push(`<div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(q.pvExtras)}</span></div>`);
       rows.push(`<div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(q.pvCar)}</span></div>`);
@@ -234,7 +236,7 @@
             ${fleetBodyTop(q)}
             ${fleetPayRows(banksMpt,"payMpt","overMpt",months)}
             ${fleetBodyRows(q)}
-            ${fleetKeyRow(q)}
+            ${fleetClientRow(q)}
             <details class="calc-more">
               <summary>Подробности расчёта</summary>
               <p class="calc-note">${fleetSubNote(q)}</p>
