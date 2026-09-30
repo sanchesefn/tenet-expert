@@ -1,9 +1,7 @@
 {
   "comment": "Ручные брони: rebuild-stock (scripts/merge_stock.py) и сборка страницы (patch_stock_src.py) ставят reserved:true этим VIN поверх stock-part1/part2. Флаги reserved из parts (PISEC) не снимаются. Убрать бронь = удалить VIN отсюда.",
-  "updated": "2026-09-29",
+  "updated": "2026-09-30",
   "vins": [
-    "LVVDC21B0SD594112",
-    "LVVDC21B2SDJ34062",
     "EDELB31B1TE103208",
     "EDELB31B4TE096853",
     "EDXFB32B7TE062327",
@@ -12,8 +10,6 @@
     "EDXGD34B1TE022143"
   ],
   "notes": {
-    "LVVDC21B0SD594112": "A8 Прайм, белый — добавлено 29.09.2026",
-    "LVVDC21B2SDJ34062": "A8 Прайм, чёрный — добавлено 29.09.2026",
     "EDELB31B1TE103208": "T4L Актив, белый — добавлено 29.09.2026",
     "EDELB31B4TE096853": "T4L Прайм, чёрный — добавлено 29.09.2026",
     "EDXFB32B7TE062327": "T7 Актив, чёрный — добавлено 29.09.2026",
