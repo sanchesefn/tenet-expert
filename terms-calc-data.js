@@ -1,1 +1,1 @@
-LOAD_FROM_FILE:/tmp/cou_content.js
+PLACEHOLDER_WILL_FAIL
