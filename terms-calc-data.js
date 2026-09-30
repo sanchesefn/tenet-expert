@@ -1,1 +1,1 @@
-LOAD_FROM_FILE:/tmp/tu08_30_content.js
+$file:/tmp/tu08_30_content.js
