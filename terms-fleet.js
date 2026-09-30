@@ -32,7 +32,7 @@
       l6e:{name:"L6 Elegant",rrc:2890000,dealer:2745500,an:0,client:2456500,prem:0,km:0,tidy:2456500,sub:150000,do:70000,casco:80000},
       l6u:{name:"L6 Ultra",rrc:3040000,dealer:2888000,an:0,client:2584000,prem:0,km:0,tidy:2584000,sub:150000,do:70000,casco:80000}
     };
-    const FLEET_TI = 50000;
+    const FLEET_TI = 100000;
     function isT8TwoWd(c){
       if(!c || c.invoice) return false;
       const vin=String(c.vin||"").toUpperCase();
