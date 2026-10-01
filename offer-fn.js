@@ -132,9 +132,11 @@
         const tag=row.win==="them"?`<em>сильнее конкурент</em>`:"";
         return `<div class="op-vs ${cls}"><div class="k">${escape(row.k)}${tag}</div><div class="us"><small>${escape(cmp.ours||"Мы")}</small>${escape(row.us)}</div><div class="them"><small>${escape(cmp.them||"Конкурент")}</small>${escape(row.them)}</div></div>`;
       }).join("");
+      const only=(cmp.only||[]);
+      const onlyHtml=only.length?`<div class="op-vs-only"><b>В нашем прайсе есть, у них в прайсе нет</b><ul>${only.map(t=>`<li>${escape(t)}</li>`).join("")}</ul></div>`:"";
       const sum=`<p class="op-vs-sum">${wins.length?`<span class="g">Мы сильнее: ${escape(wins.join(", "))}</span>`:""}${loses.length?`<span class="n">Здесь сильнее конкурент: ${escape(loses.join(", "))}</span>`:""}</p>`;
       const pay=`<div class="op-vs-pay"><b>Кредит · ${escape(cmp.them||"")}</b><span>${cmp.rate}% · ${cmp.term} мес. · взнос ${rub(cmp.down)} ₽ (${cmp.pct}%) · тело ${rub(cmp.credit)} ₽</span><span class="big">${rub(cmp.pay)} ₽ <small style="letter-spacing:0;font-size:13px;opacity:1">/ мес.</small></span><span class="sub">Наша ставка ${cmp.ourRate}%${cmp.ourName?" · "+escape(cmp.ourName):""}${cmp.ourPay?" · наш платёж "+rub(cmp.ourPay)+" ₽":""}. У конкурента на 2,5 п.п. выше. Цена без наших скидок и допов.</span></div>`;
-      return `<div class="op-vs-card"><div class="op-vs-top"><div><small>наш автомобиль</small><b>${escape(cmp.ours||"")}</b></div><div><small>конкурент</small><b>${escape(cmp.them||"")}</b></div></div><p class="op-vs-legend"><i class="g"></i>мы сильнее<i class="r"></i>конкурент слабее</p>${sum}${body}<p class="op-vs-src">${escape(cmp.trim||"")} · ${escape(cmp.src||"")}</p>${pay}</div>`;
+      return `<div class="op-vs-card"><div class="op-vs-top"><div><small>наш автомобиль</small><b>${escape(cmp.ours||"")}</b></div><div><small>конкурент</small><b>${escape(cmp.them||"")}</b></div></div><p class="op-vs-legend"><i class="g"></i>мы сильнее<i class="r"></i>конкурент слабее</p>${sum}${body}${onlyHtml}<p class="op-vs-src">${escape(cmp.trim||"")} · ${escape(cmp.src||"")}</p>${pay}</div>`;
     }
     function offerPreview(doc){
       const meta=(doc.meta||[]).map(([k,v])=>`<div class="op-line"><span>${escape(k)}</span><b>${escape(offerDash(v))}</b></div>`).join("");
@@ -143,11 +145,12 @@
       const photos=(doc.photos||[]).slice(0,4).map(u=>`<img src="${escape(u)}" alt="">`).join("");
       const sections=(doc.sections||[]).map(sec=>{
         const cmp=sec.cmp?offerCmpHtml(sec.cmp):"";
-        const pairs=!sec.cmp && (sec.pairs||[]).length?`<div class="op-specs">${(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("")}</div>`:"";
-        const lines=!sec.cmp?(sec.lines||[]).map(t=>`<p>${escape(t)}</p>`).join(""):"";
+        const deals=sec.deals?offerDealsHtml(sec.deals):"";
+        const pairs=!sec.cmp && !sec.deals && (sec.pairs||[]).length?`<div class="op-specs">${(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("")}</div>`:"";
+        const lines=!sec.cmp && !sec.deals?(sec.lines||[]).map(t=>`<p>${escape(t)}</p>`).join(""):"";
         const groups=(sec.groups||[]).length?`<div class="op-cols">${(sec.groups||[]).map(([title,items])=>`<p class="op-g">${escape(title)}</p><ul>${(items||[]).map(it=>`<li>${escape(it)}</li>`).join("")}</ul>`).join("")}</div>`:"";
-        const head=sec.cmp?"":`<h3>${escape(sec.title||"")}</h3>`;
-        return `<section>${head}${cmp}${pairs}${lines}${groups}</section>`;
+        const head=(sec.cmp||sec.deals)?"":`<h3>${escape(sec.title||"")}</h3>`;
+        return `<section>${head}${cmp}${deals}${pairs}${lines}${groups}</section>`;
       }).join("");
       return `<article class="op-doc"><p class="op-brand">ООО «ЭКСПЕРТ АВТО САМАРА» · TENET · +7 927 724 92 77</p>${photos?`<div class="op-photos">${photos}</div>`:""}<p class="op-kicker">${escape(doc.kicker||"")}</p><h2>${escape(doc.title||"Коммерческое предложение")}</h2><p class="op-head">${escape(doc.headline||"")}</p>${meta}${rows}${total}${sections}<p class="op-foot">${escape(doc.note||"")}</p></article>`;
     }
@@ -169,8 +172,23 @@
             lines.push("  мы: "+row.us);
             lines.push("  они: "+row.them);
           });
+          if((c.only||[]).length){
+            lines.push("В нашем прайсе есть, у них в прайсе нет:");
+            c.only.forEach(t=>lines.push("• "+t));
+          }
           lines.push("Кредит "+(c.them||"")+": "+c.rate+"% · "+c.term+" мес. · платёж "+rub(c.pay)+" ₽");
           lines.push("Наша ставка "+c.ourRate+"%"+(c.ourPay?" · наш платёж "+rub(c.ourPay)+" ₽":"")+" · у них на 2,5 п.п. выше.");
+          return;
+        }
+        if(sec.deals){
+          ["credit","fleet","spec"].forEach(function(key){
+            const card=sec.deals[key];
+            if(!card) return;
+            lines.push(card.title||"");
+            if(card.pay) lines.push(card.pay);
+            (card.lines||[]).forEach(t=>lines.push(t));
+            (card.pays||[]).forEach(t=>lines.push(t));
+          });
           return;
         }
         (sec.pairs||[]).forEach(([k,v])=>lines.push(k+": "+v));
@@ -198,6 +216,115 @@
           </div>
         </div>`;
     }
+    function offerCarsWord(n){
+      n=Math.abs(n|0);
+      const n10=n%10, n100=n%100;
+      if(n10===1 && n100!==11) return "машина";
+      if(n10>=2 && n10<=4 && (n100<12 || n100>14)) return "машины";
+      return "машин";
+    }
+    function offerInStock(m){
+      const list=typeof kmStockCars==="function"?kmStockCars(m):[];
+      return (list||[]).filter(c=>c && c.status==="in");
+    }
+    function offerCreditCard(d){
+      const banks=d.banks||[];
+      let best=null;
+      banks.forEach(b=>{ if(!best || (Number(b.pay)||0)<(Number(best.pay)||0)) best=b; });
+      return {
+        title:"Кредит",
+        pay:best?rub(best.pay)+" ₽ / мес.":"",
+        lines:[
+          "Первый взнос "+rub(d.down)+" ₽ ("+d.downPct+"%)",
+          "Срок "+d.months+" мес.",
+          "Тело кредита "+rub(d.credit)+" ₽",
+          "Комиссия банка "+rub(d.fee)+" ₽"
+        ],
+        pays:banks.map(b=>b.name+": "+b.rate+"% · "+b.term+" мес. · "+rub(b.pay)+" ₽ / мес.")
+      };
+    }
+    function offerFleetCard(d, f, n){
+      const base=Math.max(0, Math.round(f.tidy||f.rrc||0));
+      const sub=Math.max(0, Math.round(f.sub||0));
+      const ti=typeof FLEET_TI==="number"?FLEET_TI:100000;
+      const months=Math.max(1, Math.round(Number(d.months)||60));
+      const down=Math.max(0, Math.round(Number(d.down)||0));
+      const q=typeof fleetSubQuote==="function"?fleetSubQuote(base, sub, down, f.do||70000, f.casco||80000, months, true):null;
+      const client=q?q.price:Math.max(0, base-sub);
+      const lines=[
+        "В салоне "+n+" "+offerCarsWord(n),
+        "Цена флита "+rub(base)+" ₽",
+        "Субсидия бренда − "+rub(sub)+" ₽",
+        "Цена для клиента "+rub(client)+" ₽",
+        "С трейд-ином флита ещё − "+rub(ti)+" ₽",
+        "Ставка 19,2%, Совкомбанк",
+        "ПВ и субсидия не больше 49%"+(q?" · взнос до "+rub(q.maxPv)+" ₽":""),
+        "Досрочно до 25%"+(q?" ("+rub(q.earlyCap)+" ₽) — короче срок, платёж тот же":""),
+        "Д/О "+rub(f.do||70000)+" и каско "+rub(f.casco||80000)
+      ];
+      let pay="";
+      if(q && q.pay){
+        pay=rub(Math.round(q.pay))+" ₽ / мес.";
+        if(q.termAfter && q.termAfter!==q.term) lines.push("Срок с досрочным "+q.term+" → "+q.termAfter+" мес.");
+      }
+      return {title:"Флит", lines, pay};
+    }
+    function offerSpecCard(d, pg, n){
+      const cash=Math.round(pg.cash||0);
+      const ti=Math.round(pg.ti||0);
+      const fix=d.useTi?ti:cash;
+      const months=Math.max(1, Math.round(Number(d.months)||60));
+      const down=Math.max(0, Math.min(fix, Math.round(Number(d.down)||0)));
+      const bundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
+      const base=Math.max(0, fix-down)+bundle;
+      const nss=Math.round(base*0.0089*(months/12));
+      const payA=typeof calcPay==="function"?Math.round(calcPay(base+down, down, months, 17.4)):0;
+      const payB=typeof calcPay==="function"?Math.round(calcPay(base+nss+down, down, months, 14.4)):0;
+      return {
+        title:"Спеццена",
+        pay:payA?rub(payA)+" ₽ / мес.":"",
+        lines:[
+          "В салоне "+n+" "+offerCarsWord(n)+" по спеццене",
+          "Без трейд-ина "+rub(cash)+" ₽",
+          "С трейд-ином "+rub(ti)+" ₽",
+          "Каско, GAP и ДМС "+rub(bundle)+" всегда в кредите",
+          "17,4% без комиссий"+(payA?" · "+rub(payA)+" ₽":""),
+          "14,4% · комиссия в теле"+(payB?" · "+rub(payB)+" ₽ · тело "+rub(base+nss)+" ₽":"")
+        ]
+      };
+    }
+    function offerDeals(d){
+      const cars=offerInStock(d.m);
+      const f=(typeof FLEET_BFS!=="undefined" && d.m && FLEET_BFS[d.m.id])?FLEET_BFS[d.m.id]:null;
+      const sub=f?Math.max(0, Math.round(f.sub||0)):0;
+      const fleetCars=cars.filter(c=>{
+        if(c.invoice || c.demo) return false;
+        if(typeof carIsMpt==="function" && carIsMpt(c)) return false;
+        if(typeof carIsCorp==="function" && carIsCorp(c)) return false;
+        return true;
+      });
+      const pg=typeof pangoOf==="function"?pangoOf(d.m.id):null;
+      const specCars=pg?cars.filter(c=>!!c.invoice):[];
+      const credit=d.useLoan?offerCreditCard(d):null;
+      const fleet=(fleetCars.length && f && sub)?offerFleetCard(d, f, fleetCars.length):null;
+      const spec=specCars.length?offerSpecCard(d, pg, specCars.length):null;
+      if(!credit && !fleet && !spec) return null;
+      return {credit, fleet, spec};
+    }
+    function offerDealCard(card, cls){
+      if(!card) return "";
+      const lines=(card.lines||[]).map(t=>`<p>${escape(t)}</p>`).join("");
+      const pays=(card.pays||[]).map(t=>`<p class="pay">${escape(t)}</p>`).join("");
+      const big=card.pay?`<p class="big">${escape(card.pay)}</p>`:"";
+      return `<div class="op-deal ${cls}"><h3>${escape(card.title||"")}</h3>${big}${lines}${pays}</div>`;
+    }
+    function offerDealsHtml(deals){
+      const side=[offerDealCard(deals.fleet,"fleet"), offerDealCard(deals.spec,"spec")].filter(Boolean).join("");
+      const credit=offerDealCard(deals.credit,"credit");
+      if(credit && side) return `<div class="op-deals">${credit}<div class="op-side">${side}</div></div>`;
+      if(credit) return `<div class="op-deals solo">${credit}</div>`;
+      return `<div class="op-deals solo">${side}</div>`;
+    }
     function offerDocNew(d){
       const rows=[["РРЦ", rub(d.price)+" ₽"]];
       d.discs.forEach(([name,amt])=>rows.push([name, "− "+rub(amt)+" ₽"]));
@@ -206,21 +333,15 @@
       if(d.useLoan) rows.push(["Каско расширенное / пакет СЖ", rub(d.pack)+" ₽"]);
       else if(d.casco) rows.push(["КАСКО", rub(d.casco)+" ₽"]);
       const sections=[];
-      if(d.useLoan){
-        sections.push({title:"Кредит", pairs:[
-          ["Первый взнос", rub(d.down)+" ₽ ("+d.downPct+"%)"],
-          ["Срок", d.months+" мес."],
-          ["Тело кредита", rub(d.credit)+" ₽"],
-          ["Комиссия банка", rub(d.fee)+" ₽"]
-        ], lines:(d.banks||[]).map(b=>b.name+": "+b.rate+"% · "+b.term+" мес. · "+rub(b.pay)+" ₽ / мес.")});
-      }
+      const deals=offerDeals(d);
+      if(deals) sections.push({deals:deals});
       if(d.packEq && d.packEq.specs) sections.push({title:"Характеристики", pairs:d.packEq.specs});
       if(d.packEq && d.packEq.groups) sections.push({title:"Оснащение", groups:d.packEq.groups});
       (d.rivals||[]).forEach(r=>{
         sections.push({
           title:"Сравнение с "+r.name,
           cmp:{
-            ours:r.ours, them:r.name, trim:r.trim+" · "+rub(r.price)+" ₽", src:r.src, rows:r.board,
+            ours:r.ours, them:r.name, trim:r.trim+" · "+rub(r.price)+" ₽", src:r.src, rows:r.board, only:r.only||[],
             rate:r.rate, term:r.term, down:r.down, pct:r.pct, credit:r.credit, pay:r.pay,
             ourRate:r.ourRate, ourName:r.ourName, ourPay:r.ourPay
           }
@@ -280,7 +401,22 @@
 .op-vs-pay .big{font-size:22px;font-weight:800;color:#161618;line-height:1.2;}
 .op-vs-pay span{font-size:13px;line-height:1.4;color:#3d3832;}
 .op-vs-pay .sub{color:#7a7166;font-size:12px;}
-@media(max-width:720px){.op-vs-top{grid-template-columns:1fr;}}
+.op-vs-only{margin:0 12px 12px;background:#e3f6ea;border-radius:14px;padding:12px 14px;}
+.op-vs-only b{display:block;color:#135c34;font-size:13px;margin:0 0 6px;}
+.op-vs-only ul{margin:0;padding:0 0 0 16px;}
+.op-vs-only li{color:#135c34;font-size:13.5px;line-height:1.4;margin:0 0 3px;}
+.op-deals{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:10px;align-items:start;margin:8px 0 4px;}
+.op-deals.solo{grid-template-columns:1fr;}
+.op-side{display:flex;flex-direction:column;gap:10px;}
+.op-deal{border:1.5px solid #e4d3b8;border-radius:16px;padding:12px 14px 10px;background:#fff;}
+.op-deal.credit{border-color:#c81e2b;background:#fffdf8;}
+.op-deal.fleet{border-color:#7dba96;background:#f3faf6;}
+.op-deal.spec{border-color:#c4a574;background:#f8f4ec;}
+.op-deal h3{margin:0 0 6px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8a6840;}
+.op-deal p{margin:0 0 3px;font-size:13.5px;line-height:1.35;color:#3d3832;}
+.op-deal .big{margin:0 0 8px;font-size:22px;font-weight:800;color:#161618;line-height:1.15;}
+.op-deal .pay{font-weight:700;color:#161618;}
+@media(max-width:720px){.op-vs-top,.op-deals{grid-template-columns:1fr;}}
 </style>`;
     }
     function offerModelSelect(id, models, current){
@@ -303,15 +439,15 @@
           {k:"Привод",us:"робот DCT6 уже на входе линейки",them:"Комфорт — только механика и передний привод. 4WD появляется с Оптимум, 150 л.с.",win:"us"},
           {k:"Топливо",us:"официально АИ-92, два экрана и CarPlay уже в Актив",them:"входная версия скромнее по оснащению",win:"us"}
         ]},
-        {id:"x50",name:"Belgee X50+",trim:"Стиль",price:2505990,src:"прайс импортёра из теста",board:[
-          {k:"Багажник",us:"475–1500 л",them:"330 л — самый маленький багажник в этом классе по тесту",win:"us"},
+        {id:"x50",name:"Belgee X50+",trim:"Стиль",price:2505990,src:"прайс импортёра, Стиль",board:[
+          {k:"Багажник",us:"475–1500 л",them:"330 л — самый маленький багажник в этом классе",win:"us"},
           {k:"Клиренс",us:"203 мм",them:"182 мм",win:"us"},
           {k:"Габариты",us:"4506×1828×1701 мм",them:"4380×1810×1615 мм, база 2600",win:"us"},
           {k:"Мотор",us:"1.5T 147 л.с. и 210 Н·м",them:"1.5T 147 л.с. и 270 Н·м, 0–100 за 8,1 с — бодрее на разгоне",win:"them"},
           {k:"Привод",us:"передний",them:"только передний, полного привода нет",win:"tie"},
           {k:"Топливо",us:"официально АИ-92",them:"обычно АИ-95",win:"us"}
         ]},
-        {id:"j6",name:"Jaecoo J6",trim:"Актив",price:2290000,src:"прайс импортёра из теста",board:[
+        {id:"j6",name:"Jaecoo J6",trim:"Актив",price:2290000,src:"прайс импортёра, Актив",board:[
           {k:"Клиренс",us:"203 мм",them:"176 мм",win:"us"},
           {k:"Багажник",us:"475 л и 1500 л со сложенным рядом",them:"480 л и 1180 л — в пяти местах почти так же, сложенный ряд меньше",win:"us"},
           {k:"Габариты",us:"4506×1828×1701, база 2650",them:"4509×1860×1650, база 2610",win:"tie"},
@@ -320,7 +456,7 @@
         ]}
       ],
       t7:[
-        {id:"cityray",name:"Geely Cityray",trim:"Comfort",price:2699990,src:"прайс Geely из теста",board:[
+        {id:"cityray",name:"Geely Cityray",trim:"Comfort",price:2699990,src:"прайс Geely, Comfort",board:[
           {k:"Привод",us:"в линейке есть полный привод",them:"в РФ вся линейка только передний привод",win:"us"},
           {k:"Клиренс",us:"197 мм",them:"185 мм",win:"us"},
           {k:"Посадка",us:"4553×1862×1696 мм — длиннее и выше",them:"4510×1865×1650 мм, база 2701",win:"us"},
@@ -347,7 +483,7 @@
         ]}
       ],
       t8:[
-        {id:"f7",name:"Haval F7",trim:"Оптимум 1.5 2WD",price:2899000,price4:3399000,trim4:"Оптимум 2.0 4WD",src:"haval.ru от 2 899 000 Оптимум 1.5 2WD; 4WD — прайс из теста",board:[
+        {id:"f7",name:"Haval F7",trim:"Оптимум 1.5 2WD",price:2899000,price4:3399000,trim4:"Оптимум 2.0 4WD",src:"haval.ru от 2 899 000 Оптимум 1.5 2WD; Оптимум 4WD 3 399 000",board:[
           {k:"Клиренс",us:"213 мм у пятиместной версии",them:"183–191 мм",win:"us"},
           {k:"Багажник",us:"889 л и до 1930 л",them:"376 л и 1328 л",win:"us"},
           {k:"Мотор",us:"1.6T 186 л.с.",them:"1.5T на входе, Оптимум 2WD",win:"us"},
@@ -364,7 +500,7 @@
           {k:"Места",us:"5 мест, на полном приводе есть 5+2",them:"только 5 мест и только полный привод",win:"us"},
           {k:"Мотор",us:"2.0T 197 л.с. и 375 Н·м",them:"2.0T 231 л.с. и 380 Н·м — по мощности выше",win:"them"}
         ]},
-        {id:"atlas",name:"Geely Atlas",trim:"Люкс 2WD",price:3259990,src:"прайс Geely из теста",board:[
+        {id:"atlas",name:"Geely Atlas",trim:"Люкс 2WD",price:3259990,src:"прайс Geely, Люкс 2WD",board:[
           {k:"Мотор",us:"1.6T 186 л.с.",them:"1.5T 147 л.с. и 270 Н·м, 7DCT",win:"us"},
           {k:"Багажник",us:"889–1930 л у пяти мест",them:"650 л и 1610 л",win:"us"},
           {k:"Клиренс",us:"213 мм",them:"215 мм",win:"them"},
@@ -382,7 +518,7 @@
         ]}
       ],
       t9:[
-        {id:"monjaro",name:"Geely Monjaro",trim:"Люкс",price:4349990,priceHi:4749990,trimHi:"Флагман",src:"прайс Geely из теста",board:[
+        {id:"monjaro",name:"Geely Monjaro",trim:"Люкс",price:4349990,priceHi:4749990,trimHi:"Флагман",src:"прайс Geely: Люкс 4 349 990, Флагман 4 749 990",board:[
           {k:"Места",us:"7 мест, третий ряд уже в машине",them:"только 5 мест, третьего ряда нет",win:"us"},
           {k:"Мотор",us:"2.0T около 249 л.с. и 375 Н·м, классический автомат 8AT",them:"2.0T 238 л.с. и 350 Н·м, автомат 8AT",win:"us"},
           {k:"Топливо",us:"АИ-92",them:"не ниже АИ-95",win:"us"},
@@ -403,8 +539,23 @@
           {k:"Места",us:"сейчас в продаже 5 мест. Семь мест — это Tiggo 9, не эта машина",them:"5 мест",win:"tie"},
           {k:"Разгон",us:"9,3 с до 100 км/ч у пятиместной версии",them:"7,7 с — заметно быстрее",win:"them"},
           {k:"Экраны",us:"щиток 10,3″ и медиа 15,6″",them:"щиток 12,3″ и медиа 24,6″ — экран крупнее",win:"them"}
+        ],
+        only:[
+          "7 мест и третий ряд — в прайсе Monjaro только 5 мест",
+          "14 динамиков — в прайсе Monjaro 10",
+          "Натуральная кожа и деревянный шпон — у Monjaro экокожа и алькантара",
+          "Проекция на лобовое стекло",
+          "7 режимов полного привода во всех комплектациях",
+          "АИ-92 — у Monjaro не ниже АИ-95"
+        ],
+        only5:[
+          "14 динамиков с сабвуфером — в прайсе Monjaro 10",
+          "7 режимов движения",
+          "Деревянный шпон в салоне",
+          "АИ-92 — у Monjaro не ниже АИ-95",
+          "В Ультра — натуральная кожа и проекция на стекло"
         ]},
-        {id:"j8",name:"Jaecoo J8",trim:"Комфорт 2026",price:4130000,src:"прайс Jaecoo из теста",board:[
+        {id:"j8",name:"Jaecoo J8",trim:"Комфорт 2026",price:4130000,src:"прайс Jaecoo, Комфорт 2026",board:[
           {k:"Места",us:"7 мест",them:"5 мест",win:"us"},
           {k:"Коробка",us:"классический автомат 8AT и полный привод",them:"робот 7DCT и полный привод",win:"us"},
           {k:"Мотор",us:"2.0T около 249 л.с. и 375 Н·м",them:"2.0T 249 л.с.",win:"tie"},
@@ -431,7 +582,7 @@
         ]}
       ],
       a8:[
-        {id:"preface",name:"Geely Preface",trim:"Люкс",price:3079990,priceHi:3264990,trimHi:"Флагман",src:"прайс Geely из теста",board:[
+        {id:"preface",name:"Geely Preface",trim:"Люкс",price:3079990,priceHi:3264990,trimHi:"Флагман",src:"прайс Geely: Люкс 3 079 990, Флагман 3 264 990",board:[
           {k:"Клиренс",us:"около 144 мм",them:"135 мм",win:"us"},
           {k:"Топливо",us:"официально АИ-92",them:"не ниже АИ-95",win:"us"},
           {k:"Багажник",us:"около 535 л",them:"500 л",win:"us"},
@@ -441,7 +592,7 @@
           {k:"Характер",us:"седан TENET: 1.6T 150 л.с. и DCT7 в Прайм, 2.0 и автомат 8AT в Ультра",them:"2.0T 200 л.с. и 325 Н·м, 0–100 за 7,1 с — быстрее",win:"them"},
           {k:"Кузов",us:"4780×1843×1469, база 2790, багажник 500 л",them:"4825×1880×1469, база 2800, багажник 500 л, клиренс 135 мм",win:"tie"}
         ]},
-        {id:"univ",name:"Changan UNI-V",trim:"Спорт",price:3499900,src:"прайс Changan из теста",board:[
+        {id:"univ",name:"Changan UNI-V",trim:"Спорт",price:3499900,src:"прайс Changan, Спорт",board:[
           {k:"Комфорт",us:"климат и зимний пакет богаче",them:"однозонный климат, зимний пакет короче",win:"us"},
           {k:"Кузов",us:"классический седан",them:"лифтбек 4740×1838×1430, база 2750",win:"tie"},
           {k:"Клиренс",us:"около 144 мм",them:"152 мм",win:"them"},
@@ -484,6 +635,15 @@
       const look=typeof kmBankRate==="function"?kmBankRate("sovcom", group, months, downPct):{rate:19.2};
       return {rate:Number(look&&look.rate)||19.2, name:"Совкомбанк", pay:0};
     }
+    function offerRivalOnly(r, m){
+      const name=(m&&m.name)||"";
+      const stock=(m&&m.stock)||"";
+      let list;
+      if((stock==="tt9"||stock==="ta8") && r.only5) list=r.only5;
+      else if(/4wd/i.test(name) && r.only4) list=r.only4;
+      else list=r.only||[];
+      return (list||[]).slice();
+    }
     function offerRivalCalc(r, m, months, downPct, banks){
       const pick=offerRivalPrice(r, m);
       const price=pick.price;
@@ -500,14 +660,14 @@
         const gap=price-ourPrice;
         board.push({k:"Цена", us:rub(ourPrice)+" ₽ — наш РРЦ", them:rub(price)+" ₽"+(gap>0?" · дороже на "+rub(gap):gap<0?" · дешевле на "+rub(-gap):" · столько же"), win:gap>0?"us":gap<0?"them":"tie"});
       }
-      return {name:r.name, trim:pick.trim, price, src:r.src, board, ours:offerOurShort(m), down, pct, rate, term, pay, credit, ourRate:ours.rate, ourName:ours.name, ourPay:ours.pay||0};
+      return {name:r.name, trim:pick.trim, price, src:r.src, board, only:offerRivalOnly(r, m), ours:offerOurShort(m), down, pct, rate, term, pay, credit, ourRate:ours.rate, ourName:ours.name, ourPay:ours.pay||0};
     }
     function offerRivalsPicked(m, months, downPct, banks){
       return offerRivalList(m).filter(r=>offerOn("ofRv_"+r.id)).map(r=>offerRivalCalc(r, m, months, downPct, banks));
     }
     function offerRivalChecks(m){
       const list=offerRivalList(m);
-      if(!list.length) return `<p class="calc-note">Для этой модели в тесте нет карточек конкурентов с ценой.</p>`;
+      if(!list.length) return `<p class="calc-note">Для этой модели нет карточек конкурентов с ценой.</p>`;
       return `<div class="of-rivals">${list.map(r=>{
         const on=offerOn("ofRv_"+r.id);
         const pick=offerRivalPrice(r, m);
@@ -655,6 +815,26 @@
           R.forEach((ln,i)=>{ font("600", 15); ctx.fillStyle=win?"#8f1d2a":"#3d3832"; ctx.fillText(ln, pad+colW+28, y+24+i*20); });
           y+=bh+12;
         });
+        const only=cmp.only||[];
+        if(only.length){
+          font("600", 14);
+          const items=[];
+          only.forEach(t=>{
+            offerWrap(ctx, "•  "+t, W-pad*2-36).forEach(ln=>items.push(ln));
+          });
+          const oh=28+items.length*20+14;
+          need(oh+8);
+          box(pad, y, W-pad*2, oh, "#e3f6ea");
+          font("800", 13);
+          ctx.fillStyle="#135c34";
+          ctx.fillText("В нашем прайсе есть, у них в прайсе нет", pad+16, y+22);
+          items.forEach((ln,i)=>{
+            font("600", 14);
+            ctx.fillStyle="#135c34";
+            ctx.fillText(ln, pad+16, y+46+i*20);
+          });
+          y+=oh+12;
+        }
         font("700", 13);
         const p1=offerWrap(ctx, "Кредит "+(cmp.them||"")+" · "+cmp.rate+"% · "+cmp.term+" мес. · взнос "+rub(cmp.down)+" ₽ ("+cmp.pct+"%) · тело "+rub(cmp.credit)+" ₽", W-pad*2-28);
         font("500", 13);
@@ -671,6 +851,98 @@
         yy+=28;
         p3.forEach(ln=>{ font("500", 13); ctx.fillStyle="#6d5c48"; ctx.fillText(ln, pad+16, yy); yy+=18; });
         y+=bh+18;
+      }
+      function offerPaintDeals(deals){
+        function rbox(x,yy,w,h,fill,stroke){
+          const r=16;
+          ctx.beginPath();
+          ctx.moveTo(x+r,yy);
+          ctx.arcTo(x+w,yy,x+w,yy+h,r);
+          ctx.arcTo(x+w,yy+h,x,yy+h,r);
+          ctx.arcTo(x,yy+h,x,yy,r);
+          ctx.arcTo(x,yy,x+w,yy,r);
+          ctx.closePath();
+          ctx.fillStyle=fill;
+          ctx.fill();
+          ctx.strokeStyle=stroke;
+          ctx.lineWidth=2;
+          ctx.stroke();
+        }
+        function paintLines(lines, x, yy){
+          lines.forEach(ln=>{
+            font(ln.w, ln.s);
+            ctx.fillStyle=ln.c;
+            ctx.fillText(ln.t, x, yy);
+            yy += ln.s>=18?24:18;
+          });
+        }
+        function cardLines(card, w){
+          const out=[];
+          if(!card) return out;
+          out.push({t:String(card.title||"").toUpperCase(), s:12, w:"800", c:"#8a6840"});
+          if(card.pay){
+            font("800", 18);
+            offerWrap(ctx, card.pay, w-28).forEach(ln=>out.push({t:ln, s:18, w:"800", c:"#161618"}));
+          }
+          font("500", 13);
+          (card.lines||[]).forEach(line=>{
+            offerWrap(ctx, line, w-28).forEach(ln=>out.push({t:ln, s:13, w:"500", c:"#3d3832"}));
+          });
+          font("700", 13);
+          (card.pays||[]).forEach(line=>{
+            offerWrap(ctx, line, w-28).forEach(ln=>out.push({t:ln, s:13, w:"700", c:"#161618"}));
+          });
+          return out;
+        }
+        function cardH(lines){
+          let h=20;
+          lines.forEach(ln=>{ h += ln.s>=18?24:18; });
+          return h+14;
+        }
+        function tone(card){
+          if(!card) return ["#fff","#e4d3b8"];
+          if(card.title==="Кредит") return ["#fffdf8","#c81e2b"];
+          if(card.title==="Флит") return ["#f3faf6","#7dba96"];
+          return ["#f8f4ec","#c4a574"];
+        }
+        const gap=12;
+        const full=W-pad*2;
+        const credit=deals.credit||null;
+        const side=[deals.fleet, deals.spec].filter(Boolean);
+        y+=8;
+        if(credit && side.length){
+          const leftW=Math.round(full*0.52);
+          const rightW=full-leftW-gap;
+          const L=cardLines(credit, leftW);
+          const packs=side.map(card=>cardLines(card, rightW));
+          const hL=cardH(L);
+          const sideHs=packs.map(cardH);
+          const hR=sideHs.reduce((s,h)=>s+h,0)+gap*(side.length-1);
+          const h=Math.max(hL, hR);
+          need(h+6);
+          const y0=y;
+          const tc=tone(credit);
+          rbox(pad, y0, leftW, Math.max(hL, h), tc[0], tc[1]);
+          paintLines(L, pad+14, y0+24);
+          let yy=y0;
+          side.forEach((card,i)=>{
+            const ts=tone(card);
+            rbox(pad+leftW+gap, yy, rightW, sideHs[i], ts[0], ts[1]);
+            paintLines(packs[i], pad+leftW+gap+14, yy+24);
+            yy+=sideHs[i]+gap;
+          });
+          y=y0+h+16;
+          return;
+        }
+        [credit].concat(side).filter(Boolean).forEach(card=>{
+          const lines=cardLines(card, full);
+          const h=cardH(lines);
+          need(h+8);
+          const ts=tone(card);
+          rbox(pad, y, full, h, ts[0], ts[1]);
+          paintLines(lines, pad+14, y+24);
+          y+=h+10;
+        });
       }
       function newPage(){
         c=document.createElement("canvas");
@@ -791,6 +1063,7 @@
       }
       (doc.sections||[]).forEach(sec=>{
         if(sec.cmp){ offerPaintCmp(sec.cmp); return; }
+        if(sec.deals){ offerPaintDeals(sec.deals); return; }
         need(36);
         y+=10;
         font("800", 13);
