@@ -36,12 +36,12 @@
       return out;
     }
     const DUTY_CARS=[
-      {id:"t8",title:"Т8 4WD"},
+      {id:"t4l",title:"T4L"},
+      {id:"t7",title:"T7"},
       {id:"t82",title:"Т8 2WD"},
-      {id:"t4l",title:"TENET T4L"},
-      {id:"a8",title:"Arrizo 8"},
-      {id:"t7",title:"TENET T7"},
-      {id:"t9",title:"Т9"}
+      {id:"t8",title:"Т8 4WD"},
+      {id:"t9",title:"Т9"},
+      {id:"a8",title:"Arrizo 8"}
     ];
     function dutyTri(v){
       if(v==="ok" || v==="bad") return v;
