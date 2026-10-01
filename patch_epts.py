@@ -174,11 +174,14 @@ def patch_html(html: str) -> str:
         elif "</style>" in html:
             html = html.replace("</style>", css + "\n</style>", 1)
             print("epts css via style")
-    old_font = '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");'
-    new_font = '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tinos:wght@400;700&display=swap");'
-    if old_font in html:
-        html = html.replace(old_font, new_font, 1)
-        print("tinos")
+    for font in (
+        '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Tinos:wght@400;700&display=swap");',
+        '@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");',
+    ):
+        if font in html:
+            html = html.replace(font, "", 1)
+            print("drop google fonts")
+            break
     if '["epts","Э"' not in html:
         alt = '["docs","D","Документы","Прайсы, PDF и материалы моделей"]'
         if alt in html:
