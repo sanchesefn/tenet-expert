@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""T8 2WD → корп+мпт + МПТ-калькулятор; не-МПТ (кроме TENET T9) → субсидия бренда AQ."""
+"""T8 2WD → корп+мпт + МПТ-калькулятор; не-МПТ, включая TENET T9, → субсидия бренда AQ."""
 from pathlib import Path
 import json, re
 
@@ -17,7 +17,7 @@ HELPERS = r'''    function isT8TwoWd(c){
     function carIsMpt(c){ return !!(c && !c.invoice && (c.mpt || isT8TwoWd(c))); }
     function carIsCorp(c){ return !!(c && !c.invoice && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
     function kmHasBrandSub(m){
-      if(!m || m.id==="tt9p" || m.id==="tt9u" || m.stock==="tt9") return false;
+      if(!m) return false;
       const f=typeof fleetOf==="function"?fleetOf(m.id):null;
       return !!(f && (f.sub||0)>0);
     }
@@ -265,7 +265,7 @@ def patch_calc_fleet(text):
       const mptCut=Math.round((useFleet?f.tidy:f.rrc)*(useTi?0.9:1)*0.1);'''
     new_price = '''      const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===kmVin);
       const carMpt=typeof carIsMpt==="function"?carIsMpt(car):!!(car&&car.mpt);
-      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0 && m.id!=="tt9p" && m.id!=="tt9u");
+      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0);
       const useMpt=carMpt && kmVal("kmFleetMpt", true);
       const useSub=!useMpt && canSub && kmVal("kmFleetSub", true);
       if(useFleet){ price=f.tidy; steps.push("флит −"+rub(fleetCut)); }
@@ -294,7 +294,7 @@ def patch_calc_fleet(text):
       const steps=[];
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===kmVin);
       const carMpt=typeof carIsMpt==="function"?carIsMpt(car):!!(car&&car.mpt);
-      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0 && m.id!=="tt9p" && m.id!=="tt9u");
+      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0);
       const useMpt=carMpt && kmVal("kmFleetMpt", true);
       const useSub=!useMpt && canSub && kmVal("kmFleetSub", true);
       if(useFleet){ price=f.tidy; steps.push("флит −"+rub(fleetCut)); }
@@ -415,7 +415,7 @@ def patch_calc_km(text):
       const selected=(typeof STOCK!=="undefined"?STOCK:[]).find(c=>c && c.vin===kmVin);
       const pickMpt=!!(selected && (typeof carIsMpt==="function"?carIsMpt(selected):selected.mpt));
       const fMpt=typeof fleetOf==="function"?fleetOf(m.id):null;
-      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):!!(fMpt&&(fMpt.sub||0)>0&&m.id!=="tt9p"&&m.id!=="tt9u");
+      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):!!(fMpt&&(fMpt.sub||0)>0);
       const showMpt=pickMpt || (!selected && hasMpt);
       const showSub=!showMpt && canSub;
       const showSplit=showMpt || showSub;

@@ -23,8 +23,8 @@
       t8p:{name:"T8 Prime 2WD",rrc:3299000,dealer:3149000,an:430000,client:2870130,prem:344850,km:53156,tidy:2869000,sub:130000,do:70000,casco:80000},
       t8p4:{name:"T8 Prime 4WD",rrc:3630000,dealer:3465000,an:481000,client:3158100,prem:379500,km:52049,tidy:3149000,sub:130000,do:70000,casco:80000},
       t8u4:{name:"T8 Ultra 4WD",rrc:3885000,dealer:3705000,an:536000,client:3379950,prem:402750,km:38320,tidy:3349000,sub:130000,do:70000,casco:80000},
-      tt9p:{name:"T9 Prime 5-seat",rrc:3949000,dealer:3799000,an:550000,client:3435630,prem:442350,km:34713,tidy:3399000,sub:0,do:70000,casco:80000},
-      tt9u:{name:"T9 Ultra 5-seat",rrc:4299000,dealer:4099000,an:650000,client:3697140,prem:487840,km:31016,tidy:3649000,sub:0,do:70000,casco:80000},
+      tt9p:{name:"T9 Prime 5-seat",rrc:3949000,dealer:3799000,an:550000,client:3435630,prem:442350,km:34713,tidy:3399000,sub:190000,do:70000,casco:80000},
+      tt9u:{name:"T9 Ultra 5-seat",rrc:4299000,dealer:4099000,an:650000,client:3697140,prem:487840,km:31016,tidy:3649000,sub:190000,do:70000,casco:80000},
       ta8p:{name:"A8 Prime 1.6",rrc:2999000,dealer:2874000,an:400000,client:2639120,prem:294860,km:16279,tidy:2599000,sub:150000,do:70000,casco:80000},
       ta8u:{name:"A8 Ultra 2.0",rrc:3499000,dealer:3354000,an:500000,client:3044130,prem:379850,km:20369,tidy:2999000,sub:150000,do:70000,casco:80000},
       l4s:{name:"L4 Style",rrc:2540000,dealer:2438400,an:0,client:2235200,prem:0,km:0,tidy:2235200,sub:100000,do:70000,casco:80000},
@@ -138,7 +138,7 @@
     function carIsMpt(c){ return !!(c && !c.invoice && (c.mpt || isT8TwoWd(c))); }
     function carIsCorp(c){ return !!(c && !c.invoice && (c.corp || (typeof CORP_VINS!=="undefined"&&CORP_VINS.has(c.vin)) || isT8TwoWd(c))); }
     function kmHasBrandSub(m){
-      if(!m || m.id==="tt9p" || m.id==="tt9u" || m.stock==="tt9") return false;
+      if(!m) return false;
       const f=typeof fleetOf==="function"?fleetOf(m.id):null;
       return !!(f && (f.sub||0)>0);
     }
@@ -293,7 +293,7 @@
       const steps=[];
       const car=(typeof STOCK!=="undefined"?STOCK:[]).find(x=>x.vin===kmVin);
       const carMpt=typeof carIsMpt==="function"?carIsMpt(car):!!(car&&car.mpt);
-      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0 && m.id!=="tt9p" && m.id!=="tt9u");
+      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):((f.sub||0)>0);
       const useMpt=false;
       const useSub=canSub && kmVal("kmFleetSub", true);
       if(useFleet && useTi){ price=Math.max(0, f.tidy-FLEET_TI); steps.push("флит + трейд-ин"); }

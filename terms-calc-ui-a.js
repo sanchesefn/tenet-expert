@@ -228,7 +228,7 @@
         const look=typeof kmBankRate==="function"?kmBankRate("sber", group, term, pctUsed):{rate:10, term};
         const pay=typeof calcPay==="function"?calcPay(sale+extra, down, look.term||term, look.rate):0;
         const f=mm && typeof fleetOf==="function"?fleetOf(mm.id):null;
-        const canSub=!!(f && (f.sub||0)>0 && mm && mm.id!=="tt9p" && mm.id!=="tt9u" && mm.stock!=="tt9");
+        const canSub=!!(f && (f.sub||0)>0 && mm);
         let priceSub=0, paySub=0;
         if(canSub){
           const tiFleet=useTi?(typeof FLEET_TI==="number"?FLEET_TI:50000):0;

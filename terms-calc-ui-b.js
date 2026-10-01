@@ -101,7 +101,7 @@
       const selected=(typeof STOCK!=="undefined"?STOCK:[]).find(c=>c && c.vin===kmVin);
       const pickMpt=!!(selected && (typeof carIsMpt==="function"?carIsMpt(selected):selected.mpt));
       const fMpt=typeof fleetOf==="function"?fleetOf(m.id):null;
-      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):!!(fMpt&&(fMpt.sub||0)>0&&m.id!=="tt9p"&&m.id!=="tt9u");
+      const canSub=typeof kmHasBrandSub==="function"?kmHasBrandSub(m):!!(fMpt&&(fMpt.sub||0)>0);
       const showMpt=false;
       const showSub=canSub;
       const showFleet=!showSub && !!fMpt && (m.stock==="tt9" || m.id==="tt9p" || m.id==="tt9u");
