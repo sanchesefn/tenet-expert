@@ -690,8 +690,8 @@
       "note": "В салоне · с 31.08.2026",
       "rrc": 2985000,
       "invoice": true,
-      "reserved": true,
-      "prod": "27.08.2026"
+      "prod": "27.08.2026",
+      "reserved": true
     },
     {
       "vin": "EDEFB32B2TE106999",
@@ -1149,6 +1149,26 @@
       "note": "В салоне · с 29.09.2026",
       "rrc": 2785000,
       "invoice": true
+    },
+    {
+      "vin": "EDEFB32BXTE120827",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Голубой",
+      "status": "in",
+      "note": "В салоне · с 30.09.2026",
+      "rrc": 2985000
+    },
+    {
+      "vin": "EDEFB32BXTE120679",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 30.09.2026",
+      "rrc": 2985000
     },
     {
       "vin": "EDEDD24B2SG003755",
