@@ -1,1 +1,1 @@
-FILE:/tmp/tu08_content.js
+@/tmp/tu08_content.js
