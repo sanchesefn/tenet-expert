@@ -41,9 +41,9 @@
         ${offerField("Клиент", `<input id="osClient" value="${escape(client)}" placeholder="ФИО" />`)}
         ${client?"":`<p class="calc-note">Клиент пустой. В PDF будет прочерк.</p>`}
         <p class="eyebrow">Автомобиль и пакет</p>
-        ${offerField("Комплектация", `<select id="osModel">${models.map(x=>`<option value="${x.id}" ${x.id===mid?"selected":""}>${escape(x.name)}</option>`).join("")}</select>`)}
+        ${offerField("Комплектация", offerModelSelect("osModel", models, mid))}
         ${offerField("VIN", `<input id="osVin" value="${escape(vin)}" placeholder="необязательно" />`)}
-        ${offerField("Пакет", `<select id="osPack">${packs.map(p=>`<option value="${p.id}" ${p.id===packId?"selected":""}>${escape(p.name)} · ${rub(p.price)}</option>`).join("")}</select>`)}
+        ${offerField("Пакет", `<select id="osPack" class="of-select">${packs.map(p=>`<option value="${p.id}" ${p.id===packId?"selected":""}>${escape(p.name)} · ${rub(p.price)}</option>`).join("")}</select>`)}
         ${offerField("Стоимость, ₽", `<input id="osPrice" inputmode="numeric" value="${price}" />`)}
         <p class="calc-note">Цены пакетов — ориентир. Перед PDF сверьте сумму с прайсом сервиса.</p>
         ${offerField("Срок действия", `<input id="osValid" value="${escape(valid)}" />`)}
@@ -54,7 +54,7 @@
       const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
       const fset=typeof FLEET_BFS!=="undefined"?FLEET_BFS:{};
       const fleetIds=Object.keys(fset);
-      const options=fleetIds.length?fleetIds.map(id=>({id,name:(fset[id]&&fset[id].name)||id,rrc:(fset[id]&&(fset[id].rrc||fset[id].tidy))||0})):models;
+      const options=fleetIds.length?fleetIds.map(id=>{ const km=models.find(x=>x.id===id); return {id,brand:km&&km.brand,name:(fset[id]&&fset[id].name)||id,rrc:(fset[id]&&(fset[id].rrc||fset[id].tidy))||0}; }):models;
       const fid=offerVal("olModel", options[0]?options[0].id:(models[0]?models[0].id:"t7a"));
       const m=models.find(x=>x.id===fid)||options.find(x=>x.id===fid)||{id:fid,name:"TENET",rrc:0};
       const f=fset[fid]||{name:m.name,rrc:m.rrc||0,tidy:m.rrc||0};
@@ -101,7 +101,7 @@
         ${company?"":`<p class="calc-note">Компания пустая. В PDF будет прочерк.</p>`}
         ${offerField("ИНН", `<input id="olInn" value="${escape(inn)}" placeholder="необязательно" />`)}
         <p class="eyebrow">Автомобиль</p>
-        ${offerField("Комплектация", `<select id="olModel">${options.map(x=>`<option value="${x.id}" ${x.id===fid?"selected":""}>${escape(x.name)}${x.rrc?" · "+rub(x.rrc):""}</option>`).join("")}</select>`)}
+        ${offerField("Комплектация", offerModelSelect("olModel", options, fid))}
         ${offerField("Цена флит, ₽", `<input id="olPrice" inputmode="numeric" value="${price}" />`)}
         ${offerField("Аванс, %", `<input id="olAdv" inputmode="numeric" value="${advPct}" />`)}
         ${offerField("Срок, мес.", `<input id="olMonths" inputmode="numeric" value="${months}" />`)}

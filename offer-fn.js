@@ -101,7 +101,8 @@
         const pay=typeof calcPay==="function"?calcPay(carPrice+extras, down, term, look.rate):0;
         return {name:b.name, rate:look.rate, term, pay:Math.round(pay)};
       });
-      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount};
+      const rivals=offerRivalsPicked(m, months, downPct, banks);
+      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount, rivals};
     }
     function offerDash(v){ const s=String(v||"").trim(); return s||"—"; }
     function offerPhotoKey(id){
@@ -157,6 +158,7 @@
     function offerScreen(title, formHtml, doc){
       offerDocCurrent=doc;
       return banner(title,"Коммерческое предложение","КП")+`
+        ${offerCss()}
         ${offerNav()}
         <div class="km-layout">
           <div class="card">${formHtml}</div>
@@ -186,6 +188,17 @@
       }
       if(d.packEq && d.packEq.specs) sections.push({title:"Характеристики", pairs:d.packEq.specs});
       if(d.packEq && d.packEq.groups) sections.push({title:"Оснащение", groups:d.packEq.groups});
+      (d.rivals||[]).forEach(r=>{
+        sections.push({
+          title:"Сравнение · "+r.name,
+          pairs:r.pts,
+          lines:[
+            r.trim+" · "+rub(r.price)+" ₽ · "+r.src+".",
+            "Кредит: "+r.rate+"% · "+r.term+" мес. · ПВ "+rub(r.down)+" ("+r.pct+"%) · тело "+rub(r.credit)+" · платёж "+rub(r.pay)+" ₽.",
+            "Ставка на 2,5 п.п. выше нашей ("+r.ourName+" "+r.ourRate+"%"+(r.ourPay?" · наш платёж "+rub(r.ourPay)+" ₽":"")+". Без наших скидок и без Д/О."
+          ]
+        });
+      });
       const src=(d.packEq&&d.packEq.src)||"официальный прайс";
       return {
         kicker:"Новый автомобиль",
@@ -203,6 +216,102 @@
     function offerField(label, inner){
       return `<label class="field" style="max-width:none"><span>${label}</span>${inner}</label>`;
     }
+    function offerCss(){
+      return `<style>
+.of-select{appearance:none;-webkit-appearance:none;width:100%;background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'><path fill='%238a6840' d='M3.2 5.6 8 10.4 12.8 5.6'/></svg>") no-repeat right 14px center;border:1px solid #e4d3b8;border-radius:14px;padding:13px 42px 13px 14px;font:600 15px/1.35 Inter,Arial,sans-serif;color:#161618;box-shadow:0 1px 0 #fff inset,0 8px 18px rgba(90,60,20,.05);}
+.of-select:focus{outline:none;border-color:#c81e2b;box-shadow:0 0 0 3px rgba(200,30,43,.14);}
+.of-select optgroup{font:700 13px Inter,Arial,sans-serif;color:#8a6840;}
+.of-rivals{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 4px;}
+.of-rival{position:relative;display:flex;flex-direction:column;gap:2px;border:1px solid #eadfcf;border-radius:14px;padding:10px 12px 10px 36px;background:#fff;cursor:pointer;}
+.of-rival input{position:absolute;left:12px;top:13px;width:18px;height:18px;margin:0;padding:0;border:0;border-radius:4px;background:transparent;box-shadow:none;accent-color:#c81e2b;}
+.of-rival.on{border-color:#c81e2b;background:#fff7f6;box-shadow:0 0 0 1px #c81e2b;}
+.of-rival b{font-size:14px;line-height:1.25;}
+.of-rival small{color:#7a7166;font-size:12px;line-height:1.3;}
+@media(max-width:720px){.of-rivals{grid-template-columns:1fr;}}
+</style>`;
+    }
+    function offerModelSelect(id, models, current){
+      const map={}, order=[];
+      (models||[]).forEach(x=>{
+        const g=x.brand||"Модели";
+        if(!map[g]){ map[g]=[]; order.push(g); }
+        map[g].push(x);
+      });
+      const groups=order.map(g=>`<optgroup label="${escape(g)}">${map[g].map(x=>`<option value="${escape(x.id)}"${x.id===current?" selected":""}>${escape(x.name)}${x.rrc?" · "+rub(x.rrc):""}</option>`).join("")}</optgroup>`).join("");
+      return `<select id="${id}" class="of-select">${groups}</select>`;
+    }
+    const OFFER_RIVALS = {
+      t4l:[
+        {id:"jolion",name:"Haval Jolion",trim:"Оптимум 2WD",price:2499000,src:"haval.ru, Оптимум 2WD, каталог с 17.08.2026",pts:[["Клиренс","190 мм · у T4L 203 мм"],["Багажник","337–1133 л · у T4L 475–1500 л"],["Габариты","4472×1874×1581, база 2700"],["Привод","Комфорт только 2WD механика · 4WD с Оптимум, 7DCT 150 л.с."],["Топливо","T4L официально АИ-92, два экрана и CarPlay уже в Актив"]]},
+        {id:"x50",name:"Belgee X50+",trim:"Стиль",price:2505990,src:"прайс импортёра из теста",pts:[["Багажник","330 л — самый маленький в квартете теста"],["Клиренс","182 мм · у T4L 203 мм"],["Габариты","4380×1810×1615, база 2600"],["Мотор","147 л.с. / 270 Н·м / 7DCT / только 2WD, 0–100 за 8,1 с"],["Топливо","обычно АИ-95 · у T4L официально АИ-92"]]},
+        {id:"j6",name:"Jaecoo J6",trim:"Актив",price:2290000,src:"прайс импортёра из теста",pts:[["Привод","вся линейка только 2WD"],["Мотор","1.5T 147 л.с. / 210 Н·м / DCT6"],["Клиренс","176 мм · у T4L 203 мм"],["Багажник","480 / 1180 л"],["Габариты","4509×1860×1650, база 2610 · топливо АИ-92"]]}
+      ],
+      t7:[
+        {id:"cityray",name:"Geely Cityray",trim:"Comfort",price:2699990,src:"прайс Geely из теста",pts:[["Привод","вся линейка в РФ только 2WD"],["Мотор","1.5T 147 л.с. / 270 Н·м / 7DCT, 0–100 за 8,9 с"],["Габариты","4510×1865×1650, база 2701"],["Клиренс","185 мм · у T7 197 мм, есть 4WD"],["Багажник","571 / 1271 л · линейка до Flagship Sport 3 099 990 ₽"]]},
+        {id:"h3",name:"Haval H3",trim:"Оптимум 2WD",price:2749000,price4:3099000,trim4:"Оптимум 4WD",src:"haval.ru: от 2 549 000 с лояльным трейд-ином 200 000, здесь РРЦ без него",pts:[["Габариты","4520×1875×1745, база 2710"],["Клиренс","196 мм · у T7 197 мм"],["Мотор","2WD 143 л.с. / 210 Н·м · 4WD 177 л.с. / 270 Н·м"],["Багажник","493–1298 л"],["Кузов","несущий кроссовер, рамы нет · Оптимум 4WD 3 099 000 ₽"]]},
+        {id:"dashing",name:"Jetour Dashing",trim:"Люкс, с выгодами",price:2239900,src:"jetour-ru.com, от 2 239 900 с учётом всех выгод, Люкс 2025",pts:[["Цена на сайте","от 2 239 900 ₽ — Люкс 2025 уже со всеми выгодами, до 600 000 ₽"],["Мотор","1.5T 147 л.с. / 6DCT, выше по линейке 1.6 186 л.с. / 8AT"],["Привод","в открытом прайсе сайта 4WD нет · у T7 есть"],["Кузов","городской кроссовер, не рамник"],["Что внутри цены","трейд-ин, прямая выгода, кредит и каско уже сидят в «от»"]]}
+      ],
+      t8:[
+        {id:"f7",name:"Haval F7",trim:"Оптимум 1.5 2WD",price:2899000,price4:3399000,trim4:"Оптимум 2.0 4WD",src:"haval.ru от 2 899 000 Оптимум 1.5 2WD; 4WD — прайс из теста",pts:[["Мотор 2WD","1.5T · на сайте от 2 899 000 ₽, Премиум 2WD в тесте 3 199 000 ₽"],["Мотор 4WD","2.0T 7DCT · Оптимум 4WD в тесте 3 399 000 · Премиум 3 599 000 · Техно+ 3 799 000 ₽"],["Габариты","4780×1890×1675–1707, база 2800"],["Багажник","376 / 1328 л · у T8 5 мест больше"],["Клиренс","183–191 мм · у T8 5 мест 213 мм"]]},
+        {id:"h7",name:"Haval H7",trim:"Премиум 4WD",price:3799000,src:"haval.ru, Премиум от 3 799 000 с лояльным трейд-ином 200 000",pts:[["Привод","только 4WD, 5 мест"],["Мотор","2.0T 231 л.с. / 380 Н·м / 7DCT"],["Габариты","4705×1908×1780, база 2810"],["Клиренс","200 мм · багажник 483 / 1362 л"],["Цена","на сайте Премиум от 3 799 000 ₽ уже с лояльным трейд-ином · Техно+ в тесте от 3 999 000 ₽"]]},
+        {id:"atlas",name:"Geely Atlas",trim:"Люкс 2WD",price:3259990,src:"прайс Geely из теста",pts:[["Мотор 2WD","1.5T 147 л.с. / 270 Н·м / 7DCT от 3 259 990 ₽"],["Мотор 4WD","2.0T 200 л.с. / 325 Н·м / 8AT, топливо АИ-95"],["Габариты","4670×1900×1705, база 2777"],["Клиренс","215 мм · 5 мест"],["Багажник","650 / 1610 л"]]},
+        {id:"x70",name:"Jetour X70+",trim:"от, с выгодами",price:2839000,src:"jetour-ru.com, от 2 839 000 с учётом выгод",pts:[["Цена","от 2 839 000 ₽ на сайте, Комфорт и Престиж"],["Мотор","1.6T 190 л.с. / 275 Н·м / 7DCT"],["Класс","семейный кроссовер рядом с T8"],["Места","в тесте третьего ряда у T8 4WD не обещаем на Актив 2WD"],["Сверка","старт с сайта, без скрытых допов и без наших скидок"]]}
+      ],
+      t9:[
+        {id:"monjaro",name:"Geely Monjaro",trim:"Люкс",price:4349990,priceHi:4749990,trimHi:"Флагман",src:"прайс Geely из теста",pts:[["Места","5 мест · Tiggo 9 семь мест, TENET T9 пять"],["Мотор","2.0T 238 л.с. / 350 Н·м / 8AT / AWD, 0–100 за 7,7 с"],["Габариты","4770×1895×1689, база 2845, клиренс 210 мм"],["Багажник","562 / 704 / 1532 л"],["Цена","Люкс 4 349 990 · Флагман 4 749 990 ₽"]]},
+        {id:"j8",name:"Jaecoo J8",trim:"Комфорт 2026",price:4130000,src:"прайс Jaecoo из теста",pts:[["Места","5 мест, не семь"],["Мотор","2.0T 249 л.с. / 7DCT / AWD"],["Габариты","4820×1930×1710, база 2820, клиренс 210 мм"],["Багажник","717–2021 л"],["Цена","Комфорт 2026 г.п. от 4 130 000 ₽, 2024 г.п. от 3 894 000"]]},
+        {id:"t2",name:"Jetour T2",trim:"от, с выгодами",price:3699000,src:"jetour-ru.com, от 3 699 000 с учётом выгод",pts:[["Места","5 мест · у Tiggo 9 семь"],["Цена","от 3 699 000 ₽ на jetour-ru.com, уже с выгодами"],["Класс","кроссовер, не семиместный флагман"],["Кузов","не рамник: рамный ориентир теста — Tank 300"],["Сверка","на сайте есть старт, полного прайса без выгод нет"]]}
+      ],
+      a8:[
+        {id:"preface",name:"Geely Preface",trim:"Люкс",price:3079990,priceHi:3264990,trimHi:"Флагман",src:"прайс Geely из теста",pts:[["Кузов","седан 4825×1880×1469, база 2800"],["Клиренс","135 мм · багажник 500 л"],["Мотор","2.0T 200 л.с. / 325 Н·м / 7DCT / 2WD, 0–100 за 7,1 с"],["Топливо","не ниже АИ-95 · Arrizo 8 официально АИ-92"],["Цена","Люкс 3 079 990 · Флагман 3 264 990 ₽"]]},
+        {id:"univ",name:"Changan UNI-V",trim:"Спорт",price:3499900,src:"прайс Changan из теста",pts:[["Кузов","лифтбек 4740×1838×1430, база 2750"],["Клиренс","152 мм · багажник 465–1110 л"],["Мотор","2.0T 235 л.с. / 390 Н·м от 3 499 900 ₽"],["Климат","однозонный, зимний пакет короче"],["Багажник Arrizo","седан около 535 л против лифтбека UNI-V"]]}
+      ]
+    };
+    function offerRivalKey(m){
+      const s=(m&&m.stock)||"";
+      return {t4:"t4l",t4l:"t4l",pl4:"t4l",t7:"t7",t7l:"t7",pl6:"t7",t8:"t8",t9:"t9",tt9:"t9",a8:"a8",ta8:"a8"}[s]||"";
+    }
+    function offerRivalList(m){ return OFFER_RIVALS[offerRivalKey(m)]||[]; }
+    function offerRich(m){ return /ultra|ультра|4wd|2\.0/i.test((m&&m.name)||""); }
+    function offerRivalPrice(r, m){
+      if(offerRich(m) && r.priceHi) return {price:r.priceHi, trim:r.trimHi||r.trim};
+      if(/4wd/i.test((m&&m.name)||"") && r.price4) return {price:r.price4, trim:r.trim4||r.trim};
+      return {price:r.price, trim:r.trim};
+    }
+    function offerOurRate(banks, m, months, downPct){
+      if(banks && banks.length){
+        let best=banks[0];
+        banks.forEach(b=>{ if((Number(b.rate)||99)<(Number(best.rate)||99)) best=b; });
+        return {rate:Number(best.rate)||0, name:best.name||"наш банк", pay:best.pay||0};
+      }
+      const group=typeof kmRateGroup==="function"?kmRateGroup(m):"t4l_t7";
+      const look=typeof kmBankRate==="function"?kmBankRate("sovcom", group, months, downPct):{rate:19.2};
+      return {rate:Number(look&&look.rate)||19.2, name:"Совкомбанк", pay:0};
+    }
+    function offerRivalCalc(r, m, months, downPct, banks){
+      const pick=offerRivalPrice(r, m);
+      const price=pick.price;
+      const pct=Math.max(0, Number(downPct)||0);
+      const down=Math.min(price, Math.round(price*pct/100));
+      const ours=offerOurRate(banks, m, months, pct);
+      const rate=Math.round((ours.rate+2.5)*10)/10;
+      const term=Math.max(1, Math.round(Number(months)||60));
+      const pay=typeof calcPay==="function"?Math.round(calcPay(price, down, term, rate)):0;
+      const credit=Math.max(0, price-down);
+      return {name:r.name, trim:pick.trim, price, src:r.src, pts:r.pts, down, pct, rate, term, pay, credit, ourRate:ours.rate, ourName:ours.name, ourPay:ours.pay||0};
+    }
+    function offerRivalsPicked(m, months, downPct, banks){
+      return offerRivalList(m).filter(r=>offerOn("ofRv_"+r.id)).map(r=>offerRivalCalc(r, m, months, downPct, banks));
+    }
+    function offerRivalChecks(m){
+      const list=offerRivalList(m);
+      if(!list.length) return `<p class="calc-note">Для этой модели в тесте нет карточек конкурентов с ценой.</p>`;
+      return `<div class="of-rivals">${list.map(r=>{
+        const on=offerOn("ofRv_"+r.id);
+        const pick=offerRivalPrice(r, m);
+        return `<label class="of-rival${on?" on":""}"><input data-offer-rival type="checkbox" id="ofRv_${r.id}" ${on?"checked":""} /><b>${escape(r.name)}</b><small>${escape(pick.trim)} · ${rub(pick.price)} ₽</small></label>`;
+      }).join("")}</div>`;
+    }
     function offerNew(){
       const d=offerDeal();
       const doc=offerDocNew(d);
@@ -212,9 +321,12 @@
         ${offerField("Клиент", `<input id="ofClient" value="${escape(d.client)}" placeholder="ФИО" />`)}
         ${d.client?"":`<p class="calc-note">Клиент пустой. В PDF будет прочерк, пока не впишете имя.</p>`}
         <p class="eyebrow">Автомобиль</p>
-        ${offerField("Комплектация", `<select id="ofModel">${d.models.map(x=>`<option value="${x.id}" ${x.id===d.mid?"selected":""}>${escape(x.name)} · ${rub(x.rrc)}</option>`).join("")}</select>`)}
+        ${offerField("Комплектация", offerModelSelect("ofModel", d.models, d.mid))}
         ${offerField("Цвет", `<input id="ofColor" value="${escape(d.color)}" placeholder="не указан" />`)}
         ${offerField("РРЦ, ₽", `<input id="ofPrice" inputmode="numeric" value="${d.price}" />`)}
+        <p class="eyebrow">Конкуренты</p>
+        <p class="calc-note">Галочка кладёт в PDF пять пунктов из теста и кредит: тот же процент взноса и срок, ставка на 2,5 п.п. выше нашей. Цена конкурента — с официального сайта, без наших скидок.</p>
+        ${offerRivalChecks(d.m)}
         <p class="eyebrow">Скидки</p>
         <label class="check-row"><input id="ofTi" type="checkbox" ${d.useTi?"checked":""} /> <span>Трейд-ин ${d.m.ti?rub(d.m.ti):"нет в базе"}</span></label>
         <label class="check-row"><input id="ofLoan" type="checkbox" ${d.useLoan?"checked":""} /> <span>Кредит</span></label>
@@ -610,9 +722,9 @@
         ${offerField("Клиент", `<input id="osClient" value="${escape(client)}" placeholder="ФИО" />`)}
         ${client?"":`<p class="calc-note">Клиент пустой. В PDF будет прочерк.</p>`}
         <p class="eyebrow">Автомобиль и пакет</p>
-        ${offerField("Комплектация", `<select id="osModel">${models.map(x=>`<option value="${x.id}" ${x.id===mid?"selected":""}>${escape(x.name)}</option>`).join("")}</select>`)}
+        ${offerField("Комплектация", offerModelSelect("osModel", models, mid))}
         ${offerField("VIN", `<input id="osVin" value="${escape(vin)}" placeholder="необязательно" />`)}
-        ${offerField("Пакет", `<select id="osPack">${packs.map(p=>`<option value="${p.id}" ${p.id===packId?"selected":""}>${escape(p.name)} · ${rub(p.price)}</option>`).join("")}</select>`)}
+        ${offerField("Пакет", `<select id="osPack" class="of-select">${packs.map(p=>`<option value="${p.id}" ${p.id===packId?"selected":""}>${escape(p.name)} · ${rub(p.price)}</option>`).join("")}</select>`)}
         ${offerField("Стоимость, ₽", `<input id="osPrice" inputmode="numeric" value="${price}" />`)}
         <p class="calc-note">Цены пакетов — ориентир. Перед PDF сверьте сумму с прайсом сервиса.</p>
         ${offerField("Срок действия", `<input id="osValid" value="${escape(valid)}" />`)}
@@ -623,7 +735,7 @@
       const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
       const fset=typeof FLEET_BFS!=="undefined"?FLEET_BFS:{};
       const fleetIds=Object.keys(fset);
-      const options=fleetIds.length?fleetIds.map(id=>({id,name:(fset[id]&&fset[id].name)||id,rrc:(fset[id]&&(fset[id].rrc||fset[id].tidy))||0})):models;
+      const options=fleetIds.length?fleetIds.map(id=>{ const km=models.find(x=>x.id===id); return {id,brand:km&&km.brand,name:(fset[id]&&fset[id].name)||id,rrc:(fset[id]&&(fset[id].rrc||fset[id].tidy))||0}; }):models;
       const fid=offerVal("olModel", options[0]?options[0].id:(models[0]?models[0].id:"t7a"));
       const m=models.find(x=>x.id===fid)||options.find(x=>x.id===fid)||{id:fid,name:"TENET",rrc:0};
       const f=fset[fid]||{name:m.name,rrc:m.rrc||0,tidy:m.rrc||0};
@@ -670,7 +782,7 @@
         ${company?"":`<p class="calc-note">Компания пустая. В PDF будет прочерк.</p>`}
         ${offerField("ИНН", `<input id="olInn" value="${escape(inn)}" placeholder="необязательно" />`)}
         <p class="eyebrow">Автомобиль</p>
-        ${offerField("Комплектация", `<select id="olModel">${options.map(x=>`<option value="${x.id}" ${x.id===fid?"selected":""}>${escape(x.name)}${x.rrc?" · "+rub(x.rrc):""}</option>`).join("")}</select>`)}
+        ${offerField("Комплектация", offerModelSelect("olModel", options, fid))}
         ${offerField("Цена флит, ₽", `<input id="olPrice" inputmode="numeric" value="${price}" />`)}
         ${offerField("Аванс, %", `<input id="olAdv" inputmode="numeric" value="${advPct}" />`)}
         ${offerField("Срок, мес.", `<input id="olMonths" inputmode="numeric" value="${months}" />`)}
@@ -697,5 +809,6 @@
       });
       document.querySelectorAll("[data-offer-pdf]").forEach(b=>b.onclick=()=>offerPdf());
       document.querySelectorAll("[data-offer-down]").forEach(b=>b.onclick=()=>{ const hid=document.getElementById("ofDownMode"); if(hid) hid.value=b.dataset.offerDown||"pct"; view="offer"; render(); });
+      document.querySelectorAll("[data-offer-rival]").forEach(el=>el.addEventListener("change", ()=>{ view="offer"; render(); }));
       ["ofClient","ofModel","ofColor","ofPrice","ofSpec","ofDo","ofPack","ofCasco","ofDown","ofDownPct","ofMonths","ofValid","ofTi","ofLoan","ofCr","ofDcTi","ofDcCr","ofDcTiAmt","ofDcCrAmt","osClient","osModel","osCar","osVin","osPack","osPrice","osNote","osValid","olCo","olInn","olModel","olPrice","olAdv","olMonths","olValid"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("change", ()=>{ view="offer"; render(); }); });
     }
