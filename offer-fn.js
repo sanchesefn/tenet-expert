@@ -123,16 +123,31 @@
       if(!k) return [];
       return [1,2,3,4].map(n=>"cars/kp-"+k+"-"+n+".jpg");
     }
+    function offerCmpHtml(cmp){
+      const rows=cmp.rows||[];
+      const wins=rows.filter(r=>r.win==="us").map(r=>r.k);
+      const loses=rows.filter(r=>r.win==="them").map(r=>r.k);
+      const body=rows.map(row=>{
+        const cls=row.win==="us"?"win":row.win==="them"?"lose":"tie";
+        const tag=row.win==="them"?`<em>сильнее конкурент</em>`:"";
+        return `<div class="op-vs ${cls}"><div class="k">${escape(row.k)}${tag}</div><div class="us"><small>${escape(cmp.ours||"Мы")}</small>${escape(row.us)}</div><div class="them"><small>${escape(cmp.them||"Конкурент")}</small>${escape(row.them)}</div></div>`;
+      }).join("");
+      const sum=`<p class="op-vs-sum">${wins.length?`<span class="g">Мы сильнее: ${escape(wins.join(", "))}</span>`:""}${loses.length?`<span class="n">Здесь сильнее конкурент: ${escape(loses.join(", "))}</span>`:""}</p>`;
+      const pay=`<div class="op-vs-pay"><b>Кредит · ${escape(cmp.them||"")}</b><span>${cmp.rate}% · ${cmp.term} мес. · взнос ${rub(cmp.down)} ₽ (${cmp.pct}%) · тело ${rub(cmp.credit)} ₽</span><span class="big">${rub(cmp.pay)} ₽ <small style="letter-spacing:0;font-size:13px;opacity:1">/ мес.</small></span><span class="sub">Наша ставка ${cmp.ourRate}%${cmp.ourName?" · "+escape(cmp.ourName):""}${cmp.ourPay?" · наш платёж "+rub(cmp.ourPay)+" ₽":""}. У конкурента на 2,5 п.п. выше. Цена без наших скидок и допов.</span></div>`;
+      return `<div class="op-vs-card"><div class="op-vs-top"><div><small>наш автомобиль</small><b>${escape(cmp.ours||"")}</b></div><div><small>конкурент</small><b>${escape(cmp.them||"")}</b></div></div><p class="op-vs-legend"><i class="g"></i>мы сильнее<i class="r"></i>конкурент слабее</p>${sum}${body}<p class="op-vs-src">${escape(cmp.trim||"")} · ${escape(cmp.src||"")}</p>${pay}</div>`;
+    }
     function offerPreview(doc){
       const meta=(doc.meta||[]).map(([k,v])=>`<div class="op-line"><span>${escape(k)}</span><b>${escape(offerDash(v))}</b></div>`).join("");
       const rows=(doc.rows||[]).map(([k,v])=>`<div class="op-line"><span>${escape(k)}</span><b>${escape(v)}</b></div>`).join("");
       const total=doc.total?`<div class="op-total"><span>${escape(doc.total[0])}</span><b>${escape(doc.total[1])}</b></div>`:"";
       const photos=(doc.photos||[]).slice(0,4).map(u=>`<img src="${escape(u)}" alt="">`).join("");
       const sections=(doc.sections||[]).map(sec=>{
-        const pairs=(sec.pairs||[]).length?`<div class="op-specs">${(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("")}</div>`:"";
-        const lines=(sec.lines||[]).map(t=>`<p>${escape(t)}</p>`).join("");
+        const cmp=sec.cmp?offerCmpHtml(sec.cmp):"";
+        const pairs=!sec.cmp && (sec.pairs||[]).length?`<div class="op-specs">${(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("")}</div>`:"";
+        const lines=!sec.cmp?(sec.lines||[]).map(t=>`<p>${escape(t)}</p>`).join(""):"";
         const groups=(sec.groups||[]).length?`<div class="op-cols">${(sec.groups||[]).map(([title,items])=>`<p class="op-g">${escape(title)}</p><ul>${(items||[]).map(it=>`<li>${escape(it)}</li>`).join("")}</ul>`).join("")}</div>`:"";
-        return `<section><h3>${escape(sec.title||"")}</h3>${pairs}${lines}${groups}</section>`;
+        const head=sec.cmp?"":`<h3>${escape(sec.title||"")}</h3>`;
+        return `<section>${head}${cmp}${pairs}${lines}${groups}</section>`;
       }).join("");
       return `<article class="op-doc"><p class="op-brand">ООО «ЭКСПЕРТ АВТО САМАРА» · TENET · +7 927 724 92 77</p>${photos?`<div class="op-photos">${photos}</div>`:""}<p class="op-kicker">${escape(doc.kicker||"")}</p><h2>${escape(doc.title||"Коммерческое предложение")}</h2><p class="op-head">${escape(doc.headline||"")}</p>${meta}${rows}${total}${sections}<p class="op-foot">${escape(doc.note||"")}</p></article>`;
     }
@@ -145,6 +160,19 @@
       if(doc.total) lines.push(doc.total[0]+": "+doc.total[1]);
       (doc.sections||[]).forEach(sec=>{
         lines.push("",sec.title||"");
+        if(sec.cmp){
+          const c=sec.cmp;
+          lines.push((c.ours||"Мы")+" против "+(c.them||""));
+          (c.rows||[]).forEach(row=>{
+            const mark=row.win==="us"?" — мы сильнее":row.win==="them"?" — сильнее конкурент":"";
+            lines.push(row.k+mark);
+            lines.push("  мы: "+row.us);
+            lines.push("  они: "+row.them);
+          });
+          lines.push("Кредит "+(c.them||"")+": "+c.rate+"% · "+c.term+" мес. · платёж "+rub(c.pay)+" ₽");
+          lines.push("Наша ставка "+c.ourRate+"%"+(c.ourPay?" · наш платёж "+rub(c.ourPay)+" ₽":"")+" · у них на 2,5 п.п. выше.");
+          return;
+        }
         (sec.pairs||[]).forEach(([k,v])=>lines.push(k+": "+v));
         (sec.lines||[]).forEach(t=>lines.push(t));
         (sec.groups||[]).forEach(([t,items])=>{ lines.push(t); (items||[]).forEach(it=>lines.push("• "+it)); });
@@ -190,13 +218,12 @@
       if(d.packEq && d.packEq.groups) sections.push({title:"Оснащение", groups:d.packEq.groups});
       (d.rivals||[]).forEach(r=>{
         sections.push({
-          title:"Сравнение · "+r.name,
-          pairs:r.pts,
-          lines:[
-            r.trim+" · "+rub(r.price)+" ₽ · "+r.src+".",
-            "Кредит: "+r.rate+"% · "+r.term+" мес. · ПВ "+rub(r.down)+" ("+r.pct+"%) · тело "+rub(r.credit)+" · платёж "+rub(r.pay)+" ₽.",
-            "Ставка на 2,5 п.п. выше нашей ("+r.ourName+" "+r.ourRate+"%"+(r.ourPay?" · наш платёж "+rub(r.ourPay)+" ₽":"")+". Без наших скидок и без Д/О."
-          ]
+          title:"Сравнение с "+r.name,
+          cmp:{
+            ours:r.ours, them:r.name, trim:r.trim+" · "+rub(r.price)+" ₽", src:r.src, rows:r.board,
+            rate:r.rate, term:r.term, down:r.down, pct:r.pct, credit:r.credit, pay:r.pay,
+            ourRate:r.ourRate, ourName:r.ourName, ourPay:r.ourPay
+          }
         });
       });
       const src=(d.packEq&&d.packEq.src)||"официальный прайс";
@@ -228,6 +255,32 @@
 .of-rival b{font-size:14px;line-height:1.25;}
 .of-rival small{color:#7a7166;font-size:12px;line-height:1.3;}
 @media(max-width:720px){.of-rivals{grid-template-columns:1fr;}}
+.op-vs-card{margin:6px 0 4px;border:1px solid #eadfcf;border-radius:18px;background:#fffdf9;overflow:hidden;}
+.op-vs-top{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 14px 4px;}
+.op-vs-top small{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8a6840;font-weight:700;}
+.op-vs-top b{font-size:18px;line-height:1.25;color:#161618;}
+.op-vs-legend{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin:0;padding:2px 14px 8px;color:#7a7166;font-size:12px;}
+.op-vs-legend i{width:12px;height:12px;border-radius:4px;display:inline-block;}
+.op-vs-legend i.g{background:#d7f3e2;}
+.op-vs-legend i.r{background:#f8d5d8;margin-left:8px;}
+.op-vs-sum{display:flex;flex-direction:column;gap:3px;margin:0;padding:0 14px 10px;font-size:13.5px;line-height:1.4;}
+.op-vs-sum .g{color:#14653a;font-weight:700;}
+.op-vs-sum .n{color:#6d5c48;}
+.op-vs{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 12px 8px;}
+.op-vs .k{grid-column:1 / -1;margin:8px 2px 0;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#5c5146;}
+.op-vs .k em{margin-left:8px;font-style:normal;font-weight:700;letter-spacing:0;text-transform:none;color:#8a6840;background:#f3eadb;border-radius:999px;padding:2px 8px;font-size:11px;}
+.op-vs .us,.op-vs .them{border-radius:14px;padding:10px 12px 12px;font-size:14px;line-height:1.4;}
+.op-vs small{display:block;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin-bottom:3px;opacity:.72;}
+.op-vs.win .us{background:#e3f6ea;color:#135c34;}
+.op-vs.win .them{background:#fde8ea;color:#8f1d2a;}
+.op-vs.lose .us,.op-vs.lose .them,.op-vs.tie .us,.op-vs.tie .them{background:#f6f3ec;color:#3d3832;}
+.op-vs-src{margin:0;padding:2px 14px 8px;color:#8a8074;font-size:12px;line-height:1.4;}
+.op-vs-pay{margin:0 12px 12px;background:#f8f1e4;border-radius:14px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;}
+.op-vs-pay b{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8a6840;}
+.op-vs-pay .big{font-size:22px;font-weight:800;color:#161618;line-height:1.2;}
+.op-vs-pay span{font-size:13px;line-height:1.4;color:#3d3832;}
+.op-vs-pay .sub{color:#7a7166;font-size:12px;}
+@media(max-width:720px){.op-vs-top{grid-template-columns:1fr;}}
 </style>`;
     }
     function offerModelSelect(id, models, current){
@@ -242,29 +295,159 @@
     }
     const OFFER_RIVALS = {
       t4l:[
-        {id:"jolion",name:"Haval Jolion",trim:"Оптимум 2WD",price:2499000,src:"haval.ru, Оптимум 2WD, каталог с 17.08.2026",pts:[["Клиренс","190 мм · у T4L 203 мм"],["Багажник","337–1133 л · у T4L 475–1500 л"],["Габариты","4472×1874×1581, база 2700"],["Привод","Комфорт только 2WD механика · 4WD с Оптимум, 7DCT 150 л.с."],["Топливо","T4L официально АИ-92, два экрана и CarPlay уже в Актив"]]},
-        {id:"x50",name:"Belgee X50+",trim:"Стиль",price:2505990,src:"прайс импортёра из теста",pts:[["Багажник","330 л — самый маленький в квартете теста"],["Клиренс","182 мм · у T4L 203 мм"],["Габариты","4380×1810×1615, база 2600"],["Мотор","147 л.с. / 270 Н·м / 7DCT / только 2WD, 0–100 за 8,1 с"],["Топливо","обычно АИ-95 · у T4L официально АИ-92"]]},
-        {id:"j6",name:"Jaecoo J6",trim:"Актив",price:2290000,src:"прайс импортёра из теста",pts:[["Привод","вся линейка только 2WD"],["Мотор","1.5T 147 л.с. / 210 Н·м / DCT6"],["Клиренс","176 мм · у T4L 203 мм"],["Багажник","480 / 1180 л"],["Габариты","4509×1860×1650, база 2610 · топливо АИ-92"]]}
+        {id:"jolion",name:"Haval Jolion",trim:"Оптимум 2WD",price:2499000,src:"haval.ru, Оптимум 2WD, каталог с 17.08.2026",board:[
+          {k:"Клиренс",us:"203 мм",them:"190 мм",win:"us"},
+          {k:"Багажник",us:"475 л, со сложенным рядом 1500 л",them:"337 л и 1133 л со сложенным рядом",win:"us"},
+          {k:"Кузов",us:"4506×1828×1701 мм — выше посадка",them:"4472×1874×1581 мм",win:"us"},
+          {k:"База",us:"2650 мм",them:"2700 мм — база длиннее",win:"them"},
+          {k:"Привод",us:"робот DCT6 уже на входе линейки",them:"Комфорт — только механика и передний привод. 4WD появляется с Оптимум, 150 л.с.",win:"us"},
+          {k:"Топливо",us:"официально АИ-92, два экрана и CarPlay уже в Актив",them:"входная версия скромнее по оснащению",win:"us"}
+        ]},
+        {id:"x50",name:"Belgee X50+",trim:"Стиль",price:2505990,src:"прайс импортёра из теста",board:[
+          {k:"Багажник",us:"475–1500 л",them:"330 л — самый маленький багажник в этом классе по тесту",win:"us"},
+          {k:"Клиренс",us:"203 мм",them:"182 мм",win:"us"},
+          {k:"Габариты",us:"4506×1828×1701 мм",them:"4380×1810×1615 мм, база 2600",win:"us"},
+          {k:"Мотор",us:"1.5T 147 л.с. и 210 Н·м",them:"1.5T 147 л.с. и 270 Н·м, 0–100 за 8,1 с — бодрее на разгоне",win:"them"},
+          {k:"Привод",us:"передний",them:"только передний, полного привода нет",win:"tie"},
+          {k:"Топливо",us:"официально АИ-92",them:"обычно АИ-95",win:"us"}
+        ]},
+        {id:"j6",name:"Jaecoo J6",trim:"Актив",price:2290000,src:"прайс импортёра из теста",board:[
+          {k:"Клиренс",us:"203 мм",them:"176 мм",win:"us"},
+          {k:"Багажник",us:"475 л и 1500 л со сложенным рядом",them:"480 л и 1180 л — в пяти местах почти так же, сложенный ряд меньше",win:"us"},
+          {k:"Габариты",us:"4506×1828×1701, база 2650",them:"4509×1860×1650, база 2610",win:"tie"},
+          {k:"Привод",us:"передний",them:"вся линейка только 2WD",win:"tie"},
+          {k:"Мотор",us:"1.5T 147 л.с. / 210 Н·м / DCT6, АИ-92",them:"тот же класс: 1.5T 147 / 210 / DCT6, АИ-92",win:"tie"}
+        ]}
       ],
       t7:[
-        {id:"cityray",name:"Geely Cityray",trim:"Comfort",price:2699990,src:"прайс Geely из теста",pts:[["Привод","вся линейка в РФ только 2WD"],["Мотор","1.5T 147 л.с. / 270 Н·м / 7DCT, 0–100 за 8,9 с"],["Габариты","4510×1865×1650, база 2701"],["Клиренс","185 мм · у T7 197 мм, есть 4WD"],["Багажник","571 / 1271 л · линейка до Flagship Sport 3 099 990 ₽"]]},
-        {id:"h3",name:"Haval H3",trim:"Оптимум 2WD",price:2749000,price4:3099000,trim4:"Оптимум 4WD",src:"haval.ru: от 2 549 000 с лояльным трейд-ином 200 000, здесь РРЦ без него",pts:[["Габариты","4520×1875×1745, база 2710"],["Клиренс","196 мм · у T7 197 мм"],["Мотор","2WD 143 л.с. / 210 Н·м · 4WD 177 л.с. / 270 Н·м"],["Багажник","493–1298 л"],["Кузов","несущий кроссовер, рамы нет · Оптимум 4WD 3 099 000 ₽"]]},
-        {id:"dashing",name:"Jetour Dashing",trim:"Люкс, с выгодами",price:2239900,src:"jetour-ru.com, от 2 239 900 с учётом всех выгод, Люкс 2025",pts:[["Цена на сайте","от 2 239 900 ₽ — Люкс 2025 уже со всеми выгодами, до 600 000 ₽"],["Мотор","1.5T 147 л.с. / 6DCT, выше по линейке 1.6 186 л.с. / 8AT"],["Привод","в открытом прайсе сайта 4WD нет · у T7 есть"],["Кузов","городской кроссовер, не рамник"],["Что внутри цены","трейд-ин, прямая выгода, кредит и каско уже сидят в «от»"]]}
+        {id:"cityray",name:"Geely Cityray",trim:"Comfort",price:2699990,src:"прайс Geely из теста",board:[
+          {k:"Привод",us:"в линейке есть полный привод",them:"в РФ вся линейка только передний привод",win:"us"},
+          {k:"Клиренс",us:"197 мм",them:"185 мм",win:"us"},
+          {k:"Посадка",us:"4553×1862×1696 мм — длиннее и выше",them:"4510×1865×1650 мм, база 2701",win:"us"},
+          {k:"Багажник",us:"475 л и до 1500 л со сложенным рядом",them:"571 л в пяти местах — больше каждый день, сложенный ряд 1271 л",win:"them"},
+          {k:"Мотор",us:"1.6T 150 л.с. и 275 Н·м",them:"1.5T 147 л.с. и 270 Н·м, 0–100 за 8,9 с",win:"us"},
+          {k:"Разгон",us:"паспорт T7 спокойнее, около 9,7–9,8 с",them:"8,9 с — быстрее до сотни",win:"them"}
+        ]},
+        {id:"h3",name:"Haval H3",trim:"Оптимум 2WD",price:2749000,price4:3099000,trim4:"Оптимум 4WD",src:"haval.ru: от 2 549 000 с лояльным трейд-ином 200 000, здесь РРЦ без него",board:[
+          {k:"Мотор",us:"1.6T 150 л.с. и 275 Н·м",them:"1.5T 143 л.с. и 210 Н·м на переднем приводе",win:"us"},
+          {k:"Багажник",us:"475 л и до 1500 л",them:"493–1298 л",win:"us"},
+          {k:"Кузов",us:"несущий кроссовер, не рамник",them:"тоже несущий, рамы нет. 4520×1875×1745, база 2710",win:"tie"},
+          {k:"Клиренс",us:"197 мм",them:"196 мм",win:"tie"}
+        ],board4:[
+          {k:"Мотор",us:"1.6T 150 л.с. и 275 Н·м, полный привод",them:"1.5T 177 л.с. и 270 Н·м, полный привод — по силам выше",win:"them"},
+          {k:"Багажник",us:"475 л и до 1500 л",them:"493–1298 л",win:"us"},
+          {k:"Кузов",us:"несущий кроссовер",them:"несущий, рамы нет",win:"tie"},
+          {k:"Клиренс",us:"197 мм",them:"196 мм",win:"tie"}
+        ]},
+        {id:"dashing",name:"Jetour Dashing",trim:"от",price:2239900,src:"jetour-ru.com, от 2 239 900 с учётом всех выгод, Люкс 2025",board:[
+          {k:"Привод",us:"в линейке T7 есть полный привод",them:"на официальном сайте полный привод не заявлен",win:"us"},
+          {k:"Мотор",us:"1.6T 150 л.с. и 275 Н·м, DCT7",them:"1.5T 147 л.с. и 6DCT, выше по линейке 1.6 на 186 л.с. и 8AT",win:"tie"},
+          {k:"Класс",us:"кроссовер с клиренсом 197 мм",them:"городской кроссовер, не рамный внедорожник",win:"us"},
+          {k:"Цена на сайте",us:"в КП наш РРЦ, без спрятанной выгоды",them:"2 239 900 ₽ — это Люкс 2025 уже со всеми выгодами, до 600 000 ₽",win:"them"}
+        ]}
       ],
       t8:[
-        {id:"f7",name:"Haval F7",trim:"Оптимум 1.5 2WD",price:2899000,price4:3399000,trim4:"Оптимум 2.0 4WD",src:"haval.ru от 2 899 000 Оптимум 1.5 2WD; 4WD — прайс из теста",pts:[["Мотор 2WD","1.5T · на сайте от 2 899 000 ₽, Премиум 2WD в тесте 3 199 000 ₽"],["Мотор 4WD","2.0T 7DCT · Оптимум 4WD в тесте 3 399 000 · Премиум 3 599 000 · Техно+ 3 799 000 ₽"],["Габариты","4780×1890×1675–1707, база 2800"],["Багажник","376 / 1328 л · у T8 5 мест больше"],["Клиренс","183–191 мм · у T8 5 мест 213 мм"]]},
-        {id:"h7",name:"Haval H7",trim:"Премиум 4WD",price:3799000,src:"haval.ru, Премиум от 3 799 000 с лояльным трейд-ином 200 000",pts:[["Привод","только 4WD, 5 мест"],["Мотор","2.0T 231 л.с. / 380 Н·м / 7DCT"],["Габариты","4705×1908×1780, база 2810"],["Клиренс","200 мм · багажник 483 / 1362 л"],["Цена","на сайте Премиум от 3 799 000 ₽ уже с лояльным трейд-ином · Техно+ в тесте от 3 999 000 ₽"]]},
-        {id:"atlas",name:"Geely Atlas",trim:"Люкс 2WD",price:3259990,src:"прайс Geely из теста",pts:[["Мотор 2WD","1.5T 147 л.с. / 270 Н·м / 7DCT от 3 259 990 ₽"],["Мотор 4WD","2.0T 200 л.с. / 325 Н·м / 8AT, топливо АИ-95"],["Габариты","4670×1900×1705, база 2777"],["Клиренс","215 мм · 5 мест"],["Багажник","650 / 1610 л"]]},
-        {id:"x70",name:"Jetour X70+",trim:"от, с выгодами",price:2839000,src:"jetour-ru.com, от 2 839 000 с учётом выгод",pts:[["Цена","от 2 839 000 ₽ на сайте, Комфорт и Престиж"],["Мотор","1.6T 190 л.с. / 275 Н·м / 7DCT"],["Класс","семейный кроссовер рядом с T8"],["Места","в тесте третьего ряда у T8 4WD не обещаем на Актив 2WD"],["Сверка","старт с сайта, без скрытых допов и без наших скидок"]]}
+        {id:"f7",name:"Haval F7",trim:"Оптимум 1.5 2WD",price:2899000,price4:3399000,trim4:"Оптимум 2.0 4WD",src:"haval.ru от 2 899 000 Оптимум 1.5 2WD; 4WD — прайс из теста",board:[
+          {k:"Клиренс",us:"213 мм у пятиместной версии",them:"183–191 мм",win:"us"},
+          {k:"Багажник",us:"889 л и до 1930 л",them:"376 л и 1328 л",win:"us"},
+          {k:"Мотор",us:"1.6T 186 л.с.",them:"1.5T на входе, Оптимум 2WD",win:"us"},
+          {k:"Габариты",us:"4725×1860×1705, база 2710",them:"4780×1890, база 2800 — кузов длиннее",win:"them"}
+        ],board4:[
+          {k:"Клиренс",us:"у пяти мест 213 мм. Семиместная версия ниже по багажнику за счёт третьего ряда",them:"183–191 мм, третьего ряда нет",win:"us"},
+          {k:"Багажник",us:"у 5 мест 889–1930 л",them:"376 / 1328 л",win:"us"},
+          {k:"Мотор",us:"2.0T 197 л.с. и 375 Н·м, DCT7, полный привод",them:"2.0T и 7DCT, Оптимум 4WD 3 399 000 ₽",win:"tie"},
+          {k:"Габариты",us:"4725×1860×1705, база 2710",them:"4780×1890, база 2800",win:"them"}
+        ]},
+        {id:"h7",name:"Haval H7",trim:"Премиум 4WD",price:3799000,src:"haval.ru, Премиум от 3 799 000 уже с лояльным трейд-ином 200 000",board:[
+          {k:"Багажник",us:"у 5 мест 889–1930 л",them:"483 л и 1362 л",win:"us"},
+          {k:"Клиренс",us:"213 мм у пяти мест",them:"200 мм",win:"us"},
+          {k:"Места",us:"5 мест, на полном приводе есть 5+2",them:"только 5 мест и только полный привод",win:"us"},
+          {k:"Мотор",us:"2.0T 197 л.с. и 375 Н·м",them:"2.0T 231 л.с. и 380 Н·м — по мощности выше",win:"them"}
+        ]},
+        {id:"atlas",name:"Geely Atlas",trim:"Люкс 2WD",price:3259990,src:"прайс Geely из теста",board:[
+          {k:"Мотор",us:"1.6T 186 л.с.",them:"1.5T 147 л.с. и 270 Н·м, 7DCT",win:"us"},
+          {k:"Багажник",us:"889–1930 л у пяти мест",them:"650 л и 1610 л",win:"us"},
+          {k:"Клиренс",us:"213 мм",them:"215 мм",win:"them"},
+          {k:"Габариты",us:"4725×1860×1705, база 2710",them:"4670×1900×1705, база 2777",win:"tie"}
+        ],board4:[
+          {k:"Мотор",us:"2.0T 197 л.с. и 375 Н·м, DCT7",them:"2.0T 200 л.с. и 325 Н·м, 8AT, топливо АИ-95",win:"us"},
+          {k:"Багажник",us:"пятиместная версия 889–1930 л. У 7 мест объём меньше из‑за третьего ряда",them:"650 / 1610 л, только 5 мест",win:"us"},
+          {k:"Клиренс",us:"213 мм у 5 мест",them:"215 мм",win:"them"},
+          {k:"Габариты",us:"4725×1860×1705, база 2710",them:"4670×1900×1705, база 2777",win:"tie"}
+        ]},
+        {id:"x70",name:"Jetour X70+",trim:"от",price:2839000,src:"jetour-ru.com, от 2 839 000 с учётом выгод",board:[
+          {k:"Мотор",us:"1.6T 186 л.с. на пяти местах 2WD, на 4WD — 2.0T 197 л.с.",them:"1.6T 190 л.с. и 275 Н·м, 7DCT",win:"tie"},
+          {k:"Семья",us:"на полном приводе есть третий ряд",them:"семейный кроссовер, Комфорт и Престиж",win:"us"},
+          {k:"Цена на сайте",us:"в КП наш РРЦ",them:"от 2 839 000 ₽ уже с выгодами на сайте",win:"them"}
+        ]}
       ],
       t9:[
-        {id:"monjaro",name:"Geely Monjaro",trim:"Люкс",price:4349990,priceHi:4749990,trimHi:"Флагман",src:"прайс Geely из теста",pts:[["Места","5 мест · Tiggo 9 семь мест, TENET T9 пять"],["Мотор","2.0T 238 л.с. / 350 Н·м / 8AT / AWD, 0–100 за 7,7 с"],["Габариты","4770×1895×1689, база 2845, клиренс 210 мм"],["Багажник","562 / 704 / 1532 л"],["Цена","Люкс 4 349 990 · Флагман 4 749 990 ₽"]]},
-        {id:"j8",name:"Jaecoo J8",trim:"Комфорт 2026",price:4130000,src:"прайс Jaecoo из теста",pts:[["Места","5 мест, не семь"],["Мотор","2.0T 249 л.с. / 7DCT / AWD"],["Габариты","4820×1930×1710, база 2820, клиренс 210 мм"],["Багажник","717–2021 л"],["Цена","Комфорт 2026 г.п. от 4 130 000 ₽, 2024 г.п. от 3 894 000"]]},
-        {id:"t2",name:"Jetour T2",trim:"от, с выгодами",price:3699000,src:"jetour-ru.com, от 3 699 000 с учётом выгод",pts:[["Места","5 мест · у Tiggo 9 семь"],["Цена","от 3 699 000 ₽ на jetour-ru.com, уже с выгодами"],["Класс","кроссовер, не семиместный флагман"],["Кузов","не рамник: рамный ориентир теста — Tank 300"],["Сверка","на сайте есть старт, полного прайса без выгод нет"]]}
+        {id:"monjaro",name:"Geely Monjaro",trim:"Люкс",price:4349990,priceHi:4749990,trimHi:"Флагман",src:"прайс Geely из теста",board:[
+          {k:"Места",us:"7 мест, третий ряд уже в машине",them:"только 5 мест, третьего ряда нет",win:"us"},
+          {k:"Мотор",us:"2.0T около 249 л.с. и 375 Н·м, классический автомат 8AT",them:"2.0T 238 л.с. и 350 Н·м, автомат 8AT",win:"us"},
+          {k:"Топливо",us:"АИ-92",them:"не ниже АИ-95",win:"us"},
+          {k:"Кузов",us:"4810×1925×1741 мм — выше и шире",them:"4770×1895×1689 мм",win:"us"},
+          {k:"Салон",us:"14 динамиков, натуральная кожа и шпон",them:"10 динамиков, экокожа и алькантара",win:"us"},
+          {k:"Багажник",us:"в семи местах около 200 л, максимум до 2150 л",them:"каждый день просторнее: 562 л, максимум 1532 л",win:"them"},
+          {k:"Разгон",us:"около 8,0 с, максимум 220 км/ч",them:"7,7 с и 215 км/ч — чуть быстрее до сотни",win:"them"},
+          {k:"Клиренс",us:"200 мм",them:"210 мм",win:"them"},
+          {k:"Экраны",us:"щиток 10,3″, медиа 15,6″ и проекция",them:"щиток 12,3″ и широкая медиа 24,6″",win:"them"}
+        ],board5:[
+          {k:"Мотор",us:"2.0T 245 л.с. и 375 Н·м",them:"2.0T 238 л.с. и 350 Н·м",win:"us"},
+          {k:"Привод",us:"классический автомат 8AT, полный привод и 7 режимов",them:"8AT и полный привод",win:"us"},
+          {k:"Топливо",us:"АИ-92",them:"не ниже АИ-95",win:"us"},
+          {k:"Кузов",us:"4810×1925×1741 мм — выше и шире",them:"4770×1895×1689 мм",win:"us"},
+          {k:"Клиренс",us:"200 мм",them:"210 мм",win:"them"},
+          {k:"Багажник",us:"со сложенными сиденьями до 2065 л",them:"562 л в пяти местах и максимум 1532 л",win:"us"},
+          {k:"Салон",us:"14 динамиков с сабвуфером, шпон. В Ультра — натуральная кожа и проекция",them:"10 динамиков, экокожа и алькантара",win:"us"},
+          {k:"Места",us:"сейчас в продаже 5 мест. Семь мест — это Tiggo 9, не эта машина",them:"5 мест",win:"tie"},
+          {k:"Разгон",us:"9,3 с до 100 км/ч у пятиместной версии",them:"7,7 с — заметно быстрее",win:"them"},
+          {k:"Экраны",us:"щиток 10,3″ и медиа 15,6″",them:"щиток 12,3″ и медиа 24,6″ — экран крупнее",win:"them"}
+        ]},
+        {id:"j8",name:"Jaecoo J8",trim:"Комфорт 2026",price:4130000,src:"прайс Jaecoo из теста",board:[
+          {k:"Места",us:"7 мест",them:"5 мест",win:"us"},
+          {k:"Коробка",us:"классический автомат 8AT и полный привод",them:"робот 7DCT и полный привод",win:"us"},
+          {k:"Мотор",us:"2.0T около 249 л.с. и 375 Н·м",them:"2.0T 249 л.с.",win:"tie"},
+          {k:"Багажник",us:"максимум до 2150 л, в семи местах около 200 л",them:"717 л каждый день и до 2021 л",win:"them"},
+          {k:"Клиренс",us:"200 мм",them:"210 мм",win:"them"},
+          {k:"Кузов",us:"4810×1925×1741, база 2800",them:"4820×1930×1710, база 2820",win:"tie"}
+        ],board5:[
+          {k:"Мотор",us:"2.0T 245 л.с. и 375 Н·м, классический автомат 8AT",them:"2.0T 249 л.с., робот 7DCT",win:"us"},
+          {k:"Привод",us:"полный, 7 режимов движения",them:"полный привод",win:"us"},
+          {k:"Багажник",us:"до 2065 л со сложенным рядом",them:"717 л и до 2021 л",win:"us"},
+          {k:"Клиренс",us:"200 мм",them:"210 мм",win:"them"},
+          {k:"Кузов",us:"4810×1925×1741, база 2800",them:"4820×1930×1710, база 2820 — чуть крупнее",win:"them"},
+          {k:"Места",us:"5 мест",them:"5 мест",win:"tie"}
+        ]},
+        {id:"t2",name:"Jetour T2",trim:"от",price:3699000,src:"jetour-ru.com, от 3 699 000 с учётом выгод",board:[
+          {k:"Места",us:"7 мест",them:"5 мест",win:"us"},
+          {k:"Класс",us:"семиместный флагман 4810 мм, 2.0 и автомат 8AT",them:"кроссовер, не семиместный флагман",win:"us"},
+          {k:"Цена на сайте",us:"в КП наш РРЦ",them:"от 3 699 000 ₽ уже со всеми выгодами. На Премиум 2026 цена с выгодами выше",win:"them"}
+        ],board5:[
+          {k:"Мотор",us:"2.0T 245 л.с. и 375 Н·м, 8AT, полный привод, 7 режимов",them:"кроссовер со стартом цены на сайте, без раскрытого полного прайса",win:"us"},
+          {k:"Багажник",us:"до 2065 л со сложенным рядом",them:"на сайте указан старт цены, не объём багажника",win:"tie"},
+          {k:"Места",us:"5 мест",them:"5 мест",win:"tie"},
+          {k:"Цена на сайте",us:"наш РРЦ",them:"от 3 699 000 ₽ уже с выгодами, не голый прайс",win:"them"}
+        ]}
       ],
       a8:[
-        {id:"preface",name:"Geely Preface",trim:"Люкс",price:3079990,priceHi:3264990,trimHi:"Флагман",src:"прайс Geely из теста",pts:[["Кузов","седан 4825×1880×1469, база 2800"],["Клиренс","135 мм · багажник 500 л"],["Мотор","2.0T 200 л.с. / 325 Н·м / 7DCT / 2WD, 0–100 за 7,1 с"],["Топливо","не ниже АИ-95 · Arrizo 8 официально АИ-92"],["Цена","Люкс 3 079 990 · Флагман 3 264 990 ₽"]]},
-        {id:"univ",name:"Changan UNI-V",trim:"Спорт",price:3499900,src:"прайс Changan из теста",pts:[["Кузов","лифтбек 4740×1838×1430, база 2750"],["Клиренс","152 мм · багажник 465–1110 л"],["Мотор","2.0T 235 л.с. / 390 Н·м от 3 499 900 ₽"],["Климат","однозонный, зимний пакет короче"],["Багажник Arrizo","седан около 535 л против лифтбека UNI-V"]]}
+        {id:"preface",name:"Geely Preface",trim:"Люкс",price:3079990,priceHi:3264990,trimHi:"Флагман",src:"прайс Geely из теста",board:[
+          {k:"Клиренс",us:"около 144 мм",them:"135 мм",win:"us"},
+          {k:"Топливо",us:"официально АИ-92",them:"не ниже АИ-95",win:"us"},
+          {k:"Багажник",us:"около 535 л",them:"500 л",win:"us"},
+          {k:"Разгон",us:"седан спокойнее по характеру",them:"2.0T 200 л.с. и 325 Н·м, 0–100 за 7,1 с",win:"them"},
+          {k:"Кузов",us:"4757×1832×1469 мм",them:"4825×1880×1469 мм, база 2800 — длиннее",win:"them"}
+        ],board5:[
+          {k:"Характер",us:"седан TENET: 1.6T 150 л.с. и DCT7 в Прайм, 2.0 и автомат 8AT в Ультра",them:"2.0T 200 л.с. и 325 Н·м, 0–100 за 7,1 с — быстрее",win:"them"},
+          {k:"Кузов",us:"4780×1843×1469, база 2790, багажник 500 л",them:"4825×1880×1469, база 2800, багажник 500 л, клиренс 135 мм",win:"tie"}
+        ]},
+        {id:"univ",name:"Changan UNI-V",trim:"Спорт",price:3499900,src:"прайс Changan из теста",board:[
+          {k:"Комфорт",us:"климат и зимний пакет богаче",them:"однозонный климат, зимний пакет короче",win:"us"},
+          {k:"Кузов",us:"классический седан",them:"лифтбек 4740×1838×1430, база 2750",win:"tie"},
+          {k:"Клиренс",us:"около 144 мм",them:"152 мм",win:"them"},
+          {k:"Багажник",us:"седан около 535 л",them:"465 л и до 1110 л — лифтбек практичнее в максимуме",win:"them"},
+          {k:"Мотор",us:"не спортивная версия",them:"2.0T 235 л.с. и 390 Н·м",win:"them"}
+        ]}
       ]
     };
     function offerRivalKey(m){
@@ -277,6 +460,19 @@
       if(offerRich(m) && r.priceHi) return {price:r.priceHi, trim:r.trimHi||r.trim};
       if(/4wd/i.test((m&&m.name)||"") && r.price4) return {price:r.price4, trim:r.trim4||r.trim};
       return {price:r.price, trim:r.trim};
+    }
+    function offerOurShort(m){
+      const s=(m&&m.stock)||"";
+      return ({t4:"T4L",t4l:"T4L",pl4:"T4L",t7:"T7",t7l:"Tiggo 7L",pl6:"T7",t8:"T8",t9:"Tiggo 9",tt9:"TENET T9",a8:"Arrizo 8",ta8:"TENET A8"})[s]||(m&&m.name)||"Мы";
+    }
+    function offerRivalBoard(r, m){
+      const name=(m&&m.name)||"";
+      const stock=(m&&m.stock)||"";
+      let src;
+      if((stock==="tt9"||stock==="ta8") && r.board5) src=r.board5;
+      else if(/4wd/i.test(name) && r.board4) src=r.board4;
+      else src=r.board||[];
+      return src.map(x=>({k:x.k, us:x.us, them:x.them, win:x.win||"tie"}));
     }
     function offerOurRate(banks, m, months, downPct){
       if(banks && banks.length){
@@ -298,7 +494,13 @@
       const term=Math.max(1, Math.round(Number(months)||60));
       const pay=typeof calcPay==="function"?Math.round(calcPay(price, down, term, rate)):0;
       const credit=Math.max(0, price-down);
-      return {name:r.name, trim:pick.trim, price, src:r.src, pts:r.pts, down, pct, rate, term, pay, credit, ourRate:ours.rate, ourName:ours.name, ourPay:ours.pay||0};
+      const board=offerRivalBoard(r, m).slice();
+      const ourPrice=Number(m&&m.rrc)||0;
+      if(ourPrice && price){
+        const gap=price-ourPrice;
+        board.push({k:"Цена", us:rub(ourPrice)+" ₽ — наш РРЦ", them:rub(price)+" ₽"+(gap>0?" · дороже на "+rub(gap):gap<0?" · дешевле на "+rub(-gap):" · столько же"), win:gap>0?"us":gap<0?"them":"tie"});
+      }
+      return {name:r.name, trim:pick.trim, price, src:r.src, board, ours:offerOurShort(m), down, pct, rate, term, pay, credit, ourRate:ours.rate, ourName:ours.name, ourPay:ours.pay||0};
     }
     function offerRivalsPicked(m, months, downPct, banks){
       return offerRivalList(m).filter(r=>offerOn("ofRv_"+r.id)).map(r=>offerRivalCalc(r, m, months, downPct, banks));
@@ -325,7 +527,7 @@
         ${offerField("Цвет", `<input id="ofColor" value="${escape(d.color)}" placeholder="не указан" />`)}
         ${offerField("РРЦ, ₽", `<input id="ofPrice" inputmode="numeric" value="${d.price}" />`)}
         <p class="eyebrow">Конкуренты</p>
-        <p class="calc-note">Галочка кладёт в PDF пять пунктов из теста и кредит: тот же процент взноса и срок, ставка на 2,5 п.п. выше нашей. Цена конкурента — с официального сайта, без наших скидок.</p>
+        <p class="calc-note">Галочка кладёт в PDF сравнение: зелёным, где мы сильнее, красным, где конкурент слабее. Плюс кредит на 2,5 п.п. выше нашей ставки.</p>
         ${offerRivalChecks(d.m)}
         <p class="eyebrow">Скидки</p>
         <label class="check-row"><input id="ofTi" type="checkbox" ${d.useTi?"checked":""} /> <span>Трейд-ин ${d.m.ti?rub(d.m.ti):"нет в базе"}</span></label>
@@ -389,6 +591,87 @@
       const pages=[];
       let c, ctx, y;
       function font(w, size){ ctx.font=w+" "+size+"px Inter, Arial, sans-serif"; }
+      function offerPaintCmp(cmp){
+        const colW=(W-pad*2-14)/2;
+        function box(x,yy,w,h,fill){
+          const r=12;
+          ctx.beginPath();
+          ctx.moveTo(x+r,yy);
+          ctx.arcTo(x+w,yy,x+w,yy+h,r);
+          ctx.arcTo(x+w,yy+h,x,yy+h,r);
+          ctx.arcTo(x,yy+h,x,yy,r);
+          ctx.arcTo(x,yy,x+w,yy,r);
+          ctx.closePath();
+          ctx.fillStyle=fill;
+          ctx.fill();
+        }
+        need(78);
+        y+=8;
+        font("800", 20);
+        ctx.fillStyle="#161618";
+        ctx.fillText("Сравнение", pad, y);
+        y+=28;
+        font("700", 16);
+        ctx.fillStyle="#3d3832";
+        const title=(cmp.ours||"Мы")+"   против   "+(cmp.them||"");
+        offerWrap(ctx, title, W-pad*2).forEach(part=>{
+          need(22); font("700", 16); ctx.fillStyle="#3d3832"; ctx.fillText(part, pad, y); y+=22;
+        });
+        y+=4;
+        font("500", 13);
+        ctx.fillStyle="#7a7166";
+        ctx.fillText("Зелёным — где мы сильнее.   Красным — где конкурент слабее.", pad, y);
+        y+=22;
+        const wins=(cmp.rows||[]).filter(r=>r.win==="us").map(r=>r.k);
+        const loses=(cmp.rows||[]).filter(r=>r.win==="them").map(r=>r.k);
+        if(wins.length){
+          offerWrap(ctx, "Мы сильнее: "+wins.join(", "), W-pad*2).forEach(part=>{
+            need(20); font("700", 14); ctx.fillStyle="#14653a"; ctx.fillText(part, pad, y); y+=20;
+          });
+        }
+        if(loses.length){
+          offerWrap(ctx, "Здесь сильнее конкурент: "+loses.join(", "), W-pad*2).forEach(part=>{
+            need(20); font("500", 14); ctx.fillStyle="#6d5c48"; ctx.fillText(part, pad, y); y+=20;
+          });
+        }
+        y+=8;
+        (cmp.rows||[]).forEach(row=>{
+          const tag=row.win==="them"?"     ·  сильнее конкурент":"";
+          need(16);
+          font("800", 12);
+          ctx.fillStyle="#8a6840";
+          ctx.fillText(String(row.k||"").toUpperCase()+tag, pad, y);
+          y+=10;
+          font("500", 15);
+          const L=offerWrap(ctx, row.us||"", colW-28);
+          const R=offerWrap(ctx, row.them||"", colW-28);
+          const n=Math.max(L.length, R.length, 1);
+          const bh=n*20+20;
+          need(bh+10);
+          const win=row.win==="us";
+          box(pad, y, colW, bh, win?"#e3f6ea":"#f6f3ec");
+          box(pad+colW+14, y, colW, bh, win?"#fde8ea":"#f6f3ec");
+          L.forEach((ln,i)=>{ font("600", 15); ctx.fillStyle=win?"#135c34":"#3d3832"; ctx.fillText(ln, pad+14, y+24+i*20); });
+          R.forEach((ln,i)=>{ font("600", 15); ctx.fillStyle=win?"#8f1d2a":"#3d3832"; ctx.fillText(ln, pad+colW+28, y+24+i*20); });
+          y+=bh+12;
+        });
+        font("700", 13);
+        const p1=offerWrap(ctx, "Кредит "+(cmp.them||"")+" · "+cmp.rate+"% · "+cmp.term+" мес. · взнос "+rub(cmp.down)+" ₽ ("+cmp.pct+"%) · тело "+rub(cmp.credit)+" ₽", W-pad*2-28);
+        font("500", 13);
+        const p3=offerWrap(ctx, "Наша ставка "+cmp.ourRate+"%"+(cmp.ourName?" · "+cmp.ourName:"")+(cmp.ourPay?" · наш платёж "+rub(cmp.ourPay)+" ₽":"")+". У конкурента на 2,5 п.п. выше, без наших скидок и допов.", W-pad*2-28);
+        const bh=24+p1.length*18+30+p3.length*18+18;
+        need(bh+8);
+        box(pad, y, W-pad*2, bh, "#f8f1e4");
+        let yy=y+22;
+        p1.forEach(ln=>{ font("700", 13); ctx.fillStyle="#8a6840"; ctx.fillText(ln, pad+16, yy); yy+=18; });
+        yy+=8;
+        font("800", 22);
+        ctx.fillStyle="#161618";
+        ctx.fillText(rub(cmp.pay)+" ₽ / мес.", pad+16, yy);
+        yy+=28;
+        p3.forEach(ln=>{ font("500", 13); ctx.fillStyle="#6d5c48"; ctx.fillText(ln, pad+16, yy); yy+=18; });
+        y+=bh+18;
+      }
       function newPage(){
         c=document.createElement("canvas");
         c.width=W; c.height=H;
@@ -507,6 +790,7 @@
         y+=48;
       }
       (doc.sections||[]).forEach(sec=>{
+        if(sec.cmp){ offerPaintCmp(sec.cmp); return; }
         need(36);
         y+=10;
         font("800", 13);
