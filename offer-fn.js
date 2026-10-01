@@ -104,17 +104,36 @@
       return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount};
     }
     function offerDash(v){ const s=String(v||"").trim(); return s||"—"; }
+    function offerPhotoKey(id){
+      return ({
+        t4p:"t4",
+        t4la:"t4l",t4lp:"t4l",
+        t7a:"t7",t7p:"t7",t7a4:"t7",t7p4:"t7",
+        t8a:"t8",t8p:"t8",t8p4:"t8",t8u4:"t8",
+        tt9p:"t9",tt9u:"t9",
+        ta8p:"a8",ta8u:"a8",
+        t9p:"tiggo9",t9u:"tiggo9",
+        t7l:"t7l",
+        a8a:"arrizo",a8p:"arrizo",a8u:"arrizo"
+      })[id]||"";
+    }
+    function offerPhotoUrls(id){
+      const k=offerPhotoKey(id);
+      if(!k) return [];
+      return [1,2,3,4].map(n=>"cars/kp-"+k+"-"+n+".jpg");
+    }
     function offerPreview(doc){
       const meta=(doc.meta||[]).map(([k,v])=>`<div class="op-line"><span>${escape(k)}</span><b>${escape(offerDash(v))}</b></div>`).join("");
       const rows=(doc.rows||[]).map(([k,v])=>`<div class="op-line"><span>${escape(k)}</span><b>${escape(v)}</b></div>`).join("");
       const total=doc.total?`<div class="op-total"><span>${escape(doc.total[0])}</span><b>${escape(doc.total[1])}</b></div>`:"";
+      const photos=(doc.photos||[]).slice(0,4).map(u=>`<img src="${escape(u)}" alt="">`).join("");
       const sections=(doc.sections||[]).map(sec=>{
-        const pairs=(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("");
+        const pairs=(sec.pairs||[]).length?`<div class="op-specs">${(sec.pairs||[]).map(([k,v])=>`<div class="op-pair"><b>${escape(k)}</b><span>${escape(v)}</span></div>`).join("")}</div>`:"";
         const lines=(sec.lines||[]).map(t=>`<p>${escape(t)}</p>`).join("");
-        const groups=(sec.groups||[]).map(([t,items])=>`<p class="op-g">${escape(t)}</p><ul>${(items||[]).map(it=>`<li>${escape(it)}</li>`).join("")}</ul>`).join("");
+        const groups=(sec.groups||[]).length?`<div class="op-cols">${(sec.groups||[]).map(([title,items])=>`<p class="op-g">${escape(title)}</p><ul>${(items||[]).map(it=>`<li>${escape(it)}</li>`).join("")}</ul>`).join("")}</div>`:"";
         return `<section><h3>${escape(sec.title||"")}</h3>${pairs}${lines}${groups}</section>`;
       }).join("");
-      return `<article class="op-doc"><p class="op-brand">ООО «ЭКСПЕРТ АВТО САМАРА» · TENET · +7 927 724 92 77</p><p class="op-kicker">${escape(doc.kicker||"")}</p><h2>${escape(doc.title||"Коммерческое предложение")}</h2><p class="op-head">${escape(doc.headline||"")}</p>${meta}${rows}${total}${sections}<p class="op-foot">${escape(doc.note||"")}</p></article>`;
+      return `<article class="op-doc"><p class="op-brand">ООО «ЭКСПЕРТ АВТО САМАРА» · TENET · +7 927 724 92 77</p>${photos?`<div class="op-photos">${photos}</div>`:""}<p class="op-kicker">${escape(doc.kicker||"")}</p><h2>${escape(doc.title||"Коммерческое предложение")}</h2><p class="op-head">${escape(doc.headline||"")}</p>${meta}${rows}${total}${sections}<p class="op-foot">${escape(doc.note||"")}</p></article>`;
     }
     function offerPlain(doc){
       const lines=[doc.title||"Коммерческое предложение","ООО «ЭКСПЕРТ АВТО САМАРА» · TENET",""];
@@ -177,7 +196,8 @@
         rows:rows,
         total:["Итого клиенту", rub(d.clientPay)+" ₽"],
         sections:sections,
-        note:"Источник оснащения: "+src+". Не оферта. Итоговые условия — в договоре салона. Действует "+d.valid+"."
+        photos:offerPhotoUrls(d.m.id),
+        note:"Оснащение — все отмеченные позиции. Источник: "+src+". Не оферта. Итоговые условия — в договоре салона. Действует "+d.valid+"."
       };
     }
     function offerField(label, inner){
@@ -234,7 +254,25 @@
       });
       return out;
     }
-    function offerPaint(doc){
+    function offerCover(ctx, img, x, y, w, h){
+      const rad=12;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(x+rad, y);
+      ctx.arcTo(x+w, y, x+w, y+h, rad);
+      ctx.arcTo(x+w, y+h, x, y+h, rad);
+      ctx.arcTo(x, y+h, x, y, rad);
+      ctx.arcTo(x, y, x+w, y, rad);
+      ctx.closePath();
+      ctx.clip();
+      const ir=img.width/Math.max(1,img.height), r=w/h;
+      let sx=0, sy=0, sw=img.width, sh=img.height;
+      if(ir>r){ sw=img.height*r; sx=(img.width-sw)/2; }
+      else { sh=img.width/r; sy=(img.height-sh)/2; }
+      ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+      ctx.restore();
+    }
+    function offerPaint(doc, imgs){
       const W=1240, H=1754, pad=56;
       const pages=[];
       let c, ctx, y;
@@ -261,11 +299,22 @@
         font("500", 12);
         ctx.fillStyle="#9a9186";
         ctx.fillText("Не оферта · ООО «ЭКСПЕРТ АВТО САМАРА»", pad, H-36);
-        y=124;
+        y=118;
         pages.push(c);
+      }
+      function paintPhotos(){
+        const list=(imgs||[]).filter(Boolean).slice(0,4);
+        if(!list.length) return;
+        const n=list.length, gap=10;
+        const pw=(W-pad*2-(n-1)*gap)/n;
+        const ph=Math.round(pw*9/16);
+        need(ph+18);
+        list.forEach((im,i)=>offerCover(ctx, im, pad+i*(pw+gap), y, pw, ph));
+        y+=ph+18;
       }
       function need(h){ if(y+h>H-64) newPage(); }
       newPage();
+      paintPhotos();
       need(70);
       font("700", 12);
       ctx.fillStyle="#c81e2b";
@@ -352,22 +401,24 @@
         ctx.fillStyle="#8a6840";
         ctx.fillText(String(sec.title||"").toUpperCase(), pad, y);
         y+=22;
-        (sec.pairs||[]).forEach(([k,v])=>{
-          need(22);
-          font("700", 14);
-          ctx.fillStyle="#161618";
-          ctx.fillText(String(k), pad, y);
-          y+=20;
-          font("500", 14);
-          offerWrap(ctx, String(v), W-pad*2).forEach(part=>{
-            need(20);
-            font("500", 14);
-            ctx.fillStyle="#3d3832";
-            ctx.fillText(part, pad, y);
-            y+=20;
-          });
-          y+=4;
-        });
+        const pairs=sec.pairs||[];
+        if(pairs.length){
+          const colW=(W-pad*2-28)/2;
+          for(let i=0;i<pairs.length;i+=2){
+            font("500", 15);
+            const cells=[pairs[i], pairs[i+1]].filter(Boolean).map(([k,v])=>offerWrap(ctx, k+" — "+v, colW));
+            const n=Math.max.apply(null, cells.map(a=>a.length));
+            need(n*20+4);
+            cells.forEach((lines,ci)=>{
+              lines.forEach((ln,li)=>{
+                font("500", 15);
+                ctx.fillStyle="#3d3832";
+                ctx.fillText(ln, pad+ci*(colW+28), y+li*20);
+              });
+            });
+            y+=n*20+6;
+          }
+        }
         (sec.lines||[]).forEach(line=>{
           font("500", 15);
           offerWrap(ctx, line, W-pad*2).forEach(part=>{
@@ -378,23 +429,32 @@
             y+=22;
           });
         });
+        const gap=22, colW=(W-pad*2-gap)/2;
         (sec.groups||[]).forEach(([title, items])=>{
           need(24);
-          font("700", 15);
+          font("700", 16);
           ctx.fillStyle="#161618";
-          ctx.fillText(title, pad, y);
+          ctx.fillText(String(title||""), pad, y);
           y+=22;
-          (items||[]).forEach(it=>{
-            font("500", 14);
-            offerWrap(ctx, "• "+it, W-pad*2-8).forEach(part=>{
-              need(20);
-              font("500", 14);
-              ctx.fillStyle="#3d3832";
-              ctx.fillText(part, pad+8, y);
-              y+=20;
-            });
-          });
-          y+=6;
+          const list=items||[];
+          for(let i=0;i<list.length;i+=2){
+            font("500", 15);
+            const L=offerWrap(ctx, list[i], colW-18);
+            const R=list[i+1]?offerWrap(ctx, list[i+1], colW-18):[];
+            const n=Math.max(L.length, R.length||1);
+            need(n*19+2);
+            const draw=(lines, x)=>{
+              lines.forEach((ln,li)=>{
+                font("500", 15);
+                ctx.fillStyle="#3d3832";
+                ctx.fillText((li?"  ":"• ")+ln, x, y+li*19);
+              });
+            };
+            draw(L, pad);
+            if(R.length) draw(R, pad+colW+gap);
+            y+=n*19+2;
+          }
+          y+=8;
         });
       });
       if(doc.note){
@@ -482,10 +542,20 @@
       const raw=String((doc&&doc.file)||"КП").replace(/[\\/:*?"<>|]+/g," ").replace(/\s+/g," ").trim().slice(0,80);
       return (raw||"КП")+".pdf";
     }
-    function offerPdf(){
+    function offerLoadImgs(urls){
+      const list=(urls||[]).slice(0,4);
+      return Promise.all(list.map(src=>new Promise(resolve=>{
+        const im=new Image();
+        im.onload=()=>resolve(im.naturalWidth?im:null);
+        im.onerror=()=>resolve(null);
+        im.src=src;
+      }))).then(arr=>arr.filter(Boolean));
+    }
+    async function offerPdf(){
       const doc=offerDocCurrent;
       if(!doc || typeof document==="undefined") return;
-      const pages=offerPaint(doc).map(c=>({w:c.width,h:c.height,jpeg:offerJpeg(c)}));
+      const imgs=await offerLoadImgs(doc.photos||[]);
+      const pages=offerPaint(doc, imgs).map(c=>({w:c.width,h:c.height,jpeg:offerJpeg(c)}));
       const bytes=offerPdfBytes(pages);
       const blob=new Blob([bytes], {type:"application/pdf"});
       const url=URL.createObjectURL(blob);
