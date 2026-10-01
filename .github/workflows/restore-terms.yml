@@ -1,0 +1,34 @@
+name: restore-terms-calc-data
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore full terms-calc-data.js
+        run: |
+          set -euo pipefail
+          git show cd3ec3dfd2c6985efc591742410627675fa9ea06:terms-calc-data.js > terms-calc-data.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("terms-calc-data.js")
+          t = p.read_text(encoding="utf-8")
+          t2 = t.replace('const TERMS_DATE = "30.09.2026"', 'const TERMS_DATE = "01.10.2026"', 1)
+          if t2 == t:
+              raise SystemExit("TERMS_DATE replace failed")
+          p.write_text(t2, encoding="utf-8")
+          print("bytes", p.stat().st_size)
+          PY
+          node --check terms-calc-data.js
+          test "$(wc -c < terms-calc-data.js)" -gt 15000
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add terms-calc-data.js
+          git commit -m "ТУ: TERMS_DATE 01.10.2026 (restore full after stub)"
+          git push origin HEAD:main
