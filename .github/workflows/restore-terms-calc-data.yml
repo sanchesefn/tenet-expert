@@ -1,0 +1,82 @@
+name: restore-terms-calc-data
+on:
+  workflow_dispatch:
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Restore and patch
+        run: |
+          set -euo pipefail
+          git show 84695ab4027a6a72fcaeda5bdc8978a5f3aef6be:terms-calc-data.js > terms-calc-data.js
+          python3 <<'PY'
+          from pathlib import Path
+          text = Path("terms-calc-data.js").read_text()
+          old_inv = (
+              '    const TERMS_INV = [\n'
+              '      {model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"},\n'
+              '      {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},\n'
+              '      {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},\n'
+              '      {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},\n'
+              '      {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}\n'
+              '    ];'
+          )
+          new_inv = (
+              '    const TERMS_INV = [\n'
+              '      {model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"},\n'
+              '      {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},\n'
+              '      {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},\n'
+              '      {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},\n'
+              '      {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},\n'
+              '      {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}\n'
+              '    ];'
+          )
+          old_pango = (
+              '    const PANGO_FIX = {\n'
+              '      t4la:{cash:2150000,ti:2100000},\n'
+              '      t4lp:{cash:2250000,ti:2200000},\n'
+              '      t7p:{cash:2550000,ti:2450000},\n'
+              '      t8p4:{cash:3100000,ti:3000000},\n'
+              '      t8u4:{cash:3300000,ti:3200000}\n'
+              '    };'
+          )
+          new_pango = (
+              '    const PANGO_FIX = {\n'
+              '      t4la:{cash:2150000,ti:2100000},\n'
+              '      t4lp:{cash:2250000,ti:2200000},\n'
+              '      t7a:{cash:2450000,ti:2350000},\n'
+              '      t7p:{cash:2550000,ti:2450000},\n'
+              '      t8p4:{cash:3100000,ti:3000000},\n'
+              '      t8u4:{cash:3300000,ti:3200000}\n'
+              '    };'
+          )
+          assert old_inv in text, "INV block missing"
+          assert old_pango in text, "PANGO block missing"
+          text = text.replace(old_inv, new_inv).replace(old_pango, new_pango)
+          Path("terms-calc-data.js").write_text(text)
+          print("patched bytes", len(text.encode()))
+          PY
+          node --check terms-calc-data.js
+          test $(wc -c < terms-calc-data.js) -gt 15000
+          echo "blob $(git hash-object terms-calc-data.js)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add terms-calc-data.js
+          git commit -m "ту-google-14: restore full terms-calc-data.js + TERMS_INV T7 Active 2WD (02.10.2026)"
+          git push origin main
+      - name: Cleanup workflow file
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f .github/workflows/restore-terms-calc-data.yml ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git rm -f .github/workflows/restore-terms-calc-data.yml
+            git commit -m "cleanup: remove restore-terms-calc-data workflow" || exit 0
+            git push origin main
+          fi
