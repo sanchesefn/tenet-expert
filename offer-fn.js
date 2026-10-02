@@ -250,8 +250,7 @@
         lines:[
           "Первый взнос "+rub(d.down)+" ₽ ("+d.downPct+"%)",
           "Срок "+d.months+" мес.",
-          "Тело кредита "+rub(d.credit)+" ₽",
-          "Комиссия банка "+rub(d.fee)+" ₽"
+          "Тело кредита "+rub(d.credit)+" ₽"
         ],
         pays:banks.map(b=>b.name+": "+b.rate+"% · "+b.term+" мес. · "+rub(b.pay)+" ₽ / мес.")
       };
@@ -262,25 +261,22 @@
       const ti=typeof FLEET_TI==="number"?FLEET_TI:100000;
       const months=Math.max(1, Math.round(Number(d.months)||60));
       const down=Math.max(0, Math.round(Number(d.down)||0));
-      const q=typeof fleetSubQuote==="function"?fleetSubQuote(base, sub, down, f.do||70000, f.casco||80000, months, true):null;
-      const client=q?q.price:Math.max(0, base-sub);
+      const have=(d.service && d.ownVal)?Math.max(0, Math.round(d.ownVal)):down;
+      const q=typeof fleetSubQuote==="function"?fleetSubQuote(base, sub, have, f.do||70000, f.casco||80000, months, true):null;
+      const gov=Math.max(0, base-sub-ti);
       const lines=[
-        "В салоне "+n+" "+offerCarsWord(n),
-        "Цена флита "+rub(base)+" ₽",
-        "Субсидия бренда − "+rub(sub)+" ₽",
-        "Цена для клиента "+rub(client)+" ₽",
-        "С трейд-ином флита ещё − "+rub(ti)+" ₽",
+        "Цена по госпрограмме с учётом субсидии и трейд-ин "+rub(gov)+" ₽",
         "Ставка 19,2%, Совкомбанк",
-        "ПВ и субсидия не больше 49%"+(q?" · взнос до "+rub(q.maxPv)+" ₽":""),
-        "Досрочно до 25%"+(q?" ("+rub(q.earlyCap)+" ₽) — короче срок, платёж тот же":""),
-        "Д/О "+rub(f.do||70000)+" и каско "+rub(f.casco||80000)
+        "ПВ и субсидия не больше 49%"+(q?" · взнос до "+rub(q.maxPv)+" ₽":"")
       ];
+      if(have) lines.push("Досрочно "+rub(have)+" ₽ — короче срок, платёж тот же");
+      lines.push("Д/О "+rub(f.do||70000)+" и каско "+rub(f.casco||80000));
       let pay="";
       if(q && q.pay){
         pay=rub(Math.round(q.pay))+" ₽ / мес.";
         if(q.termAfter && q.termAfter!==q.term) lines.push("Срок с досрочным "+q.term+" → "+q.termAfter+" мес.");
       }
-      return {title:"Флит", lines, pay};
+      return {title:"Госпрограмма", lines, pay};
     }
     function offerSpecCard(d, pg, n){
       const cash=Math.round(pg.cash||0);
@@ -297,7 +293,6 @@
         title:"Спеццена",
         pay:payA?rub(payA)+" ₽ / мес.":"",
         lines:[
-          "В салоне "+n+" "+offerCarsWord(n)+" по спеццене",
           "Без трейд-ина "+rub(cash)+" ₽",
           "С трейд-ином "+rub(ti)+" ₽",
           "Каско, GAP и ДМС "+rub(bundle)+" всегда в кредите",
@@ -962,7 +957,7 @@
         function tone(card){
           if(!card) return ["#fff","#e4d3b8"];
           if(card.title==="Кредит") return ["#fffdf8","#c81e2b"];
-          if(card.title==="Флит") return ["#f3faf6","#7dba96"];
+          if(card.title==="Госпрограмма") return ["#f3faf6","#7dba96"];
           return ["#f8f4ec","#c4a574"];
         }
         const gap=12;
