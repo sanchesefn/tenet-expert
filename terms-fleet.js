@@ -25,7 +25,7 @@
       t8u4:{name:"T8 Ultra 4WD",rrc:3885000,dealer:3705000,an:536000,client:3379950,prem:402750,km:38320,tidy:3349000,sub:130000,do:70000,casco:80000},
       tt9p:{name:"T9 Prime 5-seat",rrc:3949000,dealer:3799000,an:550000,client:3435630,prem:442350,km:34713,tidy:3399000,sub:190000,do:70000,casco:80000},
       tt9u:{name:"T9 Ultra 5-seat",rrc:4299000,dealer:4099000,an:650000,client:3697140,prem:487840,km:31016,tidy:3649000,sub:190000,do:70000,casco:80000},
-      ta8p:{name:"A8 Prime 1.6",rrc:2999000,dealer:2874000,an:400000,client:2639120,prem:294860,km:16279,tidy:2599000,sub:150000,do:70000,casco:80000},
+      ta8p:{name:"A8 Prime 1.6",rrc:2999000,dealer:2874000,an:400000,client:2639120,prem:294860,km:16279,tidy:2599000,sub:0,do:70000,casco:80000},
       ta8u:{name:"A8 Ultra 2.0",rrc:3499000,dealer:3354000,an:500000,client:3044130,prem:379850,km:20369,tidy:2999000,sub:150000,do:70000,casco:80000},
       l4s:{name:"L4 Style",rrc:2540000,dealer:2438400,an:0,client:2235200,prem:0,km:0,tidy:2235200,sub:100000,do:70000,casco:80000},
       l4e:{name:"L4 Elegant",rrc:2690000,dealer:2582400,an:0,client:2313400,prem:0,km:0,tidy:2313400,sub:100000,do:70000,casco:80000},
