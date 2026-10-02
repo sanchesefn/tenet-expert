@@ -1,0 +1,36 @@
+name: restore-prep-pango
+on:
+  push:
+    paths:
+      - '.github/workflows/restore-prep-pango.yml'
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pull prepare_site_b + patch_pango from live
+        run: |
+          set -euo pipefail
+          curl -fsSL https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/main/prepare_site_b.py -o prepare_site_b.py
+          curl -fsSL https://raw.githubusercontent.com/tenet-expert/tenet-expert.github.io/main/patch_pango.py -o patch_pango.py
+          grep -q 'const TERMS_DATE' prepare_site_b.py
+          grep -q 't7a:{cash:2450000' patch_pango.py
+          wc -c prepare_site_b.py patch_pango.py
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add prepare_site_b.py patch_pango.py
+          git commit -m "fix: restore prepare_site_b + patch_pango t7a from live" || exit 0
+          git pull --rebase origin main && git push origin HEAD:main
+      - name: Self-delete
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main && git reset --hard origin/main
+          rm -f .github/workflows/restore-prep-pango.yml
+          git add -A .github/workflows/restore-prep-pango.yml
+          git diff --staged --quiet || (git commit -m "cleanup: remove restore-prep-pango" && git push origin HEAD:main)
