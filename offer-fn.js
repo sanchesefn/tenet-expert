@@ -340,7 +340,7 @@
     }
     function offerDocNew(d){
       const rows=[["РРЦ", rub(d.price)+" ₽"]];
-      d.discs.forEach(([name,amt])=>rows.push([name, "− "+rub(amt)+" ₽"]));
+      if(d.discount) rows.push(["Скидка", "− "+rub(d.discount)+" ₽"]);
       rows.push(["Автомобиль", rub(d.carPrice)+" ₽"]);
       if(d.addons) rows.push(["Дополнительное оборудование", rub(d.addons)+" ₽"]);
       if(d.useLoan) rows.push(["Каско расширенное", rub(d.pack)+" ₽"]);
