@@ -1,5 +1,7 @@
     let offerTab = "home";
     let offerOwnCar = "";
+    let offerOwnVal = 0;
+    let offerSeed = null;
     let offerDocCurrent = null;
     function offerVal(id, def){
       const el=document.getElementById(id);
@@ -51,31 +53,36 @@
     }
     function offerDeal(){
       const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
-      const mid=offerVal("ofModel", models[0]?models[0].id:"t7a");
+      const seeded=!!(offerSeed && !document.getElementById("ofModel"));
+      const S=seeded?offerSeed:null;
+      if(seeded) offerSeed=null;
+      const mid=S?S.mid:offerVal("ofModel", models[0]?models[0].id:"t7a");
       const m=models.find(x=>x.id===mid)||models[0]||{id:"t7a",name:"TENET",rrc:0,ti:0,cr:0};
-      const prevModel=offerVal("ofPrevModel", mid);
+      const prevModel=S?mid:offerVal("ofPrevModel", mid);
       const client=offerVal("ofClient","");
       const color=offerVal("ofColor","");
-      let price=offerNum("ofPrice", m.rrc)||m.rrc;
-      if(prevModel!==mid) price=m.rrc;
-      const useTi=offerOn("ofTi");
-      const useLoan=offerOn("ofLoan");
+      let price=S?(Number(S.price)||0):(offerNum("ofPrice", m.rrc)||m.rrc);
+      if(!S && prevModel!==mid) price=m.rrc;
+      const useTi=S?!!S.useTi:offerOn("ofTi");
+      const useLoan=S?!!S.useLoan:offerOn("ofLoan");
       const showDealCr=(m.cr||0)>0 && (m.id!=="t7p" || useLoan);
-      const useCr=showDealCr && offerOn("ofCr");
-      const spec=offerNum("ofSpec", 0)||0;
-      const useDcTi=useTi && offerOn("ofDcTi");
-      const useDcCr=useLoan && offerOn("ofDcCr");
+      const useCr=showDealCr && (S?!!S.useCr:offerOn("ofCr"));
+      const spec=S?(Number(S.spec)||0):(offerNum("ofSpec", 0)||0);
+      const useDcTi=useTi && (S?!!S.useDcTi:offerOn("ofDcTi"));
+      const useDcCr=useLoan && (S?!!S.useDcCr:offerOn("ofDcCr"));
       const dcDef=typeof KM_DC_DEF==="number"?KM_DC_DEF:100000;
-      const dcTi=useDcTi?offerNum("ofDcTiAmt", dcDef)||0:0;
-      const dcCr=useDcCr?offerNum("ofDcCrAmt", dcDef)||0:0;
-      const addons=offerNum("ofDo", 0)||0;
+      const dcTi=useDcTi?(S?(Number(S.dcTi)||0):(offerNum("ofDcTiAmt", dcDef)||0)):0;
+      const dcCr=useDcCr?(S?(Number(S.dcCr)||0):(offerNum("ofDcCrAmt", dcDef)||0)):0;
+      const addons=S?(Number(S.addons)||0):(offerNum("ofDo", 0)||0);
       let casco=0, pack=0;
-      if(useLoan){ pack=offerNum("ofPack", 150000)||0; casco=Math.min(pack, 80000); }
-      else casco=offerNum("ofCasco", 0)||0;
-      const months=offerNum("ofMonths", 60)||60;
-      const downMode=offerVal("ofDownMode","pct");
-      let downPct=offerNum("ofDownPct", 20);
-      let down=offerNum("ofDown", Math.round(price*0.2));
+      if(useLoan){
+        pack=S?(Number(S.pack)||0):(offerNum("ofPack", 150000)||0);
+        casco=Math.min(pack, 80000);
+      }else casco=S?(Number(S.casco)||0):(offerNum("ofCasco", 0)||0);
+      const months=S?(Number(S.months)||60):(offerNum("ofMonths", 60)||60);
+      const downMode=S?(S.downMode==="sum"?"sum":"pct"):offerVal("ofDownMode","pct");
+      let downPct=S?(Number(S.downPct)||0):offerNum("ofDownPct", 20);
+      let down=S?(Number(S.down)||0):offerNum("ofDown", Math.round(price*0.2));
       const tiAmt=useTi?(m.ti||0):0;
       const crAmt=useCr?(m.cr||0):0;
       const discs=[];
@@ -105,8 +112,13 @@
       const rivals=offerRivalsPicked(m, months, downPct, banks);
       const ownEl=document.getElementById("ofOwnCar");
       if(ownEl) offerOwnCar=String(ownEl.value||"").trim();
+      const valEl=document.getElementById("ofOwnVal");
+      if(valEl){
+        const n=Number(String(valEl.value||"").replace(/\s+/g,""));
+        offerOwnVal=Number.isFinite(n)?Math.max(0, Math.round(n)):0;
+      }
       const service=offerTab==="service";
-      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount, rivals, service, ownCar:offerOwnCar};
+      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount, rivals, service, ownCar:offerOwnCar, ownVal:service?offerOwnVal:0};
     }
     function offerDash(v){ const s=String(v||"").trim(); return s||"—"; }
     function offerPhotoKey(id){
@@ -333,6 +345,11 @@
       if(d.addons) rows.push(["Дополнительное оборудование", rub(d.addons)+" ₽"]);
       if(d.useLoan) rows.push(["Каско расширенное", rub(d.pack)+" ₽"]);
       else if(d.casco) rows.push(["КАСКО", rub(d.casco)+" ₽"]);
+      const due=Math.max(0, d.clientPay-(d.service&&d.ownVal?d.ownVal:0));
+      if(d.service && d.ownVal){
+        rows.push(["Итого за новый", rub(d.clientPay)+" ₽"]);
+        rows.push(["Оценка вашего а/м", "− "+rub(d.ownVal)+" ₽"]);
+      }
       const sections=[];
       const deals=offerDeals(d);
       if(deals) sections.push({deals:deals});
@@ -363,7 +380,7 @@
         file:(d.service?"Замена ":"КП ")+d.m.name+" "+d.client,
         meta:meta,
         rows:rows,
-        total:["Итого клиенту", rub(d.clientPay)+" ₽"],
+        total:(d.service&&d.ownVal)?["К доплате", rub(due)+" ₽"]:["Итого клиенту", rub(d.clientPay)+" ₽"],
         sections:sections,
         photos:offerPhotoUrls(d.m.id),
         note:"Оснащение — все отмеченные позиции. Источник: "+src+". Не оферта. Итоговые условия — в договоре салона. Действует "+d.valid+"."
@@ -681,7 +698,8 @@
       const own=d.service?`
         <p class="eyebrow">Его автомобиль</p>
         ${offerField("На чём приехал", `<input id="ofOwnCar" value="${escape(d.ownCar||"")}" placeholder="марка и модель" />`)}
-        <p class="calc-note">Клиент приехал в сервис на своей машине. Это то же КП на новый автомобиль: предлагаем заменить её на новую. Скидки, трейд-ин и кредит — теми же галочками.</p>`:"";
+        ${offerField("Оценка вашего а/м, ₽", `<input id="ofOwnVal" inputmode="numeric" value="${d.ownVal||""}" placeholder="0" />`)}
+        <p class="calc-note">Клиент приехал в сервис на своей машине. Оценка — зачёт его автомобиля: в бланке она уменьшает доплату. Кредит и взнос сами не пересчитываются.</p>`:"";
       return `
         ${own}
         <p class="eyebrow">Клиент</p>
@@ -708,6 +726,50 @@
         ${d.useLoan?offerField("Каско расширенное, ₽", `<input id="ofPack" inputmode="numeric" value="${d.pack}" />`):offerField("КАСКО, ₽", `<input id="ofCasco" inputmode="numeric" value="${d.casco}" />`)}
         ${d.useLoan?`<p class="eyebrow">Кредит</p><div class="down-mode"><button type="button" class="chip ${d.downMode==="sum"?"on":""}" data-offer-down="sum">Сумма, ₽</button><button type="button" class="chip ${d.downMode!=="sum"?"on":""}" data-offer-down="pct">Проценты</button></div><input type="hidden" id="ofDownMode" value="${d.downMode==="sum"?"sum":"pct"}" />${d.downMode==="sum"?offerField("Первый взнос, ₽", `<input id="ofDown" inputmode="numeric" value="${d.down}" />`):offerField("Первый взнос, %", `<input id="ofDownPct" inputmode="decimal" value="${d.downPct}" />`)}${offerField("Срок, мес.", `<input id="ofMonths" inputmode="numeric" value="${d.months}" />`)}`:""}
         ${offerField("Срок действия", `<input id="ofValid" value="${escape(d.valid)}" />`)}`;
+    }
+    function offerFromCalc(){
+      const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
+      const mid=(typeof kmId==="string" && models.some(x=>x.id===kmId))?kmId:(models[0]?models[0].id:"t7a");
+      const m=models.find(x=>x.id===mid)||{};
+      function num(id, def){
+        const el=document.getElementById(id);
+        if(!el) return def;
+        const n=Number(String(el.value||"").replace(/\s+/g,""));
+        return Number.isFinite(n)?n:def;
+      }
+      function on(id){ const el=document.getElementById(id); return !!(el && el.checked); }
+      const price=num("kmRrc", m.rrc||0);
+      const useTi=on("kmUseTi");
+      const useLoan=on("kmUseLoan");
+      const modeEl=document.getElementById("cDownMode");
+      const downMode=modeEl && String(modeEl.value||"")==="sum"?"sum":"pct";
+      const keep=typeof kmDownKeep==="object" && kmDownKeep?kmDownKeep:{};
+      offerSeed={
+        mid:mid,
+        price:price,
+        useTi:useTi,
+        useLoan:useLoan,
+        useCr:on("kmUseCr"),
+        spec:num("kmSpec", 0),
+        useDcTi:useTi && on("kmUseDcTi"),
+        dcTi:num("kmDcTi", typeof KM_DC_DEF==="number"?KM_DC_DEF:100000),
+        useDcCr:useLoan && on("kmUseDcCr"),
+        dcCr:num("kmDcCr", typeof KM_DC_DEF==="number"?KM_DC_DEF:100000),
+        addons:num("kmDo", 0),
+        pack:num("kmPack", 150000),
+        casco:num("kmCasco", 0),
+        months:num("cMonths", 60),
+        downMode:downMode,
+        downPct:num("cDownPct", keep.pct!=null?keep.pct:20),
+        down:num("cDown", keep.sum!=null?keep.sum:Math.round((price||0)*0.2))
+      };
+      offerTab="new";
+      view="offer";
+      if(typeof state!=="undefined" && state){
+        state.section="offer";
+        try{ save(); }catch(e){}
+      }
+      render();
     }
     function offerNew(){
       const d=offerDeal();
@@ -1317,5 +1379,5 @@
       document.querySelectorAll("[data-offer-pdf]").forEach(b=>b.onclick=()=>offerPdf());
       document.querySelectorAll("[data-offer-down]").forEach(b=>b.onclick=()=>{ const hid=document.getElementById("ofDownMode"); if(hid) hid.value=b.dataset.offerDown||"pct"; view="offer"; render(); });
       document.querySelectorAll("[data-offer-rival]").forEach(el=>el.addEventListener("change", ()=>{ view="offer"; render(); }));
-      ["ofClient","ofOwnCar","ofModel","ofColor","ofPrice","ofSpec","ofDo","ofPack","ofCasco","ofDown","ofDownPct","ofMonths","ofValid","ofTi","ofLoan","ofCr","ofDcTi","ofDcCr","ofDcTiAmt","ofDcCrAmt","osClient","osModel","osCar","osVin","osPack","osPrice","osNote","osValid","olCo","olInn","olModel","olPrice","olAdv","olMonths","olValid"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("change", ()=>{ view="offer"; render(); }); });
+      ["ofClient","ofOwnCar","ofOwnVal","ofModel","ofColor","ofPrice","ofSpec","ofDo","ofPack","ofCasco","ofDown","ofDownPct","ofMonths","ofValid","ofTi","ofLoan","ofCr","ofDcTi","ofDcCr","ofDcTiAmt","ofDcCrAmt","osClient","osModel","osCar","osVin","osPack","osPrice","osNote","osValid","olCo","olInn","olModel","olPrice","olAdv","olMonths","olValid"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("change", ()=>{ view="offer"; render(); }); });
     }
