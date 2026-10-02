@@ -156,6 +156,7 @@
       "status": "in",
       "note": "В салоне · с 24.09.2026",
       "rrc": 3099000,
+      "invoice": true,
       "mpt": true
     },
     {
