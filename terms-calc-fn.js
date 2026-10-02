@@ -1,4 +1,4 @@
-    const TERMS_DATE = "24.09.2026";
+    const TERMS_DATE = "02.10.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -34,6 +34,7 @@
     const TERMS_INV = [
       {model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"},
       {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
+      {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}
@@ -41,6 +42,7 @@
     const PANGO_FIX = {
       t4la:{cash:2150000,ti:2100000},
       t4lp:{cash:2250000,ti:2200000},
+      t7a:{cash:2450000,ti:2350000},
       t7p:{cash:2550000,ti:2450000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}
@@ -387,7 +389,7 @@
       t8u4:{name:"T8 Ultra 4WD",rrc:3885000,dealer:3705000,an:536000,client:3379950,prem:402750,km:38320,tidy:3349000,sub:130000,do:70000,casco:80000},
       tt9p:{name:"T9 Prime 5-seat",rrc:3949000,dealer:3799000,an:550000,client:3435630,prem:442350,km:34713,tidy:3399000,sub:190000,do:70000,casco:80000},
       tt9u:{name:"T9 Ultra 5-seat",rrc:4299000,dealer:4099000,an:650000,client:3697140,prem:487840,km:31016,tidy:3649000,sub:190000,do:70000,casco:80000},
-      ta8p:{name:"A8 Prime 1.6",rrc:2999000,dealer:2874000,an:400000,client:2639120,prem:294860,km:16279,tidy:2599000,sub:0,do:70000,casco:80000},
+      ta8p:{name:"A8 Prime 1.6",rrc:2999000,dealer:2874000,an:400000,client:2639120,prem:294860,km:16279,tidy:2599000,sub:150000,do:70000,casco:80000},
       ta8u:{name:"A8 Ultra 2.0",rrc:3499000,dealer:3354000,an:500000,client:3044130,prem:379850,km:20369,tidy:2999000,sub:150000,do:70000,casco:80000}
     };
     const FLEET_TI = 50000;
