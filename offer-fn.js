@@ -1,4 +1,5 @@
     let offerTab = "home";
+    let offerOwnCar = "";
     let offerDocCurrent = null;
     function offerVal(id, def){
       const el=document.getElementById(id);
@@ -38,11 +39,11 @@
       ta.remove();
     }
     function offerNav(){
-      const tabs=[["home","Разделы"],["new","КП Новый а/м"],["service","КП Сервис"],["lease","КП Лизинг"]];
+      const tabs=[["home","Разделы"],["new","КП Новый а/м"],["service","Оценка сервиса"],["lease","КП Лизинг"]];
       return `<div class="down-mode" style="margin:0 0 14px">${tabs.map(([id,l])=>`<button type="button" class="chip ${offerTab===id?"on":""}" data-offer-tab="${id}">${l}</button>`).join("")}</div>`;
     }
     function offerHome(){
-      const cards=[["new","Н","КП Новый а/м","Прайс, скидки, каско, кредит и PDF"],["service","С","КП Сервис","Пакет, состав и PDF"],["lease","Л","КП Лизинг","Компания, флит, аванс и PDF"]];
+      const cards=[["new","Н","КП Новый а/м","Прайс, скидки, каско, кредит и PDF"],["service","С","Оценка сервиса","Клиенту из сервиса: меняем его машину на новую"],["lease","Л","КП Лизинг","Компания, флит, аванс и PDF"]];
       return banner("Коммерческое предложение","TENET · Отдел продаж","КП")+`
         <p class="lead">Слева условия, справа бланк. Клиенту уходит PDF: его скачивают и пересылают.</p>
         ${offerNav()}
@@ -102,7 +103,10 @@
         return {name:b.name, rate:look.rate, term, pay:Math.round(pay)};
       });
       const rivals=offerRivalsPicked(m, months, downPct, banks);
-      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount, rivals};
+      const ownEl=document.getElementById("ofOwnCar");
+      if(ownEl) offerOwnCar=String(ownEl.value||"").trim();
+      const service=offerTab==="service";
+      return {m, mid, models, client, color, price, useTi, useLoan, showDealCr, useCr, spec, useDcTi, useDcCr, dcDef, dcTi, dcCr, addons, casco, pack, months, downMode, downPct, down, carPrice, clientPay, credit, fee, valid, packEq, banks, discs, discount, rivals, service, ownCar:offerOwnCar};
     }
     function offerDash(v){ const s=String(v||"").trim(); return s||"—"; }
     function offerPhotoKey(id){
@@ -327,7 +331,7 @@
       d.discs.forEach(([name,amt])=>rows.push([name, "− "+rub(amt)+" ₽"]));
       rows.push(["Автомобиль", rub(d.carPrice)+" ₽"]);
       if(d.addons) rows.push(["Дополнительное оборудование", rub(d.addons)+" ₽"]);
-      if(d.useLoan) rows.push(["Каско расширенное / пакет СЖ", rub(d.pack)+" ₽"]);
+      if(d.useLoan) rows.push(["Каско расширенное", rub(d.pack)+" ₽"]);
       else if(d.casco) rows.push(["КАСКО", rub(d.casco)+" ₽"]);
       const sections=[];
       const deals=offerDeals(d);
@@ -345,12 +349,19 @@
         });
       });
       const src=(d.packEq&&d.packEq.src)||"официальный прайс";
+      if(d.service){
+        const who=String(d.ownCar||"").trim();
+        sections.unshift({title:"Предложение", lines:["Предлагаем заменить ваш автомобиль"+(who?" («"+who+"»)":"")+" на новый."]});
+      }
+      const meta=[["Клиент", d.client]];
+      if(d.service && String(d.ownCar||"").trim()) meta.push(["Сейчас у вас", String(d.ownCar).trim()]);
+      meta.push(["Цвет", d.color],["Менеджер", offerMgr()]);
       return {
-        kicker:"Новый автомобиль",
+        kicker:d.service?"Замена автомобиля":"Новый автомобиль",
         title:"Коммерческое предложение",
         headline:d.m.name,
-        file:"КП "+d.m.name+" "+d.client,
-        meta:[["Клиент", d.client],["Цвет", d.color],["Менеджер", offerMgr()]],
+        file:(d.service?"Замена ":"КП ")+d.m.name+" "+d.client,
+        meta:meta,
         rows:rows,
         total:["Итого клиенту", rub(d.clientPay)+" ₽"],
         sections:sections,
@@ -666,10 +677,13 @@
         return `<label class="of-rival${on?" on":""}"><input data-offer-rival type="checkbox" id="ofRv_${r.id}" ${on?"checked":""} /><b>${escape(r.name)}</b><small>${escape(pick.trim)} · ${rub(pick.price)} ₽</small></label>`;
       }).join("")}</div>`;
     }
-    function offerNew(){
-      const d=offerDeal();
-      const doc=offerDocNew(d);
-      const form=`
+    function offerFormNew(d){
+      const own=d.service?`
+        <p class="eyebrow">Его автомобиль</p>
+        ${offerField("На чём приехал", `<input id="ofOwnCar" value="${escape(d.ownCar||"")}" placeholder="марка и модель" />`)}
+        <p class="calc-note">Клиент приехал в сервис на своей машине. Это то же КП на новый автомобиль: предлагаем заменить её на новую. Скидки, трейд-ин и кредит — теми же галочками.</p>`:"";
+      return `
+        ${own}
         <p class="eyebrow">Клиент</p>
         <input type="hidden" id="ofPrevModel" value="${escape(d.mid)}" />
         ${offerField("Клиент", `<input id="ofClient" value="${escape(d.client)}" placeholder="ФИО" />`)}
@@ -691,10 +705,13 @@
         ${d.useLoan?`<label class="check-row"><input id="ofDcCr" type="checkbox" ${d.useDcCr?"checked":""} /> <span>Скидка ДЦ за кредит</span></label>`:""}
         ${d.useLoan&&d.useDcCr?offerField("Скидка ДЦ за кредит, ₽", `<input id="ofDcCrAmt" inputmode="numeric" value="${d.dcCr||d.dcDef}" />`):""}
         ${offerField("Д/О, ₽", `<input id="ofDo" inputmode="numeric" value="${d.addons}" />`)}
-        ${d.useLoan?offerField("Каско расширенное / СЖ, ₽", `<input id="ofPack" inputmode="numeric" value="${d.pack}" />`):offerField("КАСКО, ₽", `<input id="ofCasco" inputmode="numeric" value="${d.casco}" />`)}
+        ${d.useLoan?offerField("Каско расширенное, ₽", `<input id="ofPack" inputmode="numeric" value="${d.pack}" />`):offerField("КАСКО, ₽", `<input id="ofCasco" inputmode="numeric" value="${d.casco}" />`)}
         ${d.useLoan?`<p class="eyebrow">Кредит</p><div class="down-mode"><button type="button" class="chip ${d.downMode==="sum"?"on":""}" data-offer-down="sum">Сумма, ₽</button><button type="button" class="chip ${d.downMode!=="sum"?"on":""}" data-offer-down="pct">Проценты</button></div><input type="hidden" id="ofDownMode" value="${d.downMode==="sum"?"sum":"pct"}" />${d.downMode==="sum"?offerField("Первый взнос, ₽", `<input id="ofDown" inputmode="numeric" value="${d.down}" />`):offerField("Первый взнос, %", `<input id="ofDownPct" inputmode="decimal" value="${d.downPct}" />`)}${offerField("Срок, мес.", `<input id="ofMonths" inputmode="numeric" value="${d.months}" />`)}`:""}
         ${offerField("Срок действия", `<input id="ofValid" value="${escape(d.valid)}" />`)}`;
-      return offerScreen("КП Новый а/м", form, doc);
+    }
+    function offerNew(){
+      const d=offerDeal();
+      return offerScreen("КП Новый а/м", offerFormNew(d), offerDocNew(d));
     }
     function offerWrap(ctx, text, maxW){
       const words=String(text||"").split(/\s+/).filter(Boolean);
@@ -1217,57 +1234,9 @@
       a.remove();
       setTimeout(()=>URL.revokeObjectURL(url), 8000);
     }
-    function offerSvcPacks(){
-      return [
-        {id:"to1",name:"ТО-1",price:18900,note:"Первое регламентное ТО",items:[["Масло ДВС","замена, оригинал / аналог по регламенту"],["Фильтр масла","замена"],["Фильтр салона","замена"],["Диагностика","ходовая, тормоза, уровни, ЭБУ"]]},
-        {id:"to2",name:"ТО-2",price:28900,note:"Второе регламентное ТО",items:[["ТО-1","масло, фильтры масла и салона"],["Фильтр воздушный","замена"],["Свечи","по регламенту"],["Интервал","сброс в ЭБУ"]]},
-        {id:"season",name:"Сезонное ТО",price:12900,note:"Подготовка к сезону",items:[["Диагностика","АКБ, щётки, жидкости"],["Шины","осмотр и давление"],["Тормоза","колодки и диски"]]},
-        {id:"warranty",name:"Расширенная гарантия",price:45000,note:"+1 год, условия в договоре ДЦ",items:[["Срок","+12 месяцев к заводской"],["Покрытие","агрегаты по договору"],["Лимит","пробег по договору"]]},
-        {id:"tyre",name:"Шиномонтаж + хранение",price:8900,note:"Сезонная смена и склад ДЦ",items:[["Шиномонтаж","4 колеса, балансировка"],["Хранение","сезон на складе"],["Запись","у сервис-менеджера"]]}
-      ];
-    }
     function offerService(){
-      const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
-      const packs=offerSvcPacks();
-      const mid=offerVal("osModel", models[0]?models[0].id:"t7a");
-      const m=models.find(x=>x.id===mid)||models[0]||{id:"t7a",name:"TENET"};
-      const client=offerVal("osClient","");
-      const vin=offerVal("osVin","");
-      const packId=offerVal("osPack", packs[0].id);
-      const prevPack=offerVal("osPrevPack", packId);
-      const pack=packs.find(x=>x.id===packId)||packs[0];
-      let price=(typeof offerNum==="function"?offerNum("osPrice", pack.price):Number(offerVal("osPrice", String(pack.price))))||pack.price;
-      if(prevPack!==packId) price=pack.price;
-      const valid=offerVal("osValid","7 дней");
-      const note=prevPack!==packId?pack.note:offerVal("osNote", pack.note);
-      const doc={
-        kicker:"Сервис",
-        title:"Коммерческое предложение",
-        headline:pack.name,
-        file:"КП сервис "+(m.name||"")+" "+client,
-        meta:[["Клиент", client],["Автомобиль", m.name],["VIN", vin],["Менеджер", offerMgr()]],
-        rows:[["Пакет", pack.name],["Примечание", note||"—"],["Срок действия", valid]],
-        total:["Стоимость пакета", rub(price)+" ₽"],
-        sections:[
-          {title:"Состав", pairs:pack.items},
-          {title:"Перед отправкой", lines:["Сумма — ориентир ДЦ. Сверьте её с прайсом сервиса, это не заказ-наряд."]}
-        ],
-        note:"Не оферта. Итоговые условия — в заказ-наряде сервиса. Действует "+valid+"."
-      };
-      const form=`
-        <p class="eyebrow">Клиент</p>
-        <input type="hidden" id="osPrevPack" value="${escape(packId)}" />
-        ${offerField("Клиент", `<input id="osClient" value="${escape(client)}" placeholder="ФИО" />`)}
-        ${client?"":`<p class="calc-note">Клиент пустой. В PDF будет прочерк.</p>`}
-        <p class="eyebrow">Автомобиль и пакет</p>
-        ${offerField("Комплектация", offerModelSelect("osModel", models, mid))}
-        ${offerField("VIN", `<input id="osVin" value="${escape(vin)}" placeholder="необязательно" />`)}
-        ${offerField("Пакет", `<select id="osPack" class="of-select">${packs.map(p=>`<option value="${p.id}" ${p.id===packId?"selected":""}>${escape(p.name)} · ${rub(p.price)}</option>`).join("")}</select>`)}
-        ${offerField("Стоимость, ₽", `<input id="osPrice" inputmode="numeric" value="${price}" />`)}
-        <p class="calc-note">Цены пакетов — ориентир. Перед PDF сверьте сумму с прайсом сервиса.</p>
-        ${offerField("Срок действия", `<input id="osValid" value="${escape(valid)}" />`)}
-        ${offerField("Примечание", `<input id="osNote" value="${escape(note)}" />`)}`;
-      return offerScreen("КП Сервис", form, doc);
+      const d=offerDeal();
+      return offerScreen("Оценка сервиса", offerFormNew(d), offerDocNew(d));
     }
     function offerLease(){
       const models=typeof KM_MODELS!=="undefined"?KM_MODELS:[];
@@ -1348,5 +1317,5 @@
       document.querySelectorAll("[data-offer-pdf]").forEach(b=>b.onclick=()=>offerPdf());
       document.querySelectorAll("[data-offer-down]").forEach(b=>b.onclick=()=>{ const hid=document.getElementById("ofDownMode"); if(hid) hid.value=b.dataset.offerDown||"pct"; view="offer"; render(); });
       document.querySelectorAll("[data-offer-rival]").forEach(el=>el.addEventListener("change", ()=>{ view="offer"; render(); }));
-      ["ofClient","ofModel","ofColor","ofPrice","ofSpec","ofDo","ofPack","ofCasco","ofDown","ofDownPct","ofMonths","ofValid","ofTi","ofLoan","ofCr","ofDcTi","ofDcCr","ofDcTiAmt","ofDcCrAmt","osClient","osModel","osCar","osVin","osPack","osPrice","osNote","osValid","olCo","olInn","olModel","olPrice","olAdv","olMonths","olValid"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("change", ()=>{ view="offer"; render(); }); });
+      ["ofClient","ofOwnCar","ofModel","ofColor","ofPrice","ofSpec","ofDo","ofPack","ofCasco","ofDown","ofDownPct","ofMonths","ofValid","ofTi","ofLoan","ofCr","ofDcTi","ofDcCr","ofDcTiAmt","ofDcCrAmt","osClient","osModel","osCar","osVin","osPack","osPrice","osNote","osValid","olCo","olInn","olModel","olPrice","olAdv","olMonths","olValid"].forEach(id=>{ const el=document.getElementById(id); if(el) el.addEventListener("change", ()=>{ view="offer"; render(); }); });
     }
