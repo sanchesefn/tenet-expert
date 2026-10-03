@@ -1,0 +1,2 @@
+склад-logicstars-08 morning 03.10.2026 Europe/Moscow
+LOGIN_OK stock=105 reserved=5 corp=5 demos=0
