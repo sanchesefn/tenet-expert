@@ -1,1 +1,2 @@
-evening-2026-10-03 склад-logicstars-17 Europe/Moscow LOGIN_OK stock=105 reserved=5
+evening Logicstars sync 04.10.2026 (склад-logicstars-17)
+TENET 15/87/5 + CHERY 1/2 → 105; reserved 5
