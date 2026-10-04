@@ -3,17 +3,6 @@
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
-      "vin": "EDXGD34B7TE034443",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Чёрный",
-      "status": "in",
-      "note": "В салоне",
-      "rrc": 3885000,
-      "salon": "Brown"
-    },
-    {
       "vin": "EDEHD24B5TE115142",
       "model": "t9",
       "name": "T9",
@@ -96,6 +85,17 @@
       "rrc": 2785000,
       "mpt": true,
       "corp": true
+    },
+    {
+      "vin": "EDXGD34B7TE034443",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Ультра 7 мест 4WD",
+      "color": "Чёрный",
+      "status": "in",
+      "note": "В салоне · с 04.10.2026",
+      "rrc": 3885000,
+      "salon": "Brown"
     },
     {
       "vin": "EDXFB32B1TE087336",
