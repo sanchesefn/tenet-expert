@@ -1,0 +1,58 @@
+name: bump-terms-date-0510
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Bump TERMS_DATE to 05.10.2026 from known-good blob
+        run: |
+          set -euo pipefail
+          # Known-good full file blob from 04.10 sync (22159 bytes, TERMS_DATE 04.10.2026)
+          git cat-file -t 1a2507a9f2be7933b161f1629451c03e8203b2c1
+          git cat-file -p 1a2507a9f2be7933b161f1629451c03e8203b2c1 > terms-calc-data.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("terms-calc-data.js")
+          t = p.read_text(encoding="utf-8")
+          if 'const TERMS_DATE = "04.10.2026"' not in t:
+              raise SystemExit("expected TERMS_DATE 04.10.2026 in source blob")
+          t2 = t.replace('const TERMS_DATE = "04.10.2026"', 'const TERMS_DATE = "05.10.2026"', 1)
+          for bad in ("PLACEHOLDER", "LOAD_FROM_FILE", "LOAD_FROM_WORKSPACE_FILE", "$file:", "FILE:/"):
+              if bad in t2:
+                  raise SystemExit(f"stub marker detected: {bad}")
+          if len(t2.encode()) < 15000:
+              raise SystemExit("file too small")
+          if "KM_BANK_RATES" not in t2 or "KM_MODELS" not in t2:
+              raise SystemExit("missing KM blocks")
+          p.write_text(t2, encoding="utf-8")
+          print("bytes", p.stat().st_size)
+          PY
+          node --check terms-calc-data.js
+          test "$(wc -c < terms-calc-data.js)" -gt 15000
+          BLOB=$(git hash-object terms-calc-data.js)
+          echo "blob $BLOB"
+          test "$BLOB" = "7ffef59c5626fcd603caf01e832912e2efba7890"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add terms-calc-data.js
+          git commit -m "tu-google-08 05.10.2026: TERMS_DATE bump (data unchanged)"
+          git push origin HEAD:main
+      - name: Cleanup this workflow file
+        if: always()
+        run: |
+          set -euo pipefail
+          WF=.github/workflows/bump-terms-date-0510.yml
+          if [ -f "$WF" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git rm -f "$WF"
+            git commit -m "cleanup: remove bump-terms-date-0510 workflow" || exit 0
+            git push origin HEAD:main
+          fi
