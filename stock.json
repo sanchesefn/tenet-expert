@@ -227,18 +227,6 @@
       "invoice": true
     },
     {
-      "vin": "EDXGD34B0TE082608",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 7 мест 4WD",
-      "color": "Тёмно-зелёный",
-      "status": "in",
-      "note": "В салоне · с 29.07.2026",
-      "prod": "22.07.2026",
-      "rrc": 3630000,
-      "invoice": true
-    },
-    {
       "vin": "EDXGD34B3TE031815",
       "model": "t8",
       "name": "T8",
