@@ -1,2 +1,2 @@
-evening Logicstars sync 05.10.2026 (склад-logicstars-17)
-TENET 14/79/4 + CHERY 1/2 → 96; reserved 3
+evening Logicstars sync 06.10.2026 (склад-logicstars-17, CSV-экспорт)
+TENET 14/78/4 + CHERY 1/2 → 95; reserved 4
