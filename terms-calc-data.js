@@ -53,19 +53,19 @@
     const PANGO_NSS = 0.0089;
     function pangoOf(id){ return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null; }
     const TERMS_PRIO = [
-      {model:"T4",vin:"EDEED31B1SE053704",trim:"Prime 4WD",year:"2025",color:"Белый",extra:"Сидоров",pay:500,bonus:1000,sold:true,seller:"Сидоров"},
-      {model:"T7",vin:"EDXFB32B4TE041659",trim:"Active",year:"2026",color:"Чёрный",extra:"Елчин",pay:500,bonus:1000,sold:true,seller:"Елчин"},
-      {model:"T7",vin:"EDXFB32B2TE041658",trim:"Active",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:1000},
-      {model:"T7",vin:"EDXFB32B7TE062327",trim:"Active",year:"2026",color:"Чёрный",extra:"Антихром",pay:500,bonus:1000},
-      {model:"T8",vin:"EDXGD34B1TE022143",trim:"Prime 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34B6TE031162",trim:"Prime 4WD",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34B3TE031815",trim:"Ultra 4WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000},
-      {model:"Tiggo 9",vin:"EDEDD24B2SG003755",trim:"Ultra",year:"2025",color:"Светло-серый",extra:"",pay:500,bonus:3000},
-      {model:"Tiggo 9",vin:"EDEDD24B3SG003926",trim:"Ultra",year:"2025",color:"Матовый",extra:"Лавров",pay:500,bonus:3000,sold:true,seller:"Лавров"},
-      {model:"Tiggo 9",vin:"EDEDD24B1SG002595",trim:"Ultra",year:"2025",color:"Чёрный",extra:"Новиков",pay:500,bonus:0,sold:true,seller:"Новиков"},
-      {model:"Arrizo 8",vin:"LVVDC21B7SD594110",trim:"Prime",year:"2025",color:"Белый",extra:"",pay:500,bonus:3000},
-      {model:"Arrizo 8",vin:"LVVDC21B0SD594112",trim:"Prime",year:"2025",color:"Белый",extra:"Павлова",pay:500,bonus:0,sold:true,seller:"Павлова"},
-      {model:"Arrizo 8",vin:"LVVDC21B2SDJ34062",trim:"Prime",year:"2025",color:"Чёрный",extra:"Павлова",pay:500,bonus:0,sold:true,seller:"Павлова"},
+      {model:"T7",vin:"EDXFB32B2TE041658",trim:"Актив",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:1000},
+      {model:"T7",vin:"EDXFB32B7TE062327",trim:"Актив",year:"2026",color:"Чёрный",extra:"Антихром",pay:500,bonus:1000},
+      {model:"Tiggo 7 L",vin:"EDEDB21B7SD723791",trim:"Актив",year:"2025",color:"Серебристый",extra:"",pay:500,bonus:1000},
+      {model:"T8",vin:"EDXGD34B1TE022143",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000,sold:true,seller:"Спицын"},
+      {model:"T8",vin:"EDXGD34B0TE082608",trim:"Прайм 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000,sold:true,seller:"Лавров"},
+      {model:"T8",vin:"EDXGD34B6TE031162",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"Спеццена · сотрудник · 1 хоз ГИБДД · 500 км · только PANGO",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34B3TE031815",trim:"Ультра 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGB32B3TE076049",trim:"Актив 5 мест 2WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34BXTE081949",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34B5TE082040",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34B2TE057953",trim:"Ультра 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000},
+      {model:"Tiggo 9",vin:"EDEDD24B2SG003755",trim:"Ультра 4WD",year:"2025",color:"Светло-серый",extra:"",pay:500,bonus:3000,reserved:true,seller:"Спицын"},
+      {model:"Arrizo 8",vin:"LVVDC21B7SD594110",trim:"Прайм",year:"2025",color:"Белый",extra:"",pay:500,bonus:3000,reserved:true,seller:"Демьянов"},
       {model:"8 Pro Max",vin:"LVTDD24B5RD409189",trim:"Ultimate",year:"2024",color:"Белый",extra:"ТЕСТ // 2850",pay:500,bonus:10000}
     ];
     const KM_MODELS = [
@@ -95,7 +95,7 @@
       {id:"l6e",brand:"TENET PLUS",name:"L6 Elegant",stock:"pl6",rrc:2890000,dealer:2745500,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"l6u",brand:"TENET PLUS",name:"L6 Ultra",stock:"pl6",rrc:3040000,dealer:2888000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50}
     ];
-    const PRIO_VINS = new Set(["EDEED31B1SE053704", "EDXFB32B4TE041659", "EDXFB32B2TE041658", "EDXFB32B7TE062327", "EDXGD34B1TE022143", "EDXGD34B6TE031162", "EDXGD34B3TE031815", "EDEDD24B2SG003755", "EDEDD24B3SG003926", "EDEDD24B1SG002595", "LVVDC21B7SD594110", "LVVDC21B0SD594112", "LVVDC21B2SDJ34062", "LVTDD24B5RD409189"]);
+    const PRIO_VINS = new Set(["EDXFB32B2TE041658","EDXFB32B7TE062327","EDEDB21B7SD723791","EDXGD34B1TE022143","EDXGD34B0TE082608","EDXGD34B6TE031162","EDXGD34B3TE031815","EDXGB32B3TE076049","EDXGD34BXTE081949","EDXGD34B5TE082040","EDXGD34B2TE057953","EDEDD24B2SG003755","LVVDC21B7SD594110","LVTDD24B5RD409189"]);
     const KM_DC_DEF = 100000;
     const KM_BANKS = [
       {id:"sber", name:"Сбер"},
