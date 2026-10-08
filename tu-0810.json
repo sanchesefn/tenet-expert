@@ -1,0 +1,43 @@
+{
+  "for": "бот ТУ",
+  "date": "08.10.2026",
+  "source": ["ТУ 8.10 лист 2026", "калькулятор 8.10 лист База", "ТУ 8.10 лист ФЛИТ BFS"],
+  "doNotReplaceWholeBlock": "Не подменять целиком terms/calc старым фрагментом. Применить только дельту ниже и согласовать со складом, аттестацией, документами и КП.",
+  "retail2026": [
+    {"id": "t4p", "name": "T4 Prime 2025", "rrc": 2449000, "dealer": 2369000, "ti": 100000, "tiBack": 80000, "cr": 0, "crBack": 0, "total": 2349000, "change": "без изменений"},
+    {"id": "t4la", "name": "T4L Active", "rrc": 2344000, "dealer": 2249000, "ti": 0, "tiBack": 0, "cr": 0, "crBack": 0, "total": 2344000, "wasRrc": 2329000, "wasDealer": 2234000},
+    {"id": "t4lp", "name": "T4L Prime", "rrc": 2494000, "dealer": 2404000, "ti": 0, "tiBack": 0, "cr": 0, "crBack": 0, "total": 2494000, "wasRrc": 2479000, "wasDealer": 2389000},
+    {"id": "t7a", "name": "T7 Active 2WD", "rrc": 2805000, "dealer": 2665000, "ti": 180000, "tiBack": 130000, "cr": 0, "crBack": 0, "total": 2625000, "wasRrc": 2785000, "wasDealer": 2645000},
+    {"id": "t7p", "name": "T7 Prime 2WD", "rrc": 3005000, "dealer": 2860000, "ti": 200000, "tiBack": 150000, "cr": 50000, "crBack": 30000, "total": 2755000, "wasRrc": 2985000, "wasDealer": 2840000},
+    {"id": "t7a4", "name": "T7 Active 4WD", "rrc": 3010000, "dealer": 2880000, "ti": 130000, "tiBack": 90000, "cr": 0, "crBack": 0, "total": 2880000, "wasRrc": 2990000, "wasDealer": 2860000},
+    {"id": "t7p4", "name": "T7 Prime 4WD", "rrc": 3210000, "dealer": 3065000, "ti": 150000, "tiBack": 110000, "cr": 0, "crBack": 0, "total": 3060000, "wasRrc": 3190000, "wasDealer": 3045000},
+    {"id": "t8a", "name": "T8 Active 2WD", "rrc": 3099000, "dealer": 2999000, "ti": 200000, "tiBack": 150000, "cr": 0, "crBack": 0, "total": 2899000, "change": "без изменений"},
+    {"id": "t8p", "name": "T8 Prime 2WD", "rrc": 3299000, "dealer": 3149000, "ti": 200000, "tiBack": 150000, "cr": 0, "crBack": 0, "total": 3099000, "change": "без изменений"},
+    {"id": "t8p4", "name": "T8 Prime 4WD", "rrc": 3630000, "dealer": 3465000, "ti": 150000, "tiBack": 100000, "cr": 0, "crBack": 0, "total": 3480000, "change": "без изменений"},
+    {"id": "t8u4", "name": "T8 Ultra 4WD", "rrc": 3885000, "dealer": 3705000, "ti": 150000, "tiBack": 100000, "cr": 0, "crBack": 0, "total": 3735000, "change": "без изменений"},
+    {"id": "ta8p", "name": "TENET A8 Prime 1.6", "rrc": 2999000, "dealer": 2874000, "ti": 100000, "tiBack": 70000, "cr": 0, "crBack": 0, "total": 2899000, "wasTi": 0, "wasTiBack": 0},
+    {"id": "ta8u", "name": "TENET A8 Ultra 2.0", "rrc": 3499000, "dealer": 3354000, "ti": 100000, "tiBack": 70000, "cr": 0, "crBack": 0, "total": 3399000, "wasTi": 0, "wasTiBack": 0},
+    {"id": "tt9p", "name": "TENET T9 Prime 5 мест", "rrc": 3949000, "dealer": 3799000, "ti": 200000, "tiBack": 130000, "cr": 0, "crBack": 0, "total": 3749000, "change": "без изменений"},
+    {"id": "tt9u", "name": "TENET T9 Ultra 5 мест", "rrc": 4299000, "dealer": 4099000, "ti": 200000, "tiBack": 130000, "cr": 0, "crBack": 0, "total": 4099000, "change": "без изменений"}
+  ],
+  "chery2025unchangedFrom1609": [
+    {"id": "t9u", "name": "Tiggo 9 Ultra", "rrc": 4640000, "dealer": 4200000, "ti": 200000, "tiBack": 150000, "direct": 200000},
+    {"id": "a8p", "name": "Arrizo 8 Prime", "rrc": 3060000, "dealer": 2699000, "ti": 200000, "tiBack": 180000, "direct": 261000},
+    {"id": "t7l", "name": "Tiggo 7L Active", "rrc": 2735000, "dealer": 2620000, "ti": 100000, "tiBack": 70000}
+  ],
+  "keep": ["коридор КМ", "бонусы %", "МПТ календарь T7", "приоритет VIN", "спец инвойс PANGO", "ставки банков"],
+  "fleet": {
+    "date": "08.10.2026",
+    "tradeInAllModels": 100000,
+    "note": "РРЦ и клиентские цены блока BFS в файле НЕ пересчитаны на новую розницу T4L/T7. Их не поднимать вслед за KM_MODELS. Субсидия TENET T9 Prime/Ultra = 190000. Субсидия TENET и МПТ на T7 и T8 не суммируются.",
+    "staffTradeIn": 50000,
+    "staffDate": "18.09.2026"
+  },
+  "bots": {
+    "склад": "Поднять rrc только у T4L Актив 2344000, T4L Прайм 2494000, T7 Актив 2WD 2805000, T7 Прайм 2WD 3005000, T7 Актив 4WD 3010000, T7 Прайм 4WD 3210000. T8, T9, Chery, TENET A8 rrc не трогать.",
+    "аттестация": "Вопросы цены T4L и T7 перевести на ТУ 08.10. Шаг T4L 150000 и доплата 4WD T7 205000 не изменились.",
+    "документы": "Таблицы t4l-price и t7-price — новые цифры. Скан лифлета 01.09 оставить как архив и подписать, что клиенту его не называть.",
+    "кп": "Берёт KM_MODELS. Отдельный прайс не держать. Флит-трейд-ин 100000, не 50000.",
+    "калькулятор": "База 08.10 совпадает с листом 2026. Личные листы менеджеров в файле калькулятора — архив сделок, в кабинет не заливать."
+  }
+}
