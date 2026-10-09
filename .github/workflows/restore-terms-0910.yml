@@ -1,0 +1,60 @@
+name: restore-terms-0910
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Restore full terms-calc-data.js from known-good blob
+        run: |
+          set -euo pipefail
+          # Known-good full file from 08.10 afternoon sync (22333 bytes, TERMS_DATE 08.10.2026)
+          # blob a00e76f22a9b961778cc73caa9e71acbcedf1995 commit ba2b848b
+          git cat-file -t a00e76f22a9b961778cc73caa9e71acbcedf1995
+          git cat-file -p a00e76f22a9b961778cc73caa9e71acbcedf1995 > terms-calc-data.js
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path("terms-calc-data.js")
+          t = p.read_text(encoding="utf-8")
+          if 'const TERMS_DATE = "08.10.2026"' not in t:
+              raise SystemExit("expected TERMS_DATE 08.10.2026 in source blob")
+          t2 = t.replace('const TERMS_DATE = "08.10.2026"', 'const TERMS_DATE = "09.10.2026"', 1)
+          for bad in ("PLACEHOLDER", "LOAD_FROM_FILE", "LOAD_FROM_WORKSPACE", "LOAD_FROM_WORKSPACE_FILE", "LOAD_FROM_WORKSPACE_R_JSON", "$file:", "FILE:/"):
+              if bad in t2:
+                  raise SystemExit(f"stub marker detected: {bad}")
+          if len(t2.encode()) < 15000:
+              raise SystemExit("file too small")
+          if "KM_BANK_RATES" not in t2 or "KM_MODELS" not in t2:
+              raise SystemExit("missing KM blocks")
+          p.write_text(t2, encoding="utf-8")
+          print("bytes", p.stat().st_size)
+          PY
+          node --check terms-calc-data.js
+          test "$(wc -c < terms-calc-data.js)" -gt 15000
+          BLOB=$(git hash-object terms-calc-data.js)
+          echo "blob $BLOB"
+          test "$BLOB" = "bb809b5893238aa3a470c88a1ebf25b2359111d8"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add terms-calc-data.js
+          git commit -m "ту-google-08: restore full terms-calc-data.js (TERMS_DATE 09.10.2026)"
+          git push origin HEAD:main
+      - name: Cleanup this workflow file
+        if: always()
+        run: |
+          set -euo pipefail
+          WF=.github/workflows/restore-terms-0910.yml
+          git pull --rebase origin main || true
+          if [ -f "$WF" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git rm -f "$WF"
+            git commit -m "cleanup: remove restore-terms-0910 workflow" || exit 0
+            git push origin HEAD:main
+          fi
