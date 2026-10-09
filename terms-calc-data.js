@@ -1,1 +1,1 @@
-LOAD_FROM_FILE:/workspace/terms-calc-data.js
+PLACEHOLDER_WILL_REPLACE
