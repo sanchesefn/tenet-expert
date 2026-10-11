@@ -1,4 +1,4 @@
-    const TERMS_DATE = "09.10.2026";
+    const TERMS_DATE = "11.10.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -59,14 +59,14 @@
       {model:"T8",vin:"EDXGD34B1TE022143",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000,sold:true,seller:"Спицын"},
       {model:"T8",vin:"EDXGD34B0TE082608",trim:"Прайм 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000,sold:true,seller:"Лавров"},
       {model:"T8",vin:"EDXGD34B6TE031162",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"Спеццена · сотрудник · 1 хоз ГИБДД · 500 км · только PANGO",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34B3TE031815",trim:"Ультра 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34B3TE031815",trim:"Ультра 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000,sold:true},
       {model:"T8",vin:"EDXGB32B3TE076049",trim:"Актив 5 мест 2WD",year:"2026",color:"Белый",extra:"",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34BXTE081949",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34B5TE082040",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000},
-      {model:"T8",vin:"EDXGD34B2TE057953",trim:"Ультра 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000},
+      {model:"T8",vin:"EDXGD34BXTE081949",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000,sold:true,seller:"Тальков"},
+      {model:"T8",vin:"EDXGD34B5TE082040",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000,sold:true},
+      {model:"T8",vin:"EDXGD34B2TE057953",trim:"Ультра 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000,sold:true,seller:"Велиджанов"},
       {model:"Tiggo 9",vin:"EDEDD24B2SG003755",trim:"Ультра 4WD",year:"2025",color:"Светло-серый",extra:"",pay:500,bonus:3000,reserved:true,seller:"Спицын"},
-      {model:"Arrizo 8",vin:"LVVDC21B7SD594110",trim:"Прайм",year:"2025",color:"Белый",extra:"",pay:500,bonus:3000,reserved:true,seller:"Демьянов"},
-      {model:"8 Pro Max",vin:"LVTDD24B5RD409189",trim:"Ultimate",year:"2024",color:"Белый",extra:"ТЕСТ // 2850",pay:500,bonus:10000}
+      {model:"Arrizo 8",vin:"LVVDC21B7SD594110",trim:"Прайм",year:"2025",color:"Белый",extra:"",pay:500,bonus:3000,sold:true,seller:"Демьянов"},
+      {model:"8 Pro Max",vin:"LVTDD24B5RD409189",trim:"Ultimate",year:"2024",color:"Белый",extra:"ТЕСТ // 2850",pay:500,bonus:10000,sold:true,seller:"Демьянов"}
     ];
     const KM_MODELS = [
       {id:"t4p",brand:"TENET",name:"T4 Prime 2025",stock:"t4",rrc:2449000,dealer:2369000,ti:100000,tiBack:80000,cr:0,crBack:0,bonus:0.03,vat:1.22,fee:0.01,kmMin:-30,kmMax:20,prioMin:-30,prioMax:20},
