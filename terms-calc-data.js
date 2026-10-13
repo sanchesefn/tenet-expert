@@ -1,4 +1,4 @@
-    const TERMS_DATE = "12.10.2026";
+    const TERMS_DATE = "13.10.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -36,6 +36,7 @@
       {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
       {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
+      {model:"T8",trim:"Active 2WD",price:"2 800 нал, 2 700 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"}
     ];
@@ -44,6 +45,7 @@
       t4lp:{cash:2250000,ti:2200000},
       t7a:{cash:2450000,ti:2350000},
       t7p:{cash:2550000,ti:2450000},
+      t8a:{cash:2800000,ti:2700000},
       t8p4:{cash:3100000,ti:3000000},
       t8u4:{cash:3300000,ti:3200000}
     };
