@@ -1,2 +1,2 @@
-evening Logicstars sync 12.10.2026 (склад-logicstars-17, CSV-экспорт)
-TENET 28/74/3 + CHERY 0/3 → 105; reserved 4; ±0 vs полдень 12.10 (A8 LVVDC21B7SD594110 CHERY непроданные→отложенные)
+evening Logicstars sync 13.10.2026 (склад-logicstars-17, CSV-экспорт)
+TENET 28/70/3 + CHERY 0/3 → 101; reserved 2; −6 vs noon 13.10 (ушли: EDEHD24BXTE118599, EDEHD24B2TE112070, EDEFD32B5TE102360, EDELB31BXTE116832, EDXGD34B5TE082040, EDXGD34BXTE081949); 3 T8 Ультра Домодедово→салон
