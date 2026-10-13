@@ -3,6 +3,26 @@
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
+      "vin": "EDXGB32B2TE103628",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 5 мест 2WD",
+      "color": "Тёмно-зелёный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3299000
+    },
+    {
+      "vin": "EDXGB32B3TE104206",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 5 мест 2WD",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3299000
+    },
+    {
       "vin": "EDEHD24B5TE115142",
       "model": "t9",
       "name": "T9",
@@ -168,16 +188,6 @@
       "rrc": 3885000
     },
     {
-      "vin": "EDEHD24B4TE117061",
-      "model": "t9",
-      "name": "T9",
-      "trim": "Ультра 4WD",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне",
-      "rrc": 4299000
-    },
-    {
       "vin": "EDEHD24B8TE117984",
       "model": "t9",
       "name": "T9",
@@ -197,26 +207,6 @@
       "note": "В салоне",
       "salon": "Brown",
       "rrc": 4299000
-    },
-    {
-      "vin": "EDEFB32B1TE123423",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Голубой",
-      "status": "in",
-      "note": "В салоне",
-      "rrc": 2805000
-    },
-    {
-      "vin": "EDEFB32B0TE123428",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Голубой",
-      "status": "in",
-      "note": "В салоне",
-      "rrc": 2805000
     },
     {
       "vin": "EDXGD34B2TE128861",
@@ -297,6 +287,36 @@
       "salon": "Brown",
       "rrc": 3885000,
       "invoice": false
+    },
+    {
+      "vin": "EDEHD24B4TE117061",
+      "model": "t9",
+      "name": "T9",
+      "trim": "Ультра 4WD",
+      "color": "Светло-серый",
+      "status": "in",
+      "note": "В салоне · с 13.10.2026",
+      "rrc": 4299000
+    },
+    {
+      "vin": "EDEFB32B1TE123423",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Голубой",
+      "status": "in",
+      "note": "В салоне · с 13.10.2026",
+      "rrc": 2805000
+    },
+    {
+      "vin": "EDEFB32B0TE123428",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив",
+      "color": "Голубой",
+      "status": "in",
+      "note": "В салоне · с 13.10.2026",
+      "rrc": 2805000
     },
     {
       "vin": "EDXGD34B6TE031162",
