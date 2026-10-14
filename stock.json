@@ -63,26 +63,6 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDXGD34B4TE129025",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 7 мест 4WD",
-      "color": "Тёмно-зелёный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 3630000
-    },
-    {
-      "vin": "EDXGD34B5TE130491",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Прайм 7 мест 4WD",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 3630000
-    },
-    {
       "vin": "EDELB31B6TE132011",
       "model": "t4l",
       "name": "T4L",
@@ -133,15 +113,24 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDXGD34B6TE050830",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Белый",
+      "vin": "EDELB31B1TE132496",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Светло-серый",
       "status": "way",
-      "note": "Домодедово · заявка",
-      "salon": "Brown",
-      "rrc": 3885000
+      "note": "Калуга · заявка",
+      "rrc": 2494000
+    },
+    {
+      "vin": "EDELB31B0TE132540",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 2494000
     },
     {
       "vin": "EDXGD34B7TE052294",
