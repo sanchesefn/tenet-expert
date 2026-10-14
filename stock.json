@@ -144,6 +144,16 @@
       "rrc": 3885000
     },
     {
+      "vin": "EDXDC24B5TG041704",
+      "model": "a8",
+      "name": "A8",
+      "trim": "2.0T 8AT Ultra",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Домодедово · заявка",
+      "rrc": 3499000
+    },
+    {
       "vin": "EDXGD34BXTE038762",
       "model": "t8",
       "name": "T8",
@@ -284,16 +294,6 @@
       "status": "in",
       "note": "В салоне · с 13.10.2026",
       "rrc": 2805000
-    },
-    {
-      "vin": "EDXDC24B5TG041704",
-      "model": "a8",
-      "name": "A8",
-      "trim": "2.0T 8AT Ultra",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "В пути · ожид. 18.10.2026",
-      "rrc": 3499000
     },
     {
       "vin": "EDXGD34B6TE031162",
