@@ -1,2 +1,2 @@
-noon Logicstars sync 14.10.2026 (склад-logicstars-12, CSV-экспорт)
-TENET 28/70/3 + CHERY 0/3 → 101; reserved 2; −1 vs morning 14.10 (+2 T4L Прайм в пути: EDELB31B1TE132496, EDELB31B0TE132540; ушли из непроданных: EDXGD34B4TE129025, EDXGD34B5TE130491, EDXGD34B6TE050830)
+noon Logicstars sync 15.10.2026 (склад-logicstars-12, CSV-экспорт)
+TENET 28/71/3 + CHERY 0/3 → 102; reserved 2; +1 vs morning (T9 EDEHD24B6TE122133)
