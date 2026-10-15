@@ -1,2 +1,2 @@
-morning Logicstars sync 14.10.2026 (склад-logicstars-08, CSV-экспорт)
-TENET 29/70/3 + CHERY 0/3 → 102; reserved 2; +1 vs evening 13.10 (новый: A8 Ultra EDXDC24B5TG041704, перемещение, ожид. 18.10.2026)
+morning Logicstars sync 15.10.2026 (склад-logicstars-08, CSV-экспорт)
+TENET 27/71/3 + CHERY 0/3 → 101; reserved 2; ±0 vs evening 14.10
