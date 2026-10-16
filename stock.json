@@ -133,6 +133,17 @@
       "rrc": 2494000
     },
     {
+      "vin": "EDXGD34B7TE134350",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Ультра 7 мест 4WD",
+      "color": "Тёмно-зелёный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "salon": "Brown",
+      "rrc": 3885000
+    },
+    {
       "vin": "EDXGD34B7TE052294",
       "model": "t8",
       "name": "T8",
