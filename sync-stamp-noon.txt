@@ -1,2 +1,2 @@
-noon Logicstars sync 15.10.2026 (склад-logicstars-12, CSV-экспорт)
-TENET 28/71/3 + CHERY 0/3 → 102; reserved 2; +1 vs morning (T9 EDEHD24B6TE122133)
+noon Logicstars sync 16.10.2026 (склад-logicstars-12, CSV-экспорт)
+TENET 29/70/3 + CHERY 0/3 → 102; reserved 2; +1 vs morning (T8 EDXGD34B7TE134350)
