@@ -1,2 +1,2 @@
-morning Logicstars sync 15.10.2026 (склад-logicstars-08, CSV-экспорт)
-TENET 27/71/3 + CHERY 0/3 → 101; reserved 2; ±0 vs evening 14.10
+morning sync 16.10.2026 Europe/Moscow
+TENET 28/70/3 + CHERY 0/3
