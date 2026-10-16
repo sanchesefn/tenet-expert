@@ -73,26 +73,6 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDELB31B7TE131952",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
-      "vin": "EDELB31B7TE132096",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
       "vin": "EDELB31B8TE131961",
       "model": "t4l",
       "name": "T4L",
