@@ -1,2 +1,2 @@
-evening Logicstars sync 16.10.2026 (склад-logicstars-17, CSV-экспорт)
-TENET 27/70/3 + CHERY 0/3 → 100; reserved 2; −2 vs noon 16.10 (ушли T4L EDELB31B7TE131952, EDELB31B7TE132096)
+evening Logicstars sync 17.10.2026 (склад-logicstars-17, CSV-экспорт)
+TENET 26/71/3 + CHERY 0/3 → 100; reserved 2; ±0 vs noon 17.10 (A8 EDXDC24B5TG041704 прибыл в салон)
