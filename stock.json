@@ -94,6 +94,28 @@
       "rrc": 4299000
     },
     {
+      "vin": "EDEHD24B2TE112036",
+      "model": "t9",
+      "name": "T9",
+      "trim": "Ультра 4WD",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "salon": "Brown",
+      "rrc": 4299000
+    },
+    {
+      "vin": "EDXGD34B5TE052262",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Ультра 7 мест 4WD",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Домодедово · заявка",
+      "salon": "Brown",
+      "rrc": 3885000
+    },
+    {
       "vin": "EDXDC24B5TG041704",
       "model": "a8",
       "name": "A8",
@@ -257,18 +279,6 @@
       "rrc": 2805000,
       "mpt": true,
       "reserved": true
-    },
-    {
-      "vin": "EDXGD34B3TE031815",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 12.06.2026",
-      "salon": "Brown",
-      "prod": "26.03.2026",
-      "rrc": 3885000
     },
     {
       "vin": "EDXGB32B3TE076049",
@@ -815,17 +825,6 @@
       "invoice": true
     },
     {
-      "vin": "EDXDC24B0TG040024",
-      "model": "a8",
-      "name": "A8",
-      "trim": "2.0T 8AT Ultra",
-      "color": "Bamboo Gray",
-      "status": "in",
-      "note": "В салоне · с 29.09.2026",
-      "rrc": 3499000,
-      "invoice": true
-    },
-    {
       "vin": "EDELB31B3TE119457",
       "model": "t4l",
       "name": "T4L",
@@ -987,17 +986,6 @@
       "note": "В салоне · с 15.10.2026",
       "salon": "Brown",
       "rrc": 3885000
-    },
-    {
-      "vin": "EDEDD24B2SG003755",
-      "model": "t9",
-      "name": "T9",
-      "trim": "Ультра 4WD",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 25.04.2026",
-      "prod": "12.03.2025",
-      "rrc": 4640000
     },
     {
       "vin": "EDEDB21B7SD723791",
