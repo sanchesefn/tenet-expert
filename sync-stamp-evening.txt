@@ -1,2 +1,2 @@
-evening Logicstars sync 18.10.2026 (склад-logicstars-17, CSV-экспорт)
-TENET 26/71/3 + CHERY 0/3 → 100; reserved 2; ±0 vs noon 18.10 (CSV identical); PISEC unchanged
+evening Logicstars sync 19.10.2026 (склад-logicstars-17, CSV-экспорт)
+TENET 22/70/3 + CHERY 0/1 → 93; −1 vs noon 19.10 (+2: T9 EDEHD24B2TE112036 Калуга, T8 EDXGD34B5TE052262 Домодедово; −3: T9 EDEDD24B2SG003755, A8 EDXDC24B0TG040024, T8 EDXGD34B3TE031815); reserved 2; PISEC: new EXEED slot 21.10 (VIN not in stock), no бронь без VIN ≥19.10
