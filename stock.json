@@ -73,46 +73,6 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDELB31B8TE131961",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
-      "vin": "EDELB31B8TE132012",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
-      "vin": "EDELB31B1TE132496",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
-      "vin": "EDELB31B0TE132540",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Светло-серый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2494000
-    },
-    {
       "vin": "EDXGD34B7TE134350",
       "model": "t8",
       "name": "T8",
@@ -120,17 +80,6 @@
       "color": "Тёмно-зелёный",
       "status": "in",
       "note": "В салоне",
-      "salon": "Brown",
-      "rrc": 3885000
-    },
-    {
-      "vin": "EDXGD34B7TE052294",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Домодедово · заявка",
       "salon": "Brown",
       "rrc": 3885000
     },
@@ -1049,16 +998,6 @@
       "note": "В салоне · с 25.04.2026",
       "prod": "12.03.2025",
       "rrc": 4640000
-    },
-    {
-      "vin": "LVVDC21B7SD594110",
-      "model": "a8",
-      "name": "A8",
-      "trim": "Прайм",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 26.06.2026",
-      "rrc": 3060000
     },
     {
       "vin": "EDEDB21B7SD723791",
