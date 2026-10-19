@@ -1,2 +1,2 @@
-morning Logicstars sync 18.10.2026 (склад-logicstars-08, CSV-экспорт)
-TENET 26/71/3 + CHERY 0/3 → 100; reserved 2; ±0 vs evening 17.10; 5 TO DEALER way→in
+morning Logicstars sync 19.10.2026 (склад-logicstars-08, CSV-экспорт)
+TENET 26/71/3 + CHERY 0/3 → 100; reserved 2; ±0 vs evening 18.10 (only day counters changed); PISEC October: no бронь без VIN ≥19.10
