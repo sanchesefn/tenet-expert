@@ -182,16 +182,6 @@
       "rrc": 2805000
     },
     {
-      "vin": "EDEFB32B0TE123428",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Голубой",
-      "status": "in",
-      "note": "В салоне · с 13.10.2026",
-      "rrc": 2805000
-    },
-    {
       "vin": "EDEHD24B8TE117984",
       "model": "t9",
       "name": "T9",
@@ -281,19 +271,6 @@
       "reserved": true
     },
     {
-      "vin": "EDXGB32B3TE076049",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Актив 5 мест 2WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 13.07.2026",
-      "prod": "23.06.2026",
-      "rrc": 3099000,
-      "invoice": true,
-      "reserved": true
-    },
-    {
       "vin": "EDEEB31B8TE003261",
       "model": "t4",
       "name": "T4",
@@ -352,17 +329,6 @@
     },
     {
       "vin": "EDEFD32B5TE102522",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм 4WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 23.08.2026",
-      "prod": "20.08.2026",
-      "rrc": 3210000
-    },
-    {
-      "vin": "EDEFD32B5TE102570",
       "model": "t7",
       "name": "T7",
       "trim": "Прайм 4WD",
