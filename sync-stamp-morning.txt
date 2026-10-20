@@ -1,2 +1,2 @@
-morning Logicstars sync 19.10.2026 (склад-logicstars-08, CSV-экспорт)
-TENET 26/71/3 + CHERY 0/3 → 100; reserved 2; ±0 vs evening 18.10 (only day counters changed); PISEC October: no бронь без VIN ≥19.10
+morning Logicstars sync 20.10.2026 (склад-logicstars-08, CSV-экспорт)
+TENET 22/70/3 + CHERY 0/1 → 93; ±0 vs evening 19.10 (only day counters changed); reserved 2 (EDXFB32B7TE062327 manual, EDXGB32B3TE076049 PISEC); corp 3; PISEC October unchanged, no бронь без VIN ≥20.10
