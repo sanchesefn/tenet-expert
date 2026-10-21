@@ -1,15 +1,8 @@
 .hub-card[data-go="sched"]::before{
-  content:"ОКТЯБРЬ";
-  display:flex;
-  align-items:flex-end;
-  padding:16px;
-  color:#fff;
-  font-weight:800;
-  letter-spacing:.22em;
-  font-size:13px;
-  background:
-    radial-gradient(90px 60px at 88% 18%, rgba(255,176,90,.9), transparent 70%),
-    linear-gradient(165deg, #1b1714 0%, #3b2a22 62%, #9a1c28 130%);
+  content:"";
+  background-image:url("hub/sched.jpg?v=1");
+  background-position:50% 32%;
+  background-size:cover;
 }
 body:has(.sched-page) .wrap{max-width:1280px;}
 .sched-page .lead{max-width:640px;}
