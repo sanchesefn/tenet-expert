@@ -1,2 +1,2 @@
-morning Logicstars sync 20.10.2026 (склад-logicstars-08, CSV-экспорт)
-TENET 22/70/3 + CHERY 0/1 → 93; ±0 vs evening 19.10 (only day counters changed); reserved 2 (EDXFB32B7TE062327 manual, EDXGB32B3TE076049 PISEC); corp 3; PISEC October unchanged, no бронь без VIN ≥20.10
+morning Logicstars sync 21.10.2026 (склад-logicstars-08, CSV-экспорт)
+TENET 38/67/3 + CHERY 0/1 → 106; −3 vs evening 20.10 (ушли T4L DISTRIBUTOR STOCK: EDELB31B2TE132958, EDELB31B5TE115703 Калуга; EDELB31B5TE125714 Домодедово); reserved 2 (EDXFB32B7TE062327 manual; EDXGD34B7TE134350 PISEC 22.10 12:00 Тальков); corp 3; TENET+ 26 без изменений; PISEC October: бронь без VIN 21.10 12:00 Андросов EXEED, 21.10 17:00 Тиммерман EXEED, 22.10 14:00 Ахмадуллин Chery
