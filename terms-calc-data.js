@@ -37,7 +37,8 @@
       {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Active 2WD",price:"2 800 нал, 2 700 ТИ"},
-      {model:"T8",trim:"Prime 4WD",price:"3 100 нал, 3 000 ТИ"},
+      {model:"T8",trim:"Prime 4WD · VIN EDXGD34B6TE031162",price:"3 100 нал, 3 000 ТИ"},
+      {model:"T8",trim:"Prime 4WD",price:"3 200 нал, 3 100 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"},
       {model:"T9",trim:"Prime 5 мест 4WD",price:"3 500 нал, 3 400 ТИ"},
       {model:"T9",trim:"Ultra 5 мест 4WD",price:"3 800 нал, 3 500 ТИ"}
@@ -48,7 +49,7 @@
       t7a:{cash:2450000,ti:2350000},
       t7p:{cash:2550000,ti:2450000},
       t8a:{cash:2800000,ti:2700000},
-      t8p4:{cash:3100000,ti:3000000},
+      t8p4:{cash:3200000,ti:3100000},
       t8u4:{cash:3300000,ti:3200000},
       tt9p:{cash:3500000,ti:3400000},
       tt9u:{cash:3800000,ti:3500000}
@@ -57,10 +58,17 @@
     const PANGO_RATE_A = 17.4;
     const PANGO_RATE_B = 14.4;
     const PANGO_NSS = 0.0089;
-    function pangoOf(id){ return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null; }
+    const PANGO_VIN = {
+      "EDXGD34B6TE031162":{cash:3100000,ti:3000000}
+    };
+    function pangoOf(id){
+      const vin=typeof kmVin==="string"?String(kmVin).toUpperCase():"";
+      if(vin && typeof PANGO_VIN!=="undefined" && PANGO_VIN[vin]) return PANGO_VIN[vin];
+      return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null;
+    }
     const TERMS_PRIO = [
-      {model:"T7",vin:"EDXFB32B2TE041658",trim:"Актив",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:1000},
-      {model:"T7",vin:"EDXFB32B7TE062327",trim:"Актив",year:"2026",color:"Чёрный",extra:"Антихром",pay:500,bonus:1000},
+      {model:"T7",vin:"EDXFB32B2TE041658",trim:"Актив",year:"2026",color:"Чёрный",extra:"",pay:500,bonus:1000,sold:true,seller:"Леонтьев"},
+      {model:"T7",vin:"EDXFB32B7TE062327",trim:"Актив",year:"2026",color:"Чёрный",extra:"Антихром",pay:500,bonus:1000,sold:true,seller:"Тальков"},
       {model:"Tiggo 7 L",vin:"EDEDB21B7SD723791",trim:"Актив",year:"2025",color:"Серебристый",extra:"",pay:500,bonus:1000},
       {model:"T8",vin:"EDXGD34B1TE022143",trim:"Прайм 7 мест 4WD",year:"2026",color:"Светло-серый",extra:"",pay:500,bonus:2000,sold:true,seller:"Спицын"},
       {model:"T8",vin:"EDXGD34B0TE082608",trim:"Прайм 7 мест 4WD",year:"2026",color:"Тёмно-зелёный",extra:"",pay:500,bonus:2000,sold:true,seller:"Лавров"},
