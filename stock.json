@@ -3,16 +3,6 @@
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
-      "vin": "EDEFB32B2TE136505",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Белый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 3005000
-    },
-    {
       "vin": "EDEFB32B2TE136567",
       "model": "t7",
       "name": "T7",
@@ -24,17 +14,6 @@
     },
     {
       "vin": "EDEFB32B2TE136648",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм",
-      "color": "Белый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "salon": "Brown",
-      "rrc": 3005000
-    },
-    {
-      "vin": "EDEFB32B7TE136600",
       "model": "t7",
       "name": "T7",
       "trim": "Прайм",
