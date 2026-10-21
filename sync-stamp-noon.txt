@@ -1,2 +1,2 @@
-noon Logicstars sync 20.10.2026 (склад-logicstars-12, CSV-экспорт)
-TENET 22/67/3 + CHERY 0/1 → 90; −3 vs morning 20.10 (ушли: T7 EDEFB32B0TE123428, T7 EDEFD32B5TE102570, T8 EDXGB32B3TE076049); reserved 1 (EDXFB32B7TE062327 manual); corp 3; PISEC October: +2 EXEED на 21.10 (1 с VIN EFEDD25B8T8000049, 1 бронь без VIN 12:00 Андросов)
+noon Logicstars sync 21.10.2026 (склад-logicstars-12, CSV-экспорт)
+TENET 42/67/3 + CHERY 0/1 → 110; +4 vs morning 21.10 (новые T7 Прайм белые DISTRIBUTOR STOCK Калуга: EDEFB32B2TE136505, EDEFB32B2TE136567, EDEFB32B2TE136648, EDEFB32B7TE136600); reserved 2; corp 3; TENET+ 26 без изменений
