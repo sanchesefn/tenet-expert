@@ -1,5 +1,5 @@
 {
-  "updated": "20.10.2026",
+  "updated": "21.10.2026",
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
@@ -81,7 +81,8 @@
       "status": "in",
       "note": "В салоне",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "reserved": true
     },
     {
       "vin": "EDEHD24B6TE122133",
@@ -186,26 +187,6 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDELB31B5TE115703",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Белый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2344000
-    },
-    {
-      "vin": "EDELB31B2TE132958",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Белый",
-      "status": "way",
-      "note": "Калуга · заявка",
-      "rrc": 2344000
-    },
-    {
       "vin": "EDELB31B4TE133187",
       "model": "t4l",
       "name": "T4L",
@@ -281,16 +262,6 @@
     },
     {
       "vin": "EDELB31B9TE125473",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Прайм",
-      "color": "Чёрный",
-      "status": "way",
-      "note": "Домодедово · заявка",
-      "rrc": 2494000
-    },
-    {
-      "vin": "EDELB31B5TE125714",
       "model": "t4l",
       "name": "T4L",
       "trim": "Прайм",
