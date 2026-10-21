@@ -1,2 +1,2 @@
-evening Logicstars sync 20.10.2026 (склад-logicstars-17, CSV-экспорт)
-TENET 41/67/3 + CHERY 0/1 → 109; +19 vs noon 20.10 (новые DISTRIBUTOR STOCK «заявка»: Калуга 16, Домодедово 3 — T4L ×11, T8 ×5, T7 ×2, T9 7 мест ×1); reserved 1 (EDXFB32B7TE062327 manual + PISEC 21.10 15:00); corp 3; PISEC October: бронь без VIN 21.10 12:00 Андросов EXEED (Башин), 21.10 17:00 Тиммерман EXEED (Засташков)
+evening Logicstars sync 21.10.2026 (склад-logicstars-17, CSV-экспорт)
+TENET 40/67/3 + CHERY 0/1 → 108; −2 vs noon 21.10 (ушли T7 Прайм белые DISTRIBUTOR STOCK Калуга: EDEFB32B2TE136505, EDEFB32B7TE136600); reserved 2; corp 3; TENET+ 26 без изменений
