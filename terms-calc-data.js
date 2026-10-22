@@ -34,6 +34,7 @@
     const TERMS_INV = [
       {model:"T4L",trim:"Active",price:"2 150 нал, 2 100 ТИ"},
       {model:"T4L",trim:"Prime",price:"2 250 нал, 2 200 ТИ"},
+      {model:"L4",trim:"Style",price:"2 200 нал, 2 100 ТИ"},
       {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Active 2WD",price:"2 800 нал, 2 700 ТИ"},
@@ -46,6 +47,7 @@
     const PANGO_FIX = {
       t4la:{cash:2150000,ti:2100000},
       t4lp:{cash:2250000,ti:2200000},
+      l4s:{cash:2200000,ti:2100000},
       t7a:{cash:2450000,ti:2350000},
       t7p:{cash:2550000,ti:2450000},
       t8a:{cash:2800000,ti:2700000},
