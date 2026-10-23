@@ -70,7 +70,7 @@
       "trim": "Ультра 4WD",
       "color": "Тёмно-зелёный",
       "status": "way",
-      "note": "Калуга · заявка",
+      "note": "Калуга · отгружен дилеру 23.10.2026",
       "rrc": 4299000
     },
     {
@@ -94,18 +94,6 @@
       "rrc": 2494000
     },
     {
-      "vin": "EDXGD34B7TE134350",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Тёмно-зелёный",
-      "status": "in",
-      "note": "В салоне",
-      "salon": "Brown",
-      "rrc": 3885000,
-      "reserved": true
-    },
-    {
       "vin": "EDEHD24B6TE122133",
       "model": "t9",
       "name": "T9",
@@ -122,7 +110,7 @@
       "trim": "Ультра 4WD",
       "color": "Светло-серый",
       "status": "way",
-      "note": "Калуга · заявка",
+      "note": "Калуга · отгружен дилеру 23.10.2026",
       "salon": "Brown",
       "rrc": 4299000
     },
@@ -643,6 +631,56 @@
       "rrc": 3949000
     },
     {
+      "vin": "EDEFB32B5TE138300",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3005000
+    },
+    {
+      "vin": "EDEFB32BXTE138292",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3005000
+    },
+    {
+      "vin": "EDEFD32B3TE138225",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив 4WD",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3010000
+    },
+    {
+      "vin": "EDEFD32B5TE138047",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив 4WD",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3010000
+    },
+    {
+      "vin": "EDEFD32B9TE138147",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Актив 4WD",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга · заявка",
+      "rrc": 3010000
+    },
+    {
       "vin": "EDEFB32B2TE105500",
       "model": "t7",
       "name": "T7",
@@ -825,16 +863,6 @@
       "name": "T4L",
       "trim": "Актив",
       "color": "Красный",
-      "status": "in",
-      "note": "В салоне · с 26.09.2026",
-      "rrc": 2344000
-    },
-    {
-      "vin": "EDELB31B7TE120014",
-      "model": "t4l",
-      "name": "T4L",
-      "trim": "Актив",
-      "color": "Чёрный",
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000
