@@ -623,6 +623,26 @@
       "rrc": 2805000
     },
     {
+      "vin": "EDEHD24B2TE115115",
+      "model": "t9",
+      "name": "T9",
+      "trim": "Прайм 4WD",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Домодедово · заявка",
+      "rrc": 3949000
+    },
+    {
+      "vin": "EDEHD24B7TE098862",
+      "model": "t9",
+      "name": "T9",
+      "trim": "Прайм 4WD",
+      "color": "Белый",
+      "status": "way",
+      "note": "Акулово · заявка",
+      "rrc": 3949000
+    },
+    {
       "vin": "EDEFB32B2TE105500",
       "model": "t7",
       "name": "T7",
