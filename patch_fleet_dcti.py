@@ -323,10 +323,16 @@ PLUS_MODELS = {"pl4", "pl6"}
 PLUS_VIN_PREFIXES = ("EFEDB21", "EDEMB31")
 PLUS_CARS = [
     {"vin": "EDEMB31B1TE136973", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "На заводе (Калуга) · отгрузка 27.10.2026", "rrc": 2890000},
-    {"vin": "EDEMB31B0TE136852", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгрузка 27.10.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B1TE137072", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "На заводе (Калуга) · отгрузка 27.10.2026", "rrc": 2890000},
+    {"vin": "EDEMB31B1TE137153", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "На заводе (Калуга) · отгрузка 27.10.2026", "rrc": 2890000},
     {"vin": "EFEDB21B5T3000583", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "На заводе (СПб Сестрорецк)", "rrc": 2540000},
+    {"vin": "EFEDB21B0T3003360", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 27.10.2026", "rrc": 2540000},
     {"vin": "EFEDB21B0T3002547", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 18.10.2026", "rrc": 2690000},
     {"vin": "EFEDB21B3T3002798", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "На заводе (СПб Сестрорецк)", "rrc": 2540000},
+    {"vin": "EFEDB21B0T3003665", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 27.10.2026", "rrc": 2540000},
+    {"vin": "EFEDB21B1T3003786", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 27.10.2026", "rrc": 2540000},
+    {"vin": "EFEDB21B1T3003402", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 27.10.2026", "rrc": 2540000},
+    {"vin": "EFEDB21B0T3004119", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Красный", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгрузка 27.10.2026", "rrc": 2690000},
     {"vin": "EFEDB21B3T3003949", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "На заводе (СПб Сестрорецк)", "rrc": 2540000},
     {"vin": "EFEDB21B4T3003944", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "На заводе (СПб Сестрорецк)", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003996", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "На заводе (СПб Сестрорецк)", "rrc": 2540000},
