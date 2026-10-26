@@ -38,7 +38,6 @@
       {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
       {model:"T8",trim:"Active 2WD",price:"2 800 нал, 2 700 ТИ"},
-      {model:"T8",trim:"Prime 4WD · VIN EDXGD34B6TE031162",price:"3 100 нал, 3 000 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 200 нал, 3 100 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"},
       {model:"T9",trim:"Prime 5 мест 4WD",price:"3 500 нал, 3 400 ТИ"},
@@ -61,7 +60,6 @@
     const PANGO_RATE_B = 14.4;
     const PANGO_NSS = 0.0089;
     const PANGO_VIN = {
-      "EDXGD34B6TE031162":{cash:3100000,ti:3000000}
     };
     function pangoOf(id){
       const vin=typeof kmVin==="string"?String(kmVin).toUpperCase():"";
