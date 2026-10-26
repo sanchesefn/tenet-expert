@@ -8,13 +8,16 @@
     const EPTS_CC=["Daria.Lukina@tenet.ru","Ejukavina@vip-avto.ru","credit@vip-avto.ru","aleontiev@chery-vipauto.ru"];
     const EPTS_TO_WORK="Anton.Kokhanov@tenet.ru";
     const EPTS_TO_WEEKEND="team.elpts@chery.ru";
+    const EPTS_PLUS_TO="Anastasiia.Klimanova@agr.auto";
+    const EPTS_PLUS_CC=["Alexey.Dmitriev@tenet.ru","Ejukavina@vip-avto.ru","credit@vip-avto.ru","aleontiev@chery-vipauto.ru"];
     const EPTS_PREFIX=[
       ["EDELB31","t4l"],["EDEEB31","t4l"],
       ["EDEFB32","t7"],["EDXFB32","t7"],["EDEFD32","t7"],["EDXFD32","t7"],
       ["EDXGB32","t8"],["EDXGD34","t8"],
       ["EDEHD24","tt9"],["EDEDD24","t9"],
       ["EDXDC24","ta8"],
-      ["LVVDC21","a8"]
+      ["LVVDC21","a8"],
+      ["EFEDB21","pl4"],["EDEMB31","pl6"]
     ];
     function eptsCleanVin(v){
       return String(v||"").toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g,"").slice(0,17);
@@ -45,11 +48,29 @@
       }
       return d;
     }
+    function eptsIsPlus(draft){
+      const id=String((draft&&draft.model)||(draft&&draft.hit&&draft.hit.model)||"");
+      if(id==="pl4"||id==="pl6"||id==="plus") return true;
+      const m=(typeof MODELS!=="undefined"&&MODELS[id])||null;
+      if(m&&m.brand==="TENET PLUS") return true;
+      const letter=String((draft&&(draft.letter||""))||"");
+      return /TENET\s*PLUS/i.test(letter);
+    }
     function eptsMailPack(draft){
       const weekend=eptsIsWeekend(draft.issuedDt);
       const vin=draft.vin;
       const pay=draft.payBy;
       const line="Прошу согласовать передачу ЭПТС для заключения договора с клиентом. Оплата до "+pay+", отзывных нет, гарантийное письмо во вложении.";
+      if(eptsIsPlus(draft)){
+        return {
+          weekend,
+          to: EPTS_PLUS_TO,
+          cc: EPTS_PLUS_CC.join(", "),
+          subj: "ЭКСПЕРТ АВТО САМАРА_ЭПТС VIN "+vin,
+          body: "Анастасия, добрый день! "+line+"\n\nVIN "+vin,
+          label: "TENET+ · Anastasiia.Klimanova@agr.auto"
+        };
+      }
       const who=weekend?"Коллеги, добрый день! ":"Антон, добрый день! ";
       return {
         weekend,
@@ -67,6 +88,9 @@
       if(id==="tt9") return "TENET T9";
       if(id==="t9") return "CHERY Tiggo 9";
       if(id==="a8") return "CHERY Arrizo 8";
+      if(id==="pl4") return "TENET PLUS L4";
+      if(id==="pl6") return "TENET PLUS L6";
+      if(id==="plus") return "TENET PLUS";
       const m=MODELS[id];
       if(m) return m.brand+" "+m.name;
       return fallback||"TENET";
@@ -463,7 +487,7 @@
             ${step2body}
           </section>
           <section class="epts-step ${eptsStepClass(3)}">
-            <div class="epts-head"><span class="epts-n">3</span><div><h3>Отправить запрос</h3><p>Будни — Коханову, выходные — Chery ELPTS. PDF во вложении через .eml.</p></div></div>
+            <div class="epts-head"><span class="epts-n">3</span><div><h3>Отправить запрос</h3><p>TENET: будни — Коханову, выходные — Chery ELPTS. TENET+ — Климановой, в копии Дмитриев. PDF во вложении через .eml.</p></div></div>
             ${step3body}
           </section>
         </div>
