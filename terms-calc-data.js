@@ -4,7 +4,7 @@
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
       {model:"T8",trim:"Приоритет",km:"−30 / 0",note:"VIN из списка"},
       {model:"T8",trim:"Остальные",km:"0 / 30",note:""},
-      {model:"T9",trim:"Все",km:"−30 / 0",note:""},
+      {model:"T9",trim:"Все",km:"−30 / 50",note:""},
       {model:"A8",trim:"Все",km:"−30 / 0",note:""}
     ];
     const TERMS_BONUS = [
@@ -96,10 +96,10 @@
       {id:"t8u4",brand:"TENET",name:"T8 Ultra 4WD",stock:"t8",rrc:3885000,dealer:3705000,ti:150000,tiBack:100000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:30,prioMin:-30,prioMax:0},
       {id:"ta8p",brand:"TENET",name:"A8 Prime 1.6",stock:"ta8",rrc:2999000,dealer:2874000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"ta8u",brand:"TENET",name:"A8 Ultra 2.0",stock:"ta8",rrc:3499000,dealer:3354000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
-      {id:"tt9p",brand:"TENET",name:"T9 Prime 5-seat",stock:"tt9",rrc:3949000,dealer:3799000,ti:200000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
-      {id:"tt9u",brand:"TENET",name:"T9 Ultra 5-seat",stock:"tt9",rrc:4299000,dealer:4099000,ti:200000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
-      {id:"tt9u7",brand:"TENET",name:"T9 Ultra 7-seat",stock:"tt9",rrc:4449000,dealer:4199000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
-      {id:"tt9s7",brand:"TENET",name:"T9 Prestige 7-seat",stock:"tt9",rrc:4649000,dealer:4299000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
+      {id:"tt9p",brand:"TENET",name:"T9 Prime 5-seat",stock:"tt9",rrc:3949000,dealer:3799000,ti:200000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
+      {id:"tt9u",brand:"TENET",name:"T9 Ultra 5-seat",stock:"tt9",rrc:4299000,dealer:4099000,ti:200000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
+      {id:"tt9u7",brand:"TENET",name:"T9 Ultra 7-seat",stock:"tt9",rrc:4449000,dealer:4199000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
+      {id:"tt9s7",brand:"TENET",name:"T9 Prestige 7-seat",stock:"tt9",rrc:4649000,dealer:4299000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
       {id:"t9p",brand:"CHERY",name:"Tiggo 9 Prime 4WD",stock:"t9",rrc:4335000,dealer:3895000,ti:300000,tiBack:250000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"t9u",brand:"CHERY",name:"Tiggo 9 Ultra 4WD",stock:"t9",rrc:4640000,dealer:4200000,ti:200000,tiBack:150000,cr:200000,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"a8a",brand:"CHERY",name:"Arrizo 8 Active",stock:"a8",rrc:2865000,dealer:2649000,ti:250000,tiBack:230000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
