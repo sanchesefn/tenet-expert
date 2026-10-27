@@ -41,7 +41,7 @@
       {id:"t82",title:"Т8 2WD"},
       {id:"t8",title:"Т8 4WD"},
       {id:"t9",title:"Т9"},
-      {id:"a8",title:"Arrizo 8"}
+      {id:"a8",title:"А8"}
     ];
     function dutyTri(v){
       if(v==="ok" || v==="bad") return v;
