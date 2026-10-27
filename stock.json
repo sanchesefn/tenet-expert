@@ -187,18 +187,6 @@
       "rrc": 3885000
     },
     {
-      "vin": "EDXGD34BXTE134388",
-      "model": "t8",
-      "name": "T8",
-      "trim": "Ультра 7 мест 4WD",
-      "color": "Тёмно-зелёный",
-      "status": "in",
-      "note": "В салоне",
-      "salon": "Brown",
-      "rrc": 3885000,
-      "reserved": true
-    },
-    {
       "vin": "EDEFD32B4TE136144",
       "model": "t7",
       "name": "T7",
@@ -285,16 +273,6 @@
       "rrc": 3099000,
       "mpt": true,
       "corp": true
-    },
-    {
-      "vin": "EDEHD24B4TE117061",
-      "model": "t9",
-      "name": "T9",
-      "trim": "Ультра 4WD",
-      "color": "Светло-серый",
-      "status": "in",
-      "note": "В салоне · с 13.10.2026",
-      "rrc": 4299000
     },
     {
       "vin": "EDEFB32B1TE123423",
