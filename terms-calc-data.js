@@ -1,4 +1,4 @@
-    const TERMS_DATE = "27.10.2026";
+    const TERMS_DATE = "28.10.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:"Антихром 0/50"},
@@ -87,7 +87,7 @@
       {id:"t4la",brand:"TENET",name:"T4L Active",stock:"t4l",rrc:2344000,dealer:2249000,ti:0,tiBack:0,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"t4lp",brand:"TENET",name:"T4L Prime",stock:"t4l",rrc:2494000,dealer:2404000,ti:0,tiBack:0,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"t7a",brand:"TENET",name:"T7 Active 2WD",stock:"t7",rrc:2805000,dealer:2665000,ti:180000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
-      {id:"t7p",brand:"TENET",name:"T7 Prime 2WD",stock:"t7",rrc:3005000,dealer:2860000,ti:200000,tiBack:150000,cr:50000,crBack:30000,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
+      {id:"t7p",brand:"TENET",name:"T7 Prime 2WD",stock:"t7",rrc:3005000,dealer:2860000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
       {id:"t7a4",brand:"TENET",name:"T7 Active 4WD",stock:"t7",rrc:3010000,dealer:2880000,ti:130000,tiBack:90000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
       {id:"t7p4",brand:"TENET",name:"T7 Prime 4WD",stock:"t7",rrc:3210000,dealer:3065000,ti:150000,tiBack:110000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
       {id:"t8a",brand:"TENET",name:"T8 Active 2WD",stock:"t8",rrc:3099000,dealer:2999000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:30,prioMin:-30,prioMax:0},
