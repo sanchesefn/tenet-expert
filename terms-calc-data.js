@@ -37,11 +37,13 @@
       {model:"L4",trim:"Style",price:"2 200 нал, 2 100 ТИ"},
       {model:"T7",trim:"Active 2WD",price:"2 450 нал, 2 350 ТИ"},
       {model:"T7",trim:"Prime 2WD",price:"2 550 нал, 2 450 ТИ"},
+      {model:"T7",trim:"Active 4WD",price:"2 700 нал, 2 600 ТИ"},
       {model:"T8",trim:"Active 2WD",price:"2 800 нал, 2 700 ТИ"},
       {model:"T8",trim:"Prime 4WD",price:"3 200 нал, 3 100 ТИ"},
       {model:"T8",trim:"Ultra 4WD",price:"3 300 нал, 3 200 ТИ"},
       {model:"T9",trim:"Prime 5 мест 4WD",price:"3 500 нал, 3 400 ТИ"},
-      {model:"T9",trim:"Ultra 5 мест 4WD",price:"3 800 нал, 3 500 ТИ"}
+      {model:"T9",trim:"Ultra 5 мест 4WD",price:"3 800 нал, 3 600 ТИ"},
+      {model:"T9",trim:"Ultra 7 мест 4WD",price:"3 900 нал, 3 700 ТИ"}
     ];
     const PANGO_FIX = {
       t4la:{cash:2150000,ti:2100000},
@@ -49,11 +51,13 @@
       l4s:{cash:2200000,ti:2100000},
       t7a:{cash:2450000,ti:2350000},
       t7p:{cash:2550000,ti:2450000},
+      t7a4:{cash:2700000,ti:2600000},
       t8a:{cash:2800000,ti:2700000},
       t8p4:{cash:3200000,ti:3100000},
       t8u4:{cash:3300000,ti:3200000},
       tt9p:{cash:3500000,ti:3400000},
-      tt9u:{cash:3800000,ti:3500000}
+      tt9u:{cash:3800000,ti:3600000},
+      tt9u7:{cash:3900000,ti:3700000}
     };
     const PANGO_BUNDLE = 150000;
     const PANGO_RATE_A = 17.4;
