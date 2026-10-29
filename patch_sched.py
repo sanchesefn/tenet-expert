@@ -113,11 +113,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # Кнопка «Фото» в карточках склада (pages.yml токеном не правится — шаг здесь, последним).
-    try:
-        import runpy
-        from pathlib import Path as _P
-        if _P("patch_photo_links.py").exists():
-            runpy.run_path("patch_photo_links.py", run_name="__main__")
-    except BaseException as e:
-        print("photo-links: skipped:", e)
