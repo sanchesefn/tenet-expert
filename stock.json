@@ -309,18 +309,6 @@
       "invoice": true
     },
     {
-      "vin": "EDXFB32B2TE041658",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Чёрный",
-      "status": "in",
-      "note": "В салоне · с 08.05.2026",
-      "rrc": 2805000,
-      "mpt": true,
-      "reserved": true
-    },
-    {
       "vin": "EDEEB31B8TE003261",
       "model": "t4",
       "name": "T4",
