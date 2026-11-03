@@ -27,7 +27,7 @@
         return `<li class="prio-item${sold?" sold":""}">
           <div class="prio-top"><b>${i+1}. ${escape(r.model)} · ${escape(r.trim)}</b>${mark}</div>
           <div class="prio-meta">${escape(r.vin)} · ${escape(r.color)} · ${escape(r.year)}${extra}</div>
-          <div class="prio-pay">${r.pay?rub(r.pay):"—"} / ${r.bonus?rub(r.bonus):"—"}</div>
+          <div class="prio-pay">Взнос ${r.pay?rub(r.pay):"—"}</div>
         </li>`;
       }).join("")+`</ol>`;
     }
