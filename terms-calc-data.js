@@ -1,4 +1,4 @@
-    const TERMS_DATE = "03.11.2026";
+    const TERMS_DATE = "04.11.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:""},
@@ -49,9 +49,8 @@
     const PANGO_FIX = {
       t4la:{cash:2150000,ti:2100000},
       t4lp:{cash:2250000,ti:2200000},
-      l4s:{cash:2200000,ti:2100000},
       t7a:{cash:2450000,ti:2350000},
-      t7p:{cash:2550000,ti:2450000},
+      t7p:{cash:2600000,ti:2500000},
       t7a4:{cash:2700000,ti:2600000},
       t8a:{cash:2800000,ti:2700000},
       t8p4:{cash:3200000,ti:3100000},
