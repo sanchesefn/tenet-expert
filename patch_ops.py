@@ -8,13 +8,12 @@ JS = ROOT / "duty-fn.js"
 STOCK_JS = ROOT / "stock-fn.js"
 
 HUB_CSS = """
-.hub-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px;}
-@media(min-width:720px){.hub-grid{grid-template-columns:1fr 1fr;}}
-@media(min-width:980px){.hub-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}}
-.hub-card::before{aspect-ratio:16/6!important;}
-.hub-card .txt{padding:8px 12px 10px!important;}
-.hub-card h3{font-size:16px!important;margin:0 0 2px!important;}
-.hub-card p{font-size:12px!important;line-height:1.3!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.hub-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
+@media(min-width:900px){.hub-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}}
+.hub-card::before{aspect-ratio:16/8!important;}
+.hub-card .txt{padding:10px 12px 12px!important;}
+.hub-card h3{font-size:16px!important;margin:0 0 4px!important;}
+.hub-card p{font-size:12px!important;line-height:1.35!important;}
 .hub-mark{width:28px!important;height:28px!important;font-size:11px!important;top:8px!important;left:8px!important;border-radius:8px!important;}
 @media(max-width:720px){
   .hub-card::before{aspect-ratio:16/9!important;}
@@ -51,6 +50,10 @@ CSS = """
 .cl-box b{display:block;margin-bottom:6px;font-size:12px}
 .cl-chips{display:flex;flex-wrap:wrap;gap:6px}
 .cl-chips label{display:inline-flex;gap:6px;align-items:center;padding:6px 8px;border:1px solid #eadfcf;border-radius:999px;font-size:12px;background:#fbf7f0}
+.cl-log{margin-top:4px}
+.cl-log h3{font-size:14px;margin:8px 0}
+.cl-log-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px solid #eadfcf;border-radius:12px;background:#fff;margin:0 0 6px;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.cl-log-row small{color:#7a7166;white-space:nowrap}
 .st-filters{display:flex;flex-wrap:wrap;gap:8px}
 .st-acc{border:1px solid #eadfcf;border-radius:14px;background:#fff;margin:8px 0;overflow:hidden}
 .st-acc summary{list-style:none;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;cursor:pointer}
@@ -67,25 +70,30 @@ CSS = """
 .st-flags{margin-top:6px;display:flex;flex-wrap:wrap;justify-content:flex-end;gap:4px}
 .study-pick{flex-wrap:wrap}
 @media print{
-  @page{size:A4 portrait;margin:6mm}
-  header,nav,.who-line,.hub-grid,.cl-bar .btn,.banner,.bot,.cl-log,.cl-prog{display:none!important}
-  .cl-cars{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:2.5mm!important}
-  .cl-foot{display:grid!important;grid-template-columns:1fr 1fr!important}
-  .cl-car,.cl-box{break-inside:avoid;padding:2mm!important}
-  .cl-item{font-size:8px!important;padding:0.3mm 1mm!important;margin:0!important}
-  .cl-sq{width:3.2mm!important;height:3.2mm!important}
-  .cl-ticks{display:none!important}
-  .cl-note{height:7mm!important;min-height:0!important;max-height:7mm!important;overflow:hidden!important}
-  .cl-item.is-bad{background:#e53935!important;color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  @page{size:A4 portrait;margin:8mm}
+  header,nav,.bot,.banner,.who-line,.hub-grid,.cl-bar .btn,.cl-log,.cl-prog{display:none!important}
+  .wrap{max-width:none!important;padding:0!important}
+  .cl{gap:4px;page-break-inside:avoid}
+  .cl-cars{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px}
+  .cl-car,.cl-box{padding:6px;border-radius:6px}
+  .cl-car h3{font-size:11px;margin:0 0 4px}
+  .cl-item{padding:1px 0;font-size:10px;gap:4px}
+  .cl-item input,.cl-mark{width:12px;height:12px}
+  .cl-foot{gap:4px}
+  .cl-item input{appearance:none!important;border:1.4px solid #000!important;background:#fff!important}
+  .cl-item input:checked + .cl-mark{color:#000!important}
   .st-acc{break-inside:avoid}
 }
 """ + HUB_CSS
 
 def patch(html: str) -> str:
+    # Restore the already-existing production helper after legacy stock replacement.
+    if "function offerNav(){" not in html:
+        html = html.replace("    function salonLabel(s){", '    function offerNav(){\n      const tabs=[["home","Разделы"],["new","КП Новый а/м"],["service","Оценка сервиса"],["fleet","КП Флит"]];\n      return `<div class="down-mode" style="margin:0 0 14px">${tabs.map(([id,l])=>`<button type="button" class="chip ${offerTab===id?"on":""}" data-offer-tab="${id}">${l}</button>`).join("")}</div>`;\n    }\n' + "    function salonLabel(s){", 1)
     js = JS.read_text(encoding="utf-8") if JS.exists() else ""
     if js:
         if "function stockBlob(c){" in html:
-            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?(?=    function login\(\)\{)", lambda m, body=js: body, html, count=1)
+            html = re.sub(r"    function stockBlob\(c\)\{[\s\S]*?(?=    function login\(\)\{)", lambda _m: js, html, count=1)
             print("duty fn replaced")
         elif "    function login(){" in html:
             html = html.replace("    function login(){", js + "    function login(){", 1)
@@ -94,7 +102,7 @@ def patch(html: str) -> str:
     if stock_js and "function stock(){" in html:
         new_html, n = re.subn(
             r"    function salonLabel\(s\)\{[\s\S]*?\n    function stock\(\)\{[\s\S]*?\n    function ",
-            lambda m, body=stock_js: body + "    function ",
+            lambda _m, body=stock_js: body + "    function ",
             html,
             count=1,
         )
@@ -104,7 +112,7 @@ def patch(html: str) -> str:
         else:
             new_html, n = re.subn(
                 r"    function stock\(\)\{[\s\S]*?\n    function ",
-                lambda m, body=stock_js: body + "    function ",
+                lambda _m, body=stock_js: body + "    function ",
                 html,
                 count=1,
             )
@@ -125,6 +133,35 @@ def patch(html: str) -> str:
     if ".st-acc{" not in html:
         html = html.replace("</style>", CSS + "\n</style>", 1)
         print("stock/duty css")
+    elif ".cl-log-row{" not in html:
+        extra = """
+.cl-log{margin-top:4px}
+.cl-log h3{font-size:14px;margin:8px 0}
+.cl-log-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 12px;border:1px solid #eadfcf;border-radius:12px;background:#fff;margin:0 0 6px;width:100%;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.cl-log-row small{color:#7a7166;white-space:nowrap}
+"""
+        html = html.replace("</style>", extra + "\n</style>", 1)
+        print("duty log css")
+    html = html.replace(
+        """@media print{
+  header,nav,.who-line,.hub-grid,.cl-bar .btn{display:none!important}
+  .cl-item input{appearance:none!important;border:1.4px solid #000!important;background:#fff!important}
+  .cl-item input:checked + .cl-mark{color:#000!important}
+  .cl-mark{color:#000}
+  .st-acc{break-inside:avoid}
+}""",
+        """@media print{
+  @page{size:A4 portrait;margin:8mm}
+  header,nav,.bot,.banner,.who-line,.hub-grid,.cl-bar .btn,.cl-log,.cl-prog{display:none!important}
+  .wrap{max-width:none!important;padding:0!important}
+  .cl{gap:4px;page-break-inside:avoid}
+  .cl-cars{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px}
+  .cl-car,.cl-box{padding:6px;border-radius:6px}
+  .cl-item input{appearance:none!important;border:1.4px solid #000!important;background:#fff!important}
+  .cl-item input:checked + .cl-mark{color:#000!important}
+  .st-acc{break-inside:avoid}
+}""",
+    )
     if '["duty","Ч"' not in html:
         needle = '["epts","Э","Заказ ЭПТС","Гарантийное письмо: VIN, PDF и отправка"]'
         if needle in html:
@@ -138,7 +175,7 @@ def patch(html: str) -> str:
     html = html.replace("terms,calc,stock,docs}", "terms,calc,stock,docs,epts,duty,gibdd}")
     html = html.replace(
         'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС"};',
-        'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД",offer:"КП"};',
+        'const extra={terms:"Условия",calc:"Калькулятор",stock:"Склад",docs:"Документы",epts:"ЭПТС",duty:"Чек-лист",gibdd:"ГИБДД"};',
     )
     if 'if(typeof dutyBind==="function") dutyBind();' not in html:
         html = html.replace(
