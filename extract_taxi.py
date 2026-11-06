@@ -1,111 +1,141 @@
 #!/usr/bin/env python3
-"""Read the green LS «Такси» tag; keep its VINs in live stock parts.
-LS tag text is a tooltip, not CSV: /images/Tags/Confirm.svg => hover == «Такси».
-Read-only except for the JSON files --out1/--out2. TENET, CHERY and TENET+:
-Непроданные, Отложенные, Неоплаченные; Корпоративные if present.
-Confirm.svg additionally inspected for red BallRed; multiple tags stay independent.
-Do not run without a saved authenticated browser on 9238. Set LOGIN=1 to log into
-missing sessions using LOGIN_USER and LOGICSTARS_PASSWORD (never printed).
+"""Read the green LS tag whose Confirm.svg tooltip is exactly «Такси».
+BallRed.svg and unrelated green highlights are not taxi. READ-ONLY in LS.
+Requires an existing saved LS Chrome session on port 9238. LOGIN=1 permits
+filling login via LS_LOGIN/LOGICSTARS_PASSWORD (secret never printed).
+Writes only taxi-vins.json and taxi-extraction-report.json and only after ALL
+configured tabs complete. The regular stock merge applies these VINs taxi:true
+only to cars already in stock; never adds/deletes/restores a sold vehicle.
 """
-import os,re,json,sys,time
 from pathlib import Path
+import os,re,json,sys
 from playwright.sync_api import sync_playwright
 
-COLLECTOR_MODELS=('Непроданные','Отложенные','Неоплаченные','Корпоративные','Факторинг')
+VIN_RE=re.compile(r'E[A-Z0-9]{16}')
 CABINETS=[
  ('TENET',['Непроданные','Отложенные','Неоплаченные','Корпоративные','Факторинг'],'https://tenet.oldcabinet.prod.logicstars.ru'),
- ('CHERY',['Непроданные','Отложенные','Неоплаченные','Факторинг'],'https://tenet.oldcabinet.prod.logicstars.ru'),
- ('TENET+',['Непроданные','Отложенные','Неоплаченные','Факторинг'],'https://tenetplus.oldcabinet.prod.logicstars.ru'),
+ ('CHERY',['Непроданные','Неоплаченные','Факторинг'],'https://tenet.oldcabinet.prod.logicstars.ru'),
+ ('TENET+',['Непроданные','Неоплаченные','Факторинг'],'https://tenetplus.oldcabinet.prod.logicstars.ru'),
 ]
-VINRE=re.compile(r'E[A-Z0-9]{16}')
 
-def label_vins(row_html,vin,tooltips):
-    """True iff a tag cell contains a confirmed green Taxi tooltip, never red alone."""
-    return any('Confirm.svg' in src and name.strip()=='Такси' for src,name in tooltips.items()) and '/images/Tags/Confirm.svg' in row_html
+def label_vins(html,vin,tooltips):
+    return bool(vin and 'images/Tags/Confirm.svg' in html and any('Confirm.svg' in src and name.strip().lower()=='такси' for src,name in tooltips.items()))
 
-def wait_data(pg,timeout=210):
+def wait_grid(pg,timeout=240):
+    """Require either desired count or an explicitly empty row."""
+    stable=0
     for _ in range(timeout):
-        text=pg.inner_text('body')
-        if (pg.locator('tr.dxbs-data-row').count() or 'Нет данных для отображения' in text) and 'Loading...' not in text and 'Пожалуйста, подождите...' not in text and not pg.locator('div.busyindicator.show').count():return
+        match=re.search(r'Строк:\s*(\d+)',pg.inner_text('body'))
+        total=int(match.group(1)) if match else None
+        rows=pg.locator('tr.dxbs-data-row').count()
+        empty=pg.locator('tr.dxbs-empty-data-row').count()
+        ready=(total is not None and rows==total) or (total==0 and rows==0 and empty==1)
+        if ready:
+            stable+=1
+            if stable>=3:return total
+        else:stable=0
         pg.wait_for_timeout(1000)
-    raise TimeoutError('stock data not settled')
+    raise RuntimeError('LS: полная таблица не загружена, данные не сохранены')
 
-def select_brand(pg,brand):
-    for _ in range(180):
-        if pg.locator('button').filter(has_text='Непроданные').count():break
-        pg.wait_for_timeout(1000)
-    corporate=bool(pg.locator('button').filter(has_text='Корпоративные').count())
-    if (brand=='TENET') != corporate:
-        pg.get_by_text(brand,exact=True).first.evaluate('e=>e.click()');wait_data(pg)
+def open_cars(pg,base):
+    pg.goto(base+'/sales/cars',timeout=120000)
+    if 'login' not in pg.url.lower():return
+    if os.environ.get('LOGIN')!='1':raise RuntimeError('LOGIN_REQUIRED: выполните login.py для '+base)
+    pg.fill('input[type=text],input[name*=ogin i]',os.getenv('LOGIN_USER','LEONTEV24722'))
+    pg.fill('input[type=password]',os.environ['LOGICSTARS_PASSWORD'])
+    pg.click('text=ВХОД >> nth=0');pg.wait_for_timeout(10000)
+    pg.goto(base+'/sales/cars',timeout=120000)
+    if 'login' in pg.url.lower():raise RuntimeError('LOGIN_FAILED '+base)
 
-def click_tab(pg,tab):
-    q=pg.locator('button').filter(has_text=tab).first
+def switch_brand(pg,base,brand):
+    pg.goto(base+'/sales/cars',timeout=120000)
     for _ in range(180):
-        if q.count():break
+        if pg.locator('a.dropdown-item').filter(has_text=brand).count():break
         pg.wait_for_timeout(1000)
-    else:return False
+    else:raise RuntimeError('LS: отсутствует selector '+brand)
+    is_tenet=bool(pg.locator('button').filter(has_text='Корпоративные').count())
+    if (brand=='TENET')!=is_tenet:
+        pg.locator('a.dropdown-item').filter(has_text=brand).last.evaluate('el=>el.click()')
+        pg.wait_for_timeout(6000)
+        pg.goto(base+'/sales/cars',timeout=120000)
+    # Confirm the brand from its known tab shape; on the same shape wait.
     for _ in range(120):
-        if q.is_enabled():break
+        corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
+        deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
+        if corp==deferred and (brand=='TENET')==corp:
+            if not deferred:wait_grid(pg)
+            return
         pg.wait_for_timeout(1000)
-    # Already selected tabs are disabled in some layouts; current grid is already usable.
-    if not q.is_enabled():
-        wait_data(pg)
-        return bool(pg.locator('tr.dxbs-data-row').count())
-    q.click();wait_data(pg);return True
+    raise RuntimeError('LS: не удалось подтвердить выбор кабинета '+brand)
 
-def read_vins(pg,port,label):
-    out={}
-    for i in range(pg.locator('tr.dxbs-data-row').count()):
-        row=pg.locator('tr.dxbs-data-row').nth(i)
-        text=row.inner_text();hits=VINRE.findall(text)
-        if not hits:continue
-        vin=hits[0]
-        if not row.locator('img[src$="/Tags/Confirm.svg"]').count():continue
-        img=row.locator('img[src$="/Tags/Confirm.svg"]').first
-        try:
-            img.hover();pg.wait_for_timeout(450)
-            tooltips=pg.locator('.tippy-content').all_inner_texts()
-        except Exception as e:raise RuntimeError(f'Taxi tooltip needed for {label}: {str(e)[:250]}')
-        if any(t.strip()=='Такси' for t in tooltips):out[vin]={'brand':port,'tab':label,'taxi':True,'ls_tag':'Confirm.svg / Такси'}
-    pg.mouse.move(0,0)
-    return out
+def select_tab(pg,tab):
+    button=pg.locator('button').filter(has_text=tab).first
+    for _ in range(180):
+        if button.count():break
+        pg.wait_for_timeout(1000)
+    else:raise RuntimeError('LS: обязательная вкладка не найдена: '+tab)
+    for _ in range(120):
+        if button.is_enabled():break
+        pg.wait_for_timeout(1000)
+    # TENET carries (N) on selected tab, CHERY and TENET+ do not always.
+    # Do not require the previously selected tab's (N) -- it belongs elsewhere.
+    needs_counter=bool(pg.locator('button').filter(has_text='Отложенные').count())
+    if button.is_enabled():button.click()
+    for _ in range(240):
+        current=pg.locator('button').filter(has_text=tab).first
+        match=re.search(r'\((\d+)\)',current.inner_text()) if current.count() else None
+        expected=int(match.group(1)) if match else None
+        if expected is not None or not needs_counter:
+            count=wait_grid(pg)
+            if expected is None or count==expected:return count
+        pg.wait_for_timeout(1000)
+    raise TimeoutError('LS: вкладка '+tab+' не выдала подтверждённый полный набор; сохранение отменено')
 
-def annotate(path,taxi):
-    p=Path(path);d=json.loads(p.read_text())
-    for c in d['cars']:
-        if c['vin'] in taxi:c['taxi']=True
-    assert 'EDEDB21B7SD723791' not in {c['vin'] for c in d['cars']}
-    p.write_text(json.dumps(d,ensure_ascii=False,separators=(',',':'))+'\n')
-    return sum(c.get('taxi') is True for c in d['cars'])
+def read_taxi(pg,brand,tab):
+    total=select_tab(pg,tab)
+    print(brand+'/'+tab+': полных строк '+str(total),flush=True)
+    found={};rows=pg.locator('tr.dxbs-data-row')
+    for index in range(total):
+        row=rows.nth(index);vin=VIN_RE.findall(row.inner_text())
+        if not vin:raise RuntimeError(f'{brand}/{tab}: строка {index} без VIN; сохранение запрещено')
+        icons=row.locator('img[src*="/Tags/Confirm.svg"]')
+        for k in range(icons.count()):
+            icons.nth(k).hover();pg.wait_for_timeout(600)
+            # Tippy is hidden after a later hover within the same row; this probe is the one row with a current tooltip.
+            tips=pg.locator('.tippy-content').all_inner_texts()
+            if not tips:
+                icons.nth(k).hover(force=True);pg.wait_for_timeout(1500)
+                tips=pg.locator('.tippy-content').all_inner_texts()
+            if not tips:raise RuntimeError(f'{brand}/{tab}: tooltip Confirm у {vin[0]} не прочитан')
+            if any(t.strip().lower()=='такси' for t in tips):
+                found[vin[0]]={'brand':brand,'tab':tab,'taxi':True,'icons':[{'src':icons.nth(k).get_attribute('src'),'tooltip':'Такси'}]}
+        pg.mouse.move(0,0)
+    return found
 
 def main():
-    args={a.split('=',1)[0]:a.split('=',1)[1] for a in sys.argv[1:] if '=' in a}
-    out1=args.get('--out1','taxi-stock-part1.json');out2=args.get('--out2','taxi-stock-part2.json')
-    taxi={};report=[]
-    with sync_playwright() as p:
-        browser=p.chromium.connect_over_cdp('http://127.0.0.1:9238');ctx=browser.contexts[0]
+    if '-h' in sys.argv or '--help' in sys.argv:print(__doc__);return
+    taxis={};report=[]
+    with sync_playwright() as driver:
+        browser=driver.chromium.connect_over_cdp('http://127.0.0.1:9238');ctx=browser.contexts[0]
         for brand,tabs,base in CABINETS:
             pg=ctx.new_page();pg.set_default_timeout(90000);pg.set_viewport_size({'width':1920,'height':1080})
-            pg.goto(base+'/sales/cars',timeout=120000)
-            if 'login' in pg.url.lower():
-                if os.environ.get('LOGIN')!='1':raise RuntimeError('LOGIN_REQUIRED '+brand)
-                pg.fill('input[type=text], input[name*=ogin i]',os.getenv('LOGIN_USER','LEONTEV24722'))
-                pw=os.environ['LOGICSTARS_PASSWORD'];pg.fill('input[type=password]',pw)
-                pg.click('text=ВХОД >> nth=0');pg.wait_for_timeout(7000);del pw
-                pg.goto(base+'/sales/cars',timeout=120000)
-            if brand=='CHERY':select_brand(pg,'CHERY')
+            open_cars(pg,base)
+            if brand!='TENET+':switch_brand(pg,base,brand)
+            else:wait_grid(pg)
+            corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
+            deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
+            if brand=='TENET':assert corp and deferred,'Cabinet identity TENET not confirmed'
+            if brand=='CHERY':assert not corp and not deferred,'Cabinet identity CHERY not confirmed'
             for tab in tabs:
-                if not click_tab(pg,tab):report.append({'brand':brand,'tab':tab,'missing':True});continue
-                vins=read_vins(pg,brand,tab)
-                taxi.update(vins)
-                print(f'{brand} / {tab}: {len(vins)} taxi' if vins else f'{brand} / {tab}: 0')
-                report.append({'brand':brand,'tab':tab,'count':len(vins),'vins':list(vins)})
-                # Restore a fresh page between tabs, avoids stale busy Blazor indicators.
-                if tab!=tabs[-1]:pg.goto(base+'/sales/cars',timeout=120000);select_brand(pg,brand)
+                found=read_taxi(pg,brand,tab)
+                taxis.update(found)
+                report.append({'brand':brand,'tab':tab,'taxi':len(found),'complete':True})
+                print(' → такси: '+str(len(found)),flush=True)
             pg.close()
-    Path('taxi-vins.json').write_text(json.dumps(sorted(taxi),ensure_ascii=False,indent=2)+'\n')
-    Path('taxi-extraction-report.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
-    counts=[annotate(out1,taxi),annotate(out2,taxi)]
-    print('TOTAL_TAXI',len(taxi),'IN_PARTS',sum(counts),'JSON',out1,out2)
+    path=Path('taxi-vins.json')
+    Path('taxi-vins.json.tmp').write_text(json.dumps(sorted(taxis),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    Path('taxi-extraction-report.json.tmp').write_text(json.dumps({'complete':True,'count':len(taxis),'tabs':report},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
+    Path('taxi-vins.json.tmp').replace(path);Path('taxi-extraction-report.json.tmp').replace('taxi-extraction-report.json')
+    print('TAXI_EXTRACT_OK',len(taxis),'все вкладки полностью загружены; сохранено')
 
 if __name__=='__main__':main()
