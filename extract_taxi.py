@@ -22,17 +22,20 @@ def label_vins(html,vin,tooltips):
     return bool(vin and 'images/Tags/Confirm.svg' in html and any('Confirm.svg' in src and name.strip().lower()=='такси' for src,name in tooltips.items()))
 
 def wait_grid(pg,timeout=240):
-    """Require either desired count or an explicitly empty row."""
+    # Correct LS semantics: empty loading view contains no footer at all.
+    # Accept only a settled complete table, including explicit empty data row.
     stable=0
     for _ in range(timeout):
-        match=re.search(r'Строк:\s*(\d+)',pg.inner_text('body'))
+        text=pg.inner_text('body')
+        loading=('Loading...' in text or 'Пожалуйста, подождите...' in text or pg.locator('div.busyindicator.show').count()>0)
+        match=re.search(r'Строк:\s*(\d+)',text)
         total=int(match.group(1)) if match else None
         rows=pg.locator('tr.dxbs-data-row').count()
         empty=pg.locator('tr.dxbs-empty-data-row').count()
-        ready=(total is not None and rows==total) or (total==0 and rows==0 and empty==1)
+        ready=(not loading) and (rows>0 or empty>0) and (total is not None or total==0 or empty==1)
         if ready:
             stable+=1
-            if stable>=3:return total
+            if stable>=3:return total if total is not None else 0
         else:stable=0
         pg.wait_for_timeout(1000)
     raise RuntimeError('LS: полная таблица не загружена, данные не сохранены')
@@ -69,28 +72,26 @@ def switch_brand(pg,base,brand):
     raise RuntimeError('LS: не удалось подтвердить выбор кабинета '+brand)
 
 def select_tab(pg,tab):
-    # READ-ONLY driver: group counts other than selected one may be stale.
     button=pg.locator('button').filter(has_text=tab).first
     for _ in range(180):
         if button.count():break
         pg.wait_for_timeout(1000)
     else:raise RuntimeError('LS: обязательная вкладка не найдена: '+tab)
+    old={row for row in pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)')}
     for _ in range(120):
         if button.is_enabled():break
         pg.wait_for_timeout(1000)
-    # TENET carries (N) on selected tab, CHERY and TENET+ do not always.
-    # Do not require the previously selected tab's (N) -- it belongs elsewhere.
-    needs_counter=bool(pg.locator('button').filter(has_text='Отложенные').count())
     if button.is_enabled():button.click()
     for _ in range(240):
-        current=pg.locator('button').filter(has_text=tab).first
-        match=re.search(r'\((\d+)\)',current.inner_text()) if current.count() else None
-        expected=int(match.group(1)) if match else None
-        if expected is not None or not needs_counter:
-            count=wait_grid(pg)
-            if expected is None or count==expected:return count
-        pg.wait_for_timeout(1000)
-    raise TimeoutError('LS: вкладка '+tab+' не выдала подтверждённый полный набор; сохранение отменено')
+        try:
+            count=wait_grid(pg,timeout=15)
+            current=pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)')
+            if set(current)==old:continue
+            print('новые VIN-строки',tab,len(current),'->',count,flush=True)
+            return count
+        except Exception:
+            pg.wait_for_timeout(1000)
+    raise RuntimeError('LS: вкладка '+tab+' не дала новый полный список; старый результат не сохранён')
 
 def read_taxi(pg,brand,tab):
     total=select_tab(pg,tab)
