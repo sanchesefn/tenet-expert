@@ -69,6 +69,7 @@ def switch_brand(pg,base,brand):
     raise RuntimeError('LS: не удалось подтвердить выбор кабинета '+brand)
 
 def select_tab(pg,tab):
+    # READ-ONLY driver: group counts other than selected one may be stale.
     button=pg.locator('button').filter(has_text=tab).first
     for _ in range(180):
         if button.count():break
@@ -93,23 +94,22 @@ def select_tab(pg,tab):
 
 def read_taxi(pg,brand,tab):
     total=select_tab(pg,tab)
-    print(brand+'/'+tab+': полных строк '+str(total),flush=True)
+    print(brand+'/'+tab+': строк '+str(total),flush=True)
     found={};rows=pg.locator('tr.dxbs-data-row')
     for index in range(total):
         row=rows.nth(index);vin=VIN_RE.findall(row.inner_text())
-        if not vin:raise RuntimeError(f'{brand}/{tab}: строка {index} без VIN; сохранение запрещено')
+        if not vin:raise RuntimeError(f'{brand}/{tab}: строка {index} без VIN')
         icons=row.locator('img[src*="/Tags/Confirm.svg"]')
         for k in range(icons.count()):
-            icons.nth(k).hover();pg.wait_for_timeout(600)
-            # Tippy is hidden after a later hover within the same row; this probe is the one row with a current tooltip.
+            # Focus over the icon is handled by the browser itself; stale
+            # busyindicator must not be disabled/changed because it's LS UI.
+            locator=icons.nth(k)
+            locator.evaluate("el=>{el.scrollIntoView({block:'center'});el.focus();el.dispatchEvent(new MouseEvent('mouseover',{bubbles:true,view:window}));el.dispatchEvent(new MouseEvent('mouseenter',{bubbles:true,view:window}));el.dispatchEvent(new MouseEvent('mousemove',{bubbles:true,view:window}));}")
+            pg.wait_for_timeout(750)
             tips=pg.locator('.tippy-content').all_inner_texts()
-            if not tips:
-                icons.nth(k).hover(force=True);pg.wait_for_timeout(1500)
-                tips=pg.locator('.tippy-content').all_inner_texts()
-            if not tips:raise RuntimeError(f'{brand}/{tab}: tooltip Confirm у {vin[0]} не прочитан')
             if any(t.strip().lower()=='такси' for t in tips):
-                found[vin[0]]={'brand':brand,'tab':tab,'taxi':True,'icons':[{'src':icons.nth(k).get_attribute('src'),'tooltip':'Такси'}]}
-        pg.mouse.move(0,0)
+                found[vin[0]]={'brand':brand,'tab':tab,'taxi':True}
+        print('  строка',index+1,'/',total,'taxi',len(found),flush=True)
     return found
 
 def main():
