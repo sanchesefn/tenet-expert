@@ -53,6 +53,7 @@
         if(typeof carIsMpt==="function"?carIsMpt(r):r.mpt) bits.push(`<span class="st mpt">МПТ</span>`);
         if(typeof carIsCorp==="function"?carIsCorp(r):(r.corp || (typeof CORP_VINS!=="undefined" && CORP_VINS.has(r.vin)))) bits.push(`<span class="st corp">Корпоративный</span>`);
       }
+      if(r.taxi) bits.push(`<span class="st taxi">ТАКСИ</span>`);
       if(r.demo) bits.push(`<span class="st demo">ДЕМО</span>`);
       return bits.join(" ");
     }
@@ -166,6 +167,32 @@
         </div>
       </article>`;
     }
+    /*stock-taxi-block v1: Logicstars Confirm.svg tooltip «Такси»; red BallRed is separate.*/
+    function stockTaxiBlock(rows){
+      const cars=(rows||[]).filter(r=>r&&r.taxi===true);
+      if(!cars.length || (typeof isAo==="function" && isAo())) return "";
+      const groups={};
+      cars.forEach(r=>{(groups[r.model]||(groups[r.model]=[])).push(r);});
+      const order=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8","pl4","pl6"];
+      const titles={t4:"T4",t4l:"T4L",t7:"T7",t8:"T8",tt9:"T9",t9:"Tiggo 9",t7l:"Tiggo 7 L",ta8:"A8",a8:"Arrizo 8",pl4:"L4",pl6:"L6"};
+      const brands={t9:"CHERY",t7l:"CHERY",a8:"CHERY",pl4:"TENET PLUS",pl6:"TENET PLUS"};
+      const ids=Object.keys(groups).sort((a,b)=>(order.indexOf(a)<0?999:order.indexOf(a))-(order.indexOf(b)<0?999:order.indexOf(b)));
+      const models=ids.map(id=>{ /* syntax guard: balanced comparator parentheses */
+        const rows=groups[id].slice().sort((a,b)=>{
+          const trimCmp=String(a.trim||"").localeCompare(String(b.trim||""),"ru");
+          const colorCmp=String(a.color||"").localeCompare(String(b.color||""),"ru");
+          const vinCmp=String(a.vin||"").localeCompare(String(b.vin||""));
+          return trimCmp || colorCmp || vinCmp;
+        });
+        return `<div class="st-taxi-model"><p class="eyebrow">${escape(brands[id]||"TENET")} · ${escape(titles[id]||id.toUpperCase())}</p><div class="st-list">${rows.map(stockCard).join("")}</div></div>`;
+      }).join("");
+      return `<section class="card st-taxi-block" id="taxi-block" data-stock-taxi>
+        <p class="eyebrow">Подходят для работы в такси</p>
+        <h3>Такси</h3>
+        <p class="tune-note">По зелёной метке «Такси» в Logic Star. ${cars.length} авто · ${cars.filter(x=>x.status==="in").length} в наличии · ${cars.filter(x=>x.status==="way").length} в пути.</p>
+        <div id="taxi-stock-list" class="st-taxi-models">${models}</div>
+      </section>`;
+    }
     function stock(){
       if(needAuth()) return login();
       if(typeof stockSort!=="string") stockSort="trim";
@@ -190,6 +217,7 @@
         const arrow=on?(stockSortDir<0?" ↓":" ↑"):"";
         return `<button type="button" class="chip ${on?"on":""}" data-stock-sort="${k}">${lab}${arrow}</button>`;
       }).join("");
+      const taxi=stockTaxiBlock(sale.filter(x=>x.taxi===true));
       const body = list.length
         ? `<div class="st-board">`+ids.map(id=>{
             const titles={t4:["TENET","T4"],t4l:["TENET","T4L"],t7:["TENET","T7"],t8:["TENET","T8"],tt9:["TENET","T9"],t9:["CHERY","Tiggo 9"],t7l:["CHERY","Tiggo 7 L"],ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};
@@ -248,5 +276,6 @@
           <span class="st-sort-lab">Сортировка</span>
           ${sortBtns}
         </div>
+        ${taxi}
         ${body}`;
     }

@@ -372,6 +372,19 @@ def _is_plus_car(obj):
 
 
 def plus_stock(text):
+    # Taxi tooltip flags from the regular LS read; only mark, never add a car.
+    global PLUS_CARS
+    taxi=Path("taxi-vins.json")
+    if taxi.exists():
+        vins=set(json.loads(taxi.read_text(encoding="utf-8")))
+        copy=[]
+        for car in PLUS_CARS:
+            car=dict(car)
+            if car.get("vin","").upper() in vins:
+                car["taxi"]=True
+            copy.append(car)
+        PLUS_CARS=copy
+
     m = STOCK_RE.search(text)
     if not m:
         return text
