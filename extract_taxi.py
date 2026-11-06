@@ -56,17 +56,34 @@ def switch_brand(pg,base,brand):
         if pg.locator('a.dropdown-item').filter(has_text=brand).count():break
         pg.wait_for_timeout(1000)
     else:raise RuntimeError('LS: отсутствует selector '+brand)
+    # selector markup exists before Blazor accepts events; clicking earlier is ignored.
+    wait_grid(pg)
+    original_rows=set(pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)'))
     is_tenet=bool(pg.locator('button').filter(has_text='Корпоративные').count())
     if (brand=='TENET')!=is_tenet:
         pg.locator('a.dropdown-item').filter(has_text=brand).last.evaluate('el=>el.click()')
-        pg.wait_for_timeout(6000)
-        pg.goto(base+'/sales/cars',timeout=120000)
+        # A reload silently returns the server-selected TENET brand. Stay on
+        # Blazor's newly selected grid and verify its complete data below.
+        for _ in range(120):
+            corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
+            deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
+            rows=set(pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)'))
+            if (brand=='TENET')==(corp and deferred) and rows!=original_rows:break
+            pg.wait_for_timeout(1000)
+        else:raise RuntimeError('LS: переключение бренда не применено: '+brand)
     # Confirm the brand from its known tab shape; on the same shape wait.
     for _ in range(120):
         corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
         deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
         if corp==deferred and (brand=='TENET')==corp:
-            if not deferred:wait_grid(pg)
+            if not pg.locator('button').filter(has_text='Непроданные').first.count():
+                pg.wait_for_timeout(1000)
+                continue
+            wait_grid(pg)
+            if is_tenet!=(brand=='TENET'):
+                rows=set(pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)'))
+                if rows==original_rows:raise RuntimeError('LS: бренд не дал новый набор строк, данные не сохранены')
+            print('LS кабинет подтверждён',brand,flush=True)
             return
         pg.wait_for_timeout(1000)
     raise RuntimeError('LS: не удалось подтвердить выбор кабинета '+brand)
@@ -81,7 +98,10 @@ def select_tab(pg,tab):
     for _ in range(120):
         if button.is_enabled():break
         pg.wait_for_timeout(1000)
-    if button.is_enabled():button.click()
+    if not button.is_enabled():
+        print('вкладка уже активна',tab,flush=True)
+        return wait_grid(pg)
+    button.click()
     for _ in range(240):
         try:
             count=wait_grid(pg,timeout=15)
@@ -113,6 +133,13 @@ def read_taxi(pg,brand,tab):
         print('  строка',index+1,'/',total,'taxi',len(found),flush=True)
     return found
 
+CHECKPOINT=Path('/workspace/taxi/taxi-tabs-checkpoint.json')
+
+def save_checkpoint(taxis,report,complete=False):
+    data={'complete':bool(complete),'taxi_count':len(taxis),'tabs':report,'vins':sorted(taxis)}
+    CHECKPOINT.parent.mkdir(parents=True,exist_ok=True)
+    CHECKPOINT.write_text(json.dumps(data,ensure_ascii=False,indent=2),encoding='utf8')
+
 def main():
     if '-h' in sys.argv or '--help' in sys.argv:print(__doc__);return
     taxis={};report=[]
@@ -126,13 +153,20 @@ def main():
             corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
             deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
             if brand=='TENET':assert corp and deferred,'Cabinet identity TENET not confirmed'
-            if brand=='CHERY':assert not corp and not deferred,'Cabinet identity CHERY not confirmed'
+            if brand=='CHERY':
+                wait_grid(pg)
+                corp=bool(pg.locator('button').filter(has_text='Корпоративные').count())
+                deferred=bool(pg.locator('button').filter(has_text='Отложенные').count())
+                assert pg.locator('button').filter(has_text='Непроданные').first.count() and not corp and not deferred,'Cabinet identity CHERY not confirmed'
             for tab in tabs:
                 found=read_taxi(pg,brand,tab)
                 taxis.update(found)
                 report.append({'brand':brand,'tab':tab,'taxi':len(found),'complete':True})
+                save_checkpoint(taxis,report)
                 print(' → такси: '+str(len(found)),flush=True)
             pg.close()
+    assert len(report)==sum(len(x[1]) for x in CABINETS),'не все обязательные вкладки завершены'
+    save_checkpoint(taxis,report,True)
     path=Path('taxi-vins.json')
     Path('taxi-vins.json.tmp').write_text(json.dumps(sorted(taxis),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     Path('taxi-extraction-report.json.tmp').write_text(json.dumps({'complete':True,'count':len(taxis),'tabs':report},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
