@@ -94,13 +94,15 @@ def select_tab(pg,tab):
         if button.count():break
         pg.wait_for_timeout(1000)
     else:raise RuntimeError('LS: обязательная вкладка не найдена: '+tab)
-    old={row for row in pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)')}
     for _ in range(120):
-        if button.is_enabled():break
+        if button.count() and button.is_enabled():break
         pg.wait_for_timeout(1000)
-    if not button.is_enabled():
+    old=set(pg.locator('tr.dxbs-data-row').evaluate_all('(els)=>els.map(e=>e.innerText)'))
+    if button.count() and button.is_disabled():
+        wait_grid(pg)
         print('вкладка уже активна',tab,flush=True)
         return wait_grid(pg)
+    if not button.count() or not button.is_enabled():raise RuntimeError('LS: вкладка '+tab+' недоступна, результат не сохранён')
     button.click()
     for _ in range(240):
         try:
@@ -167,7 +169,10 @@ def main():
             pg.close()
     assert len(report)==sum(len(x[1]) for x in CABINETS),'не все обязательные вкладки завершены'
     save_checkpoint(taxis,report,True)
-    path=Path('taxi-vins.json')
+    existing=Path('taxi-vins.json')
+    known=json.loads(existing.read_text()) if existing.exists() else []
+    if not taxis and known:raise RuntimeError('получен пустой набор такси при непустом прежнем списке; обновление запрещено')
+    path=existing
     Path('taxi-vins.json.tmp').write_text(json.dumps(sorted(taxis),ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     Path('taxi-extraction-report.json.tmp').write_text(json.dumps({'complete':True,'count':len(taxis),'tabs':report},ensure_ascii=False,indent=2)+'\n',encoding='utf8')
     Path('taxi-vins.json.tmp').replace(path);Path('taxi-extraction-report.json.tmp').replace('taxi-extraction-report.json')
