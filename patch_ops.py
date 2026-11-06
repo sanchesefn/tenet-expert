@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from pathlib import Path
-import re
+import re, json
 
 ROOT = Path(".")
 SITE = Path("_site/index.html")
@@ -119,6 +119,11 @@ def patch(html: str) -> str:
             if n:
                 html = new_html
                 print("stock fn replaced")
+    m = re.search(r"const STOCK = (\[.*?\]);\s*\n\s*const ST_LABEL", html, re.S)
+    if m:
+        stock = json.loads(m.group(1))
+        stock = [x for x in stock if x.get("vin") != "EDEDB21B7SD723791"]
+        html = html[:m.start(1)] + json.dumps(stock, ensure_ascii=False) + html[m.end(1):]
     html = html.replace(
         '${(typeof stockHasSovcom==="function"&&stockHasSovcom(r))?` <span class="st lease">Совкомбанк лизинг</span>`:""}',
         "",
