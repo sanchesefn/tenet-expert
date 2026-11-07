@@ -322,7 +322,8 @@
       "prod": "26.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "reserved": true
     },
     {
       "vin": "EDXGD34B8TE095641",
