@@ -2,8 +2,11 @@
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:""},
-      {model:"T7",trim:"Prime 2WD/4WD",km:"50 / 100",note:""},
-      {model:"T7",trim:"EDEFD32B4TE136144",km:"100 / 200",note:"VIN"},
+      {model:"T7",trim:"EDEFD32B4TE136144",km:"100 / 200",note:"Prime 4WD"},
+      {model:"T7",trim:"EDEFB32B2TE136648",km:"50 / 100",note:"Prime 2WD"},
+      {model:"T7",trim:"EDEFB32B2TE136567",km:"50 / 100",note:"Prime 2WD"},
+      {model:"T7",trim:"EDEFD32B9TE138147",km:"50 / 100",note:"Active 4WD"},
+      {model:"T7",trim:"EDEFD32B3TE138225",km:"50 / 100",note:"Active 4WD"},
       {model:"T8",trim:"Приоритет",km:"−50 / 0",note:"VIN из списка"},
       {model:"T8",trim:"Остальные",km:"0 / 30",note:""},
       {model:"T9",trim:"Все",km:"0 / 30",note:""},
@@ -76,29 +79,24 @@
       if(vin && typeof PANGO_VIN!=="undefined" && PANGO_VIN[vin]) return PANGO_VIN[vin];
       return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null;
     }
+
     const TERMS_PRIO = [
-      {model:"T8",vin:"EDXGD34B8TE095347",trim:"Прайм 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T8",vin:"EDXGD34B5TE095631",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"",pay:1000},
-      {model:"T8",vin:"EDXGB32B8TE110275",trim:"Прайм 5 мест 2WD",year:"2026",color:"Чёрный",extra:"",pay:1000},
-      {model:"T8",vin:"EDXGB32B1TE110196",trim:"Прайм 5 мест 2WD",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T8",vin:"EDXGB32B0TE089261",trim:"Актив 5 мест 2WD",year:"2026",color:"Светло-серый",extra:"",pay:1000},
-      {model:"T7",vin:"EDXFD32B2TE042710",trim:"Актив 4WD",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFD32B1TE101190",trim:"Прайм 4WD",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFD32B5TE102522",trim:"Прайм 4WD",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFB32B8TE099203",trim:"Прайм",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFB32BXTE100707",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFB32B8TE105355",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000},
-      {model:"T7",vin:"EDEFB32B2TE105500",trim:"Актив",year:"2026",color:"Чёрный",extra:"",pay:1000},
-      {model:"T4",vin:"EDEEB31B8TE003261",trim:"Прайм",year:"2026",color:"Светло-серый",extra:"",pay:1000}
+      {model:"T4",vin:"EDEEB31B8TE003261",trim:"Прайм",year:"2026",color:"Светло-серый",extra:"",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T8",vin:"EDXGD34B5TE095631",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T8",vin:"EDXGD34B8TE095347",trim:"Прайм 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T7",vin:"EDEFB32BXTE100707",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:0,kmCash:50},
+      {model:"T7",vin:"EDEFB32B8TE099203",trim:"Прайм",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:0,kmCash:50},
+      {model:"T7",vin:"EDEFB32B8TE105355",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:0,kmCash:50},
+      {model:"T7",vin:"EDXFD32B2TE042710",trim:"Актив 4WD",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:0,kmCash:50}
     ];
     const KM_MODELS = [
       {id:"t4p",brand:"TENET",name:"T4 Prime 2025",stock:"t4",rrc:2449000,dealer:2369000,ti:100000,tiBack:80000,cr:0,crBack:0,bonus:0.03,vat:1.22,fee:0.01,kmMin:-30,kmMax:20,prioMin:-30,prioMax:20},
       {id:"t4la",brand:"TENET",name:"T4L Active",stock:"t4l",rrc:2344000,dealer:2249000,ti:0,tiBack:0,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"t4lp",brand:"TENET",name:"T4L Prime",stock:"t4l",rrc:2494000,dealer:2404000,ti:0,tiBack:0,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"t7a",brand:"TENET",name:"T7 Active 2WD",stock:"t7",rrc:2805000,dealer:2665000,ti:180000,tiBack:130000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
-      {id:"t7p",brand:"TENET",name:"T7 Prime 2WD",stock:"t7",rrc:3005000,dealer:2860000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:50,kmMax:100,prioMin:50,prioMax:100},
+      {id:"t7p",brand:"TENET",name:"T7 Prime 2WD",stock:"t7",rrc:3005000,dealer:2860000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
       {id:"t7a4",brand:"TENET",name:"T7 Active 4WD",stock:"t7",rrc:3010000,dealer:2880000,ti:130000,tiBack:90000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
-      {id:"t7p4",brand:"TENET",name:"T7 Prime 4WD",stock:"t7",rrc:3210000,dealer:3065000,ti:150000,tiBack:110000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:50,kmMax:100,prioMin:50,prioMax:100},
+      {id:"t7p4",brand:"TENET",name:"T7 Prime 4WD",stock:"t7",rrc:3210000,dealer:3065000,ti:150000,tiBack:110000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:30,kmMax:80,prioMin:30,prioMax:80},
       {id:"t8a",brand:"TENET",name:"T8 Active 2WD",stock:"t8",rrc:3099000,dealer:2999000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:30,prioMin:-50,prioMax:0},
       {id:"t8p",brand:"TENET",name:"T8 Prime 2WD",stock:"t8",rrc:3299000,dealer:3149000,ti:200000,tiBack:150000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:30,prioMin:-50,prioMax:0},
       {id:"t8p4",brand:"TENET",name:"T8 Prime 4WD",stock:"t8",rrc:3630000,dealer:3465000,ti:150000,tiBack:100000,cr:0,crBack:0,bonus:0.02,vat:1.22,fee:0.01,kmMin:0,kmMax:30,prioMin:-50,prioMax:0},
@@ -120,7 +118,8 @@
       {id:"l6e",brand:"TENET PLUS",name:"L6 Elegant",stock:"pl6",rrc:2890000,dealer:2745500,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"l6u",brand:"TENET PLUS",name:"L6 Ultra",stock:"pl6",rrc:3040000,dealer:2888000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50}
     ];
-    const PRIO_VINS = new Set(["EDXGD34B8TE095347","EDXGD34B5TE095631","EDXGB32B8TE110275","EDXGB32B1TE110196","EDXGB32B0TE089261","EDXFD32B2TE042710","EDEFD32B1TE101190","EDEFD32B5TE102522","EDEFB32B8TE099203","EDEFB32BXTE100707","EDEFB32B8TE105355","EDEFB32B2TE105500","EDEEB31B8TE003261"]);
+
+    const PRIO_VINS = new Set(["EDEEB31B8TE003261", "EDXGD34B5TE095631", "EDXGD34B8TE095347", "EDEFB32BXTE100707", "EDEFB32B8TE099203", "EDEFB32B8TE105355", "EDXFD32B2TE042710"]);
     const KM_DC_DEF = 100000;
     const KM_BANKS = [
       {id:"sber", name:"Сбер"},
@@ -385,3 +384,11 @@
       if(p>=10) return 10;
       return 0;
     }
+
+    const KM_FORK = Object.fromEntries([
+      ...KM_CORRIDOR.filter(r=>/^[A-HJ-NPR-Z0-9]{17}$/.test(r.trim)).map(r=>{
+        const pair=r.km.replace(/[−–]/g,"-").split("/").map(Number);
+        return [r.trim,{ti:pair[0],cash:pair[1]}];
+      }),
+      ...TERMS_PRIO.filter(r=>Number.isFinite(r.kmTi)&&Number.isFinite(r.kmCash)).map(r=>[r.vin,{ti:r.kmTi,cash:r.kmCash}])
+    ]);
