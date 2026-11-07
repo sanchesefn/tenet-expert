@@ -1,5 +1,5 @@
 {
-  "updated": "06.11.2026",
+  "updated": "07.11.2026",
   "dealer": "ООО «ЭКСПЕРТ АВТО САМАРА»",
   "cars": [
     {
@@ -592,7 +592,8 @@
       "status": "in",
       "note": "В салоне · с 02.10.2026",
       "rrc": 3005000,
-      "taxi": true
+      "taxi": true,
+      "reserved": true
     },
     {
       "vin": "EDELB31B4TE121993",
