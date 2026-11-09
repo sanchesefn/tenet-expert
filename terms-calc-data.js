@@ -1,4 +1,4 @@
-    const TERMS_DATE = "08.11.2026";
+    const TERMS_DATE = "09.11.2026";
     const KM_CORRIDOR = [
       {model:"T4L",trim:"Все",km:"0 / 50",note:""},
       {model:"T7",trim:"Все",km:"30 / 80",note:""},
@@ -10,7 +10,9 @@
       {model:"T8",trim:"Приоритет",km:"−50 / 0",note:"Только 2 VIN Prime 4WD; приоритетные 2WD — стандарт 0/30"},
       {model:"T8",trim:"Остальные",km:"0 / 30",note:""},
       {model:"T9",trim:"Все",km:"0 / 30",note:""},
-      {model:"A8",trim:"Все",km:"0 / 30",note:""}
+      {model:"A8",trim:"Все",km:"0 / 30",note:""},
+      {model:"L6",trim:"Все",km:"0 / 50",note:""},
+      {model:"L4",trim:"Все",km:"−30 / 50",note:""}
     ];
     const TERMS_BONUS = [
       {model:"T4L",trim:"Все",bonus:"2%"},
@@ -119,8 +121,8 @@
       {id:"a8p",brand:"CHERY",name:"Arrizo 8 Prime",stock:"a8",rrc:3060000,dealer:2699000,ti:200000,tiBack:180000,cr:261000,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"a8u",brand:"CHERY",name:"Arrizo 8 Ultra Black",stock:"a8",rrc:3275000,dealer:2899000,ti:200000,tiBack:180000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:-30,kmMax:0,prioMin:-30,prioMax:0},
       {id:"t7l",brand:"CHERY",name:"Tiggo 7 L Active",stock:"t7l",rrc:2735000,dealer:2620000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.02,vat:1.2,fee:0.02,kmMin:0,kmMax:30,prioMin:0,prioMax:30},
-      {id:"l4s",brand:"TENET PLUS",name:"L4 Style",stock:"pl4",rrc:2540000,dealer:2438400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
-      {id:"l4e",brand:"TENET PLUS",name:"L4 Elegant",stock:"pl4",rrc:2690000,dealer:2582400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
+      {id:"l4s",brand:"TENET PLUS",name:"L4 Style",stock:"pl4",rrc:2540000,dealer:2438400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
+      {id:"l4e",brand:"TENET PLUS",name:"L4 Elegant",stock:"pl4",rrc:2690000,dealer:2582400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
       {id:"l6e",brand:"TENET PLUS",name:"L6 Elegant",stock:"pl6",rrc:2890000,dealer:2745500,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50},
       {id:"l6u",brand:"TENET PLUS",name:"L6 Ultra",stock:"pl6",rrc:3040000,dealer:2888000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50}
     ];
