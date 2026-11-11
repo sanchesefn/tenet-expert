@@ -946,8 +946,59 @@
       "trim": "Ультра 4WD",
       "color": "Тёмно-зелёный",
       "status": "way",
-      "note": "Домодедово / не отгружен",
+      "note": "Домодедово · отгружен дилеру 11.11.2026",
       "rrc": 4299000
+    },
+    {
+      "vin": "EDELB31B2TE131065",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Красный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000,
+      "taxi": true
+    },
+    {
+      "vin": "EDELB31B7TE147052",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B7TE146922",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B9TE146646",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2494000
+    },
+    {
+      "vin": "EDELB31B2TE146648",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Прайм",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2494000
     }
   ]
 }
