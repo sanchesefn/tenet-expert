@@ -332,6 +332,7 @@ PLUS_CARS = [
     {"vin": "EDEMB31B0TE145552", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
     {"vin": "EDEMB31B0TE146572", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
     {"vin": "EDEMB31B1TE102015", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
+    {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
     {"vin": "EFEDB21BXT3003706", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2540000},
     {"vin": "EDEMB31B2TE139641", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2890000},
     {"vin": "EDEMB31B1TE140229", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 3040000},
