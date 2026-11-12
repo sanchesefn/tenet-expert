@@ -336,7 +336,6 @@ PLUS_CARS = [
     {"vin": "EFEDB21BXT3003706", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2540000},
     {"vin": "EDEMB31B2TE139641", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2890000},
     {"vin": "EDEMB31B1TE140229", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 3040000},
-    {"vin": "EFEDB21B0T3003360", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},
     {"vin": "EFEDB21B0T3002547", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2690000},
     {"vin": "EFEDB21B0T3003665", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003786", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},

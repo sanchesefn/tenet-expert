@@ -101,19 +101,6 @@
       "taxi": true
     },
     {
-      "vin": "EDEFD32B1TE101190",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Прайм 4WD",
-      "color": "Белый",
-      "status": "in",
-      "note": "В салоне · с 23.08.2026",
-      "salon": "Brown",
-      "prod": "18.08.2026",
-      "rrc": 3210000,
-      "taxi": true
-    },
-    {
       "vin": "EDEFD32B5TE102522",
       "model": "t7",
       "name": "T7",
@@ -504,6 +491,59 @@
       "taxi": true
     },
     {
+      "vin": "EDEFD32BXTE143888",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм 4WD",
+      "color": "Серый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3210000,
+      "mpt": true,
+      "corp": true
+    },
+    {
+      "vin": "EDXGB32B0TE147241",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Прайм 5 мест 2WD",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3299000
+    },
+    {
+      "vin": "EDXGD34B4TE148741",
+      "model": "t8",
+      "name": "T8",
+      "trim": "Ультра 7 мест 4WD",
+      "color": "Светло-серый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "salon": "Brown",
+      "rrc": 3885000
+    },
+    {
+      "vin": "EDEFD32B3TE149449",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм 4WD",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3210000
+    },
+    {
+      "vin": "EDEFD32B5TE149839",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм 4WD",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3210000
+    },
+    {
       "vin": "EDEFB32B8TE122298",
       "model": "t7",
       "name": "T7",
@@ -517,18 +557,6 @@
     },
     {
       "vin": "EDEFB32B8TE122317",
-      "model": "t7",
-      "name": "T7",
-      "trim": "Актив",
-      "color": "Серый",
-      "status": "in",
-      "note": "В салоне · с 29.09.2026",
-      "rrc": 2805000,
-      "invoice": true,
-      "taxi": true
-    },
-    {
-      "vin": "EDEFB32B7TE122325",
       "model": "t7",
       "name": "T7",
       "trim": "Актив",
