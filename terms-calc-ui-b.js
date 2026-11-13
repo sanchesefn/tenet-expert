@@ -35,8 +35,8 @@
       const useTi=kmVal("kmUseTi", false);
       const useLoan=kmVal("kmUseLoan", false);
       const hasDealCr=m.cr>0;
-      const dealCrLabel=m.id==="t7p"?"Выгодный кредит":"Прямая скидка";
-      const dealCrNeedsLoan=m.id==="t7p";
+      const dealCrLabel=["t7p","t7a4","t7p4"].includes(m.id)?"Выгодный кредит":"Прямая скидка";
+      const dealCrNeedsLoan=["t7p","t7a4","t7p4"].includes(m.id);
       const showDealCr=hasDealCr && (!dealCrNeedsLoan || useLoan);
       const useCr=showDealCr && kmVal("kmUseCr", false);
       const spec=kmVal("kmSpec", 0);

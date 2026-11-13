@@ -65,7 +65,7 @@
       if(!S && prevModel!==mid) price=m.rrc;
       const useTi=S?!!S.useTi:offerOn("ofTi");
       const useLoan=S?!!S.useLoan:offerOn("ofLoan");
-      const showDealCr=(m.cr||0)>0 && (m.id!=="t7p" || useLoan);
+      const showDealCr=(m.cr||0)>0 && (!["t7p","t7a4","t7p4"].includes(m.id) || useLoan);
       const useCr=showDealCr && (S?!!S.useCr:offerOn("ofCr"));
       const spec=S?(Number(S.spec)||0):(offerNum("ofSpec", 0)||0);
       const useDcTi=useTi && (S?!!S.useDcTi:offerOn("ofDcTi"));
@@ -87,7 +87,7 @@
       const crAmt=useCr?(m.cr||0):0;
       const discs=[];
       if(tiAmt) discs.push(["Трейд-ин импортёра", tiAmt]);
-      if(useCr && crAmt) discs.push([m.id==="t7p"?"Выгодный кредит":"Программа кредита", crAmt]);
+      if(useCr && crAmt) discs.push([["t7p","t7a4","t7p4"].includes(m.id)?"Выгодный кредит":"Программа кредита", crAmt]);
       if(spec) discs.push(["Спецпредложение", spec]);
       if(dcTi) discs.push(["Скидка ДЦ за трейд-ин", dcTi]);
       if(dcCr) discs.push(["Скидка ДЦ за кредит", dcCr]);
@@ -711,7 +711,7 @@
         <p class="eyebrow">Скидки</p>
         <label class="check-row"><input id="ofTi" type="checkbox" ${d.useTi?"checked":""} /> <span>Трейд-ин ${d.m.ti?rub(d.m.ti):"нет в базе"}</span></label>
         <label class="check-row"><input id="ofLoan" type="checkbox" ${d.useLoan?"checked":""} /> <span>Кредит</span></label>
-        ${d.showDealCr?`<label class="check-row"><input id="ofCr" type="checkbox" ${d.useCr?"checked":""} /> <span>${d.m.id==="t7p"?"Выгодный кредит":"Программа кредита"} · ${rub(d.m.cr||0)}</span></label>`:""}
+        ${d.showDealCr?`<label class="check-row"><input id="ofCr" type="checkbox" ${d.useCr?"checked":""} /> <span>${d.["t7p","t7a4","t7p4"].includes(m.id)?"Выгодный кредит":"Программа кредита"} · ${rub(d.m.cr||0)}</span></label>`:""}
         ${offerField("Спецпредложение, ₽", `<input id="ofSpec" inputmode="numeric" value="${d.spec}" />`)}
         ${d.useTi?`<label class="check-row"><input id="ofDcTi" type="checkbox" ${d.useDcTi?"checked":""} /> <span>Скидка ДЦ за трейд-ин</span></label>`:""}
         ${d.useTi&&d.useDcTi?offerField("Скидка ДЦ за трейд-ин, ₽", `<input id="ofDcTiAmt" inputmode="numeric" value="${d.dcTi||d.dcDef}" />`):""}
