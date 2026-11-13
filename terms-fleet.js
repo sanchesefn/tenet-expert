@@ -105,38 +105,31 @@
     }
     function fleetSubBreak(q, o){
       o=o||{};
-      const want=Math.max(0, Math.round(q.want||0));
-      const sections=[];
-      const priceRows=[];
-      if(o.name) priceRows.push(`<div class="bank-row"><span>Комплектация</span><span class="pay">${escape(o.name)}</span></div>`);
-      priceRows.push(`<div class="bank-row"><span>${o.trade?"Флит + трейд-ин":"Флит"}</span><span class="pay">${rub(q.base)}</span></div>`);
-      if(q.sub) priceRows.push(`<div class="bank-row"><span>Субсидия бренда</span><span class="pay">− ${rub(q.sub)}</span></div>`);
-      priceRows.push(`<div class="bank-row strong"><span>Цена для клиента</span><span class="pay">${rub(q.price)}</span></div>`);
-      sections.push(`<div class="break-section"><div class="break-title">Цена</div>${priceRows.join("")}</div>`);
-      const pvRows=[];
-      if(want && want !== q.pv) pvRows.push(`<div class="bank-row"><span>Клиент внёс</span><span class="pay">${rub(want)}</span></div>`);
-      pvRows.push(`<div class="bank-row"><span>ПВ в авто <small>(предел 49%)</small></span><span class="pay">${rub(q.pvCar)}</span></div>`);
-      if(q.pvExtras) pvRows.push(`<div class="bank-row"><span>Д/О + КАСКО из остатка</span><span class="pay">${rub(q.pvExtras)}</span></div>`);
-      if(q.early) pvRows.push(`<div class="bank-row"><span>Досрочно <small>(сокращает срок)</small></span><span class="pay">${rub(q.early)}</span></div>`);
-      if(q.earlyOver) pvRows.push(`<div class="bank-row muted"><span>Сверх 25% не в программе</span><span class="pay">${rub(q.earlyOver)}</span></div>`);
-      if(q.extrasCredit) pvRows.push(`<div class="bank-row"><span>Д/О + КАСКО в кредите</span><span class="pay">${rub(q.extrasCredit)}</span></div>`);
-      sections.push(`<div class="break-section"><div class="break-title">Как распределён первый взнос</div>${pvRows.join("")}</div>`);
-      const paid=fleetPaid(q);
-      const creditRows=[];
-      creditRows.push(`<div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(paid.deal)}</span></div>`);
-      if(q.early) creditRows.push(`<div class="bank-row strong"><span>После досрочного</span><span class="pay">${rub(paid.after)}</span></div>`);
-      sections.push(`<div class="break-section"><div class="break-title">Кредит</div>${creditRows.join("")}</div>`);
-      const key=Math.max(0, Math.round((q.price||0)+(q.doCasco||0)));
-      sections.push(`<div class="bank-row key"><span>Под ключ</span><span class="pay">${rub(key)}</span></div>`);
-      return `<div class="mpt-break">${sections.join("")}</div>`;
+      const rows=[];
+      if(o.name) rows.push(`<div class="bank-row"><span>Комплектация</span><span class="pay">${escape(o.name)}</span></div>`);
+      if(o.stock) rows.push(`<div class="bank-row"><span>На складе</span><span class="pay">${o.stock}</span></div>`);
+      if(o.rrc!=null) rows.push(`<div class="bank-row"><span>РРЦ</span><span class="pay">${rub(o.rrc)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>${o.trade?"Флит + трейд-ин":"Флит"}</span><span class="pay">${rub(q.base)}</span></div>`);
+      if(q.sub) rows.push(`<div class="bank-row"><span>Субсидия бренда</span><span class="pay">− ${rub(q.sub)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(q.pv)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>из них каско и Д/О</span><span class="pay">${rub(q.pvExtras)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>ПВ в авто</span><span class="pay">${rub(q.pvCar)}</span></div>`);
+      if(q.extrasCredit) rows.push(`<div class="bank-row"><span>Д/О и каско в кредите</span><span class="pay">${rub(q.extrasCredit)}</span></div>`);
+      if(q.early) rows.push(`<div class="bank-row"><span>Досрочно · сокращает срок, не платёж</span><span class="pay">${rub(q.early)}</span></div>`);
+      if(q.earlyOver) rows.push(`<div class="bank-row"><span>Сверх 25% в программу не входит</span><span class="pay">${rub(q.earlyOver)}</span></div>`);
+      rows.push(`<div class="bank-row"><span>Тело с учётом всех денег клиента</span><span class="pay">${rub(fleetPaid(q).after)}</span></div>`);
+      rows.push(fleetBodyRows(q));
+      rows.push(fleetKeyRow(q));
+      return `<div class="mpt-break">${rows.join("")}</div>`;
     }
     function fleetSubNote(q){
       const bits=[];
-      if(q.limited) bits.push("ПВ в авто + субсидия ≤ 49% от базы");
-      if(q.pvExtras) bits.push("Д/О и КАСКО берутся из остатка сверх предела ПВ");
-      if(q.early) bits.push("Досрочное "+rub(q.early)+" сокращает срок до "+q.termAfter+" мес., платёж не меняется");
-      if(q.earlyOver) bits.push("Часть денег сверх 25% в программу не входит");
-      return bits.length ? bits.join(". ")+"." : "Стандартный расчёт.";
+      if(q.limited) bits.push("ПВ "+rub(q.pv)+" + субсидия "+rub(q.sub)+" не больше 49% от "+rub(q.base));
+      bits.push("Каско и Д/О "+rub(q.doCasco)+" из взноса");
+      if(q.extrasCredit) bits.push(rub(q.extrasCredit)+" Д/О и каско остаются в кредите");
+      if(q.early) bits.push(rub(q.early)+" досрочно: срок "+q.term+" → "+q.termAfter+" мес., платёж тот же. Потолок 25% ("+rub(q.earlyCap)+")");
+      if(q.earlyOver) bits.push(rub(q.earlyOver)+" сверх 25% в программу не входит");
+      return bits.join(". ")+".";
     }
     function isT8TwoWd(c){
       if(!c || c.invoice) return false;
