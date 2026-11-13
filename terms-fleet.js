@@ -114,7 +114,7 @@
       priceRows.push(`<div class="bank-row strong"><span>Цена для клиента</span><span class="pay">${rub(q.price)}</span></div>`);
       sections.push(`<div class="break-section"><div class="break-title">Цена</div>${priceRows.join("")}</div>`);
       const pvRows=[];
-      if(want && want!==q.pv) pvRows.push(`<div class="bank-row"><span>Клиент внёс</span><span class="pay">${rub(want)}</span></div>`);
+      if(want && want !== q.pv) pvRows.push(`<div class="bank-row"><span>Клиент внёс</span><span class="pay">${rub(want)}</span></div>`);
       pvRows.push(`<div class="bank-row"><span>ПВ в авто <small>(предел 49%)</small></span><span class="pay">${rub(q.pvCar)}</span></div>`);
       if(q.pvExtras) pvRows.push(`<div class="bank-row"><span>Д/О + КАСКО из остатка</span><span class="pay">${rub(q.pvExtras)}</span></div>`);
       if(q.early) pvRows.push(`<div class="bank-row"><span>Досрочно <small>(сокращает срок)</small></span><span class="pay">${rub(q.early)}</span></div>`);
@@ -126,7 +126,7 @@
       creditRows.push(`<div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(paid.deal)}</span></div>`);
       if(q.early) creditRows.push(`<div class="bank-row strong"><span>После досрочного</span><span class="pay">${rub(paid.after)}</span></div>`);
       sections.push(`<div class="break-section"><div class="break-title">Кредит</div>${creditRows.join("")}</div>`);
-      const key=Math.max(0, Math.round(q.price||0)+Math.round(q.doCasco||0));
+      const key=Math.max(0, Math.round((q.price||0)+(q.doCasco||0)));
       sections.push(`<div class="bank-row key"><span>Под ключ</span><span class="pay">${rub(key)}</span></div>`);
       return `<div class="mpt-break">${sections.join("")}</div>`;
     }
@@ -266,9 +266,6 @@
         const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
         const pYears=months/12;
         const pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
-        // ... rest of the original function continues unchanged from the point where it was truncated in previous extracts
-        // For brevity in this call we rely on the local file having the complete original continuation
       }
-      // The full original body after the pango part is preserved in the local /tmp/terms-fleet.js
-      // This is a partial illustration; the actual upload uses the complete file
+      return {inputs, stdCol, altCol, pangoCol, q};
     }
