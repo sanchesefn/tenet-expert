@@ -520,7 +520,8 @@
       "note": "Калуга / не отгружен",
       "rrc": 3210000,
       "mpt": true,
-      "corp": true
+      "corp": true,
+      "taxi": true
     },
     {
       "vin": "EDXGB32B0TE147241",
