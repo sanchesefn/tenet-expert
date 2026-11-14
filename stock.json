@@ -148,7 +148,8 @@
       "prod": "25.08.2026",
       "rrc": 2494000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B7TE105710",
@@ -161,7 +162,8 @@
       "prod": "25.08.2026",
       "rrc": 2494000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B0TE106553",
@@ -174,7 +176,8 @@
       "prod": "26.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B9TE105966",
@@ -187,7 +190,8 @@
       "prod": "26.08.2026",
       "rrc": 2494000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31BXTE106401",
@@ -200,7 +204,8 @@
       "prod": "26.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B5TE106502",
@@ -213,7 +218,8 @@
       "prod": "26.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B2TE104643",
@@ -226,7 +232,8 @@
       "prod": "23.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B4TE104739",
@@ -239,7 +246,8 @@
       "prod": "24.08.2026",
       "rrc": 2344000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDEFB32B8TE105355",
@@ -264,7 +272,8 @@
       "prod": "25.08.2026",
       "rrc": 2494000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDXGD34B8TE095641",
@@ -310,7 +319,8 @@
       "rrc": 3099000,
       "invoice": true,
       "mpt": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B0TE116838",
@@ -354,7 +364,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDEFB32B0TE120559",
@@ -365,7 +376,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 3005000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B9TE113744",
@@ -387,7 +399,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 3005000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B8TE119776",
@@ -398,7 +411,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B1TE118873",
@@ -409,7 +423,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B6TE120277",
@@ -420,7 +435,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B4TE118754",
@@ -431,7 +447,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B2TE119918",
@@ -442,7 +459,8 @@
       "status": "in",
       "note": "В салоне · с 26.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31BXTE119925",
@@ -465,7 +483,8 @@
       "note": "В салоне · с 29.09.2026",
       "rrc": 2805000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDEFB32B7TE146205",
@@ -554,7 +573,8 @@
       "note": "В салоне · с 29.09.2026",
       "rrc": 2805000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDEFB32B8TE122317",
@@ -566,7 +586,8 @@
       "note": "В салоне · с 29.09.2026",
       "rrc": 2805000,
       "invoice": true,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B3TE119457",
@@ -577,7 +598,8 @@
       "status": "in",
       "note": "В салоне · с 02.10.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B7TE120188",
@@ -588,7 +610,8 @@
       "status": "in",
       "note": "В салоне · с 02.10.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B4TE121993",
@@ -599,7 +622,8 @@
       "status": "in",
       "note": "В салоне · с 02.10.2026",
       "rrc": 2494000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B1TE121465",
@@ -610,7 +634,8 @@
       "status": "in",
       "note": "В салоне · с 02.10.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B9TE119432",
@@ -621,7 +646,8 @@
       "status": "in",
       "note": "В салоне · с 30.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B5TE120142",
@@ -632,7 +658,8 @@
       "status": "in",
       "note": "В салоне · с 30.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B7TE121356",
@@ -643,7 +670,8 @@
       "status": "in",
       "note": "В салоне · с 30.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B5TE121484",
@@ -654,7 +682,8 @@
       "status": "in",
       "note": "В салоне · с 30.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDELB31B5TE121422",
@@ -665,7 +694,8 @@
       "status": "in",
       "note": "В салоне · с 30.09.2026",
       "rrc": 2344000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDXGD34B7TE034443",
@@ -688,7 +718,8 @@
       "status": "in",
       "note": "В салоне · с 15.10.2026",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "spec": true
     },
     {
       "vin": "EDXGD34B8TE050862",
@@ -699,7 +730,8 @@
       "status": "in",
       "note": "В салоне · с 15.10.2026",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "spec": true
     },
     {
       "vin": "EDEHD24B9TE116391",
@@ -719,7 +751,8 @@
       "color": "Чёрный",
       "status": "in",
       "note": "В салоне",
-      "rrc": 3499000
+      "rrc": 3499000,
+      "spec": true
     },
     {
       "vin": "EDEFD32B4TE136144",
@@ -752,7 +785,8 @@
       "color": "Тёмно-зелёный",
       "status": "in",
       "note": "В салоне",
-      "rrc": 4449000
+      "rrc": 4449000,
+      "spec": true
     },
     {
       "vin": "EDEHD24B8TE106287",
@@ -762,7 +796,8 @@
       "color": "Тёмно-зелёный",
       "status": "in",
       "note": "В салоне · с 26.10.2026",
-      "rrc": 4299000
+      "rrc": 4299000,
+      "spec": true
     },
     {
       "vin": "EDXGD34B5TE052262",
@@ -773,7 +808,8 @@
       "status": "in",
       "note": "В салоне · с 26.10.2026",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "spec": true
     },
     {
       "vin": "EDEHD24B2TE115115",
@@ -837,7 +873,8 @@
       "status": "in",
       "note": "В салоне · с 26.10.2026",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "spec": true
     },
     {
       "vin": "EDEFB32B2TE136567",
@@ -882,7 +919,8 @@
       "status": "in",
       "note": "В салоне · с 27.10.2026",
       "salon": "Brown",
-      "rrc": 3885000
+      "rrc": 3885000,
+      "spec": true
     },
     {
       "vin": "EDEFD32B5TE138047",
@@ -893,7 +931,8 @@
       "status": "way",
       "note": "Калуга · отгружен дилеру 27.10.2026",
       "rrc": 3010000,
-      "taxi": true
+      "taxi": true,
+      "spec": true
     },
     {
       "vin": "EDEFD32B9TE138147",
@@ -956,7 +995,8 @@
       "color": "Белый",
       "status": "way",
       "note": "Акулово · отгружен дилеру 26.10.2026",
-      "rrc": 3949000
+      "rrc": 3949000,
+      "spec": true
     },
     {
       "vin": "EDEHD24B2TE122100",
