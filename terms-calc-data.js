@@ -81,9 +81,70 @@
     };
     function pangoOf(id){
       const vin=typeof kmVin==="string"?String(kmVin).toUpperCase():"";
-      if(vin && typeof PANGO_VIN!=="undefined" && PANGO_VIN[vin]) return PANGO_VIN[vin];
-      return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null;
+      const vinPrice=(vin && typeof EXCL_FIX!=="undefined" && EXCL_FIX[vin]) || (vin && typeof PANGO_VIN!=="undefined" && PANGO_VIN[vin]) || null;
+      const trimPrice=(typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null;
+      const bg=(typeof termsBgActive==="function" && termsBgActive() && typeof PANGO_BG!=="undefined" && PANGO_BG[id]) || null;
+      if(vinPrice) return pangoBetter(vinPrice, bg);
+      return pangoBetter(trimPrice, bg);
     }
+
+    /* TENET_BG_START 19.11.2026: аналог спеца до 30.11.2026 включительно, Europe/Samara. С 01.12.2026 termsBgActive()=false. */
+    const TERMS_BG_UNTIL = "2026-11-30";
+    const TERMS_BG = [
+      {model:"T7",trim:"Актив 2WD",price:"2 400 нал, 2 300 ТИ"},
+      {model:"T7",trim:"Прайм 2WD",price:"2 550 нал, 2 450 ТИ"},
+      {model:"T7",trim:"Актив 4WD",price:"2 600 нал, 2 500 ТИ"},
+      {model:"T7",trim:"Прайм 4WD",price:"2 800 нал, 2 700 ТИ"},
+      {model:"T8",trim:"Актив 2WD 5 мест",price:"2 800 нал, 2 700 ТИ"},
+      {model:"T8",trim:"Прайм 2WD 5 мест",price:"2 900 нал, 2 800 ТИ"},
+      {model:"T8",trim:"Прайм 4WD 7 мест",price:"3 200 нал, 3 100 ТИ"},
+      {model:"T8",trim:"Ультра 4WD 7 мест",price:"3 300 нал, 3 200 ТИ"},
+      {model:"A8",trim:"Ультра 2.0",price:"3 100 нал, 3 000 ТИ"},
+      {model:"T9",trim:"Прайм 5 мест",price:"3 500 нал, 3 400 ТИ"},
+      {model:"T9",trim:"Ультра 5 мест",price:"3 800 нал, 3 600 ТИ"},
+      {model:"T9",trim:"Ультра 7 мест",price:"3 900 нал, 3 700 ТИ"}
+    ];
+    const PANGO_BG = {
+      t7a:{cash:2400000,ti:2300000},
+      t7p:{cash:2550000,ti:2450000},
+      t7a4:{cash:2600000,ti:2500000},
+      t7p4:{cash:2800000,ti:2700000},
+      t8a:{cash:2800000,ti:2700000},
+      t8p:{cash:2900000,ti:2800000},
+      t8p4:{cash:3200000,ti:3100000},
+      t8u4:{cash:3300000,ti:3200000},
+      ta8u:{cash:3100000,ti:3000000},
+      tt9p:{cash:3500000,ti:3400000},
+      tt9u:{cash:3800000,ti:3600000},
+      tt9u7:{cash:3900000,ti:3700000}
+    };
+    function termsBgActive(){
+      /* Until 2026-11-30 inclusive, Europe/Samara (UTC+4, no DST). */
+      try{
+        const ymd=new Intl.DateTimeFormat("en-CA",{timeZone:"Europe/Samara",year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+        return ymd<=TERMS_BG_UNTIL;
+      }catch(e){
+        return new Date(Date.now()+4*3600*1000).toISOString().slice(0,10)<=TERMS_BG_UNTIL;
+      }
+    }
+    function pangoBetter(a,b){
+      if(!a) return b||null;
+      if(!b) return a;
+      return {cash:Math.min(a.cash,b.cash),ti:Math.min(a.ti,b.ti)};
+    }
+    function isPangoBg(car){
+      if(!car || typeof termsBgActive!=="function" || !termsBgActive() || typeof PANGO_BG==="undefined") return false;
+      const t=String(car.trim||"").toLowerCase();
+      if(t.includes("престиж")||t.includes("prestige")) return false;
+      const id=typeof kmIdFromCar==="function"?kmIdFromCar(car):"";
+      return !!(id && PANGO_BG[id]);
+    }
+    function isPangoDeal(car,id){
+      if(!car) return false;
+      if(car.invoice) return true;
+      return typeof isPangoBg==="function" && isPangoBg(car);
+    }
+    /* TENET_BG_END */
 
     const TERMS_PRIO = [
       {model:"T4",vin:"EDEEB31B8TE003261",trim:"Прайм",year:"2026",color:"Светло-серый",extra:"",pay:1000,kmTi:-50,kmCash:0},
