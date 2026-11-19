@@ -431,16 +431,23 @@ PLUS_UI_SUBS = [
     ('      if(id==="t7l") return true;\n      return true;',
      '      if(id==="l4s") return t.includes("стайл")||t.includes("style");\n'
      '      if(id==="l4e"||id==="l6e") return t.includes("элегант")||t.includes("elegant");\n'
-     '      if(id==="l6u") return t.includes("ультра")||t.includes("ultra");\n'
+     '      if(id==="l6u4") return (t.includes("ультра")||t.includes("ultra")) && t.includes("4wd");\n'
+     '      if(id==="l6u") return (t.includes("ультра")||t.includes("ultra")) && !t.includes("4wd");\n'
      '      if(id==="t7l") return true;\n      return true;'),
     ('      if(car.model==="t7l") return "t7l";\n      return "";',
      '      if(car.model==="t7l") return "t7l";\n'
      '      if(car.model==="pl4") return (t.includes("стайл")||t.includes("style"))?"l4s":"l4e";\n'
-     '      if(car.model==="pl6") return (t.includes("ультра")||t.includes("ultra"))?"l6u":"l6e";\n      return "";'),
+     '      if(car.model==="pl6"){\n'
+     '        if((t.includes("ультра")||t.includes("ultra")) && t.includes("4wd")) return "l6u4";\n'
+     '        if(t.includes("ультра")||t.includes("ultra")) return "l6u";\n'
+     '        return "l6e";\n'
+     '      }\n      return "";'),
     ('const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];',
      'const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8","pl4","pl6"];'),
     ('ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};',
      'ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"],pl4:["TENET PLUS","L4"],pl6:["TENET PLUS","L6"]};'),
+    ('if(id==="l6e"||id==="l6u") return "L6";',
+     'if(id==="l6e"||id==="l6u"||id==="l6u4") return "L6";'),
 ]
 
 
