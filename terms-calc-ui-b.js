@@ -139,13 +139,13 @@
       }
       const _pg=(typeof pangoOf==="function")?pangoOf(m.id):null;
       const pShow=!!(_pg && (showMpt || showSub || canSub));
-      let pFix=0, pDownP=0, pBundle=150000, pBase=0, pCreditB=0, pRateA=17.4, pRateB=14.4, pNss=0, pPayA=0, pPayB=0, pOverA=0, pOverB=0, pYears=0, pYearsLabel="0", pYearsWord="лет", pKm=km, pKmK=kmK, pOk=ok, pDiscount=0, pTiBack=0, pCard=0, pBonus=0, pMargin=0, pIron=0;
+      let pFix=0, pDownP=0, pBundle=150000, pBase=0, pCreditB=0, pRateA=18.4, pRateB=15.4, pNss=0, pPayA=0, pPayB=0, pOverA=0, pOverB=0, pYears=0, pYearsLabel="0", pYearsWord="лет", pKm=km, pKmK=kmK, pOk=ok, pDiscount=0, pTiBack=0, pCard=0, pBonus=0, pMargin=0, pIron=0;
       if(_pg){
         pFix=useTi?_pg.ti:_pg.cash;
         pDownP=Math.max(0, Math.min(pFix, down));
         pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
-        pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
-        pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:18.4;
+        pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:15.4;
         const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
         pYears=months/12;
         pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
@@ -305,10 +305,10 @@
           </div>
           ${pShow?`<div class="pay-col pango km-pay">
             <p class="eyebrow">Спеццена · PANGO</p>
-            <p class="eyebrow" style="margin-top:8px">17,4% без комиссий</p>
+            <p class="eyebrow" style="margin-top:8px">18,4% без комиссий</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
-            <p class="eyebrow" style="margin-top:8px">14,4% · НСС в теле</p>
+            <p class="eyebrow" style="margin-top:8px">15,4% · НСС в теле</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
             <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
             <details class="calc-more">

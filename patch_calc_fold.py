@@ -21,10 +21,10 @@ PANGO_KM = r'''${pShow?`<div class="pay-col pango km-pay">
             <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
             <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
             <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
-            <p class="eyebrow" style="margin-top:10px">17,4% без комиссий</p>
+            <p class="eyebrow" style="margin-top:10px">18,4% без комиссий</p>
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
             <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
-            <p class="eyebrow" style="margin-top:10px">14,4% · НСС в теле</p>
+            <p class="eyebrow" style="margin-top:10px">15,4% · НСС в теле</p>
             <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
             <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
             <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
@@ -32,10 +32,10 @@ PANGO_KM = r'''${pShow?`<div class="pay-col pango km-pay">
 
 PANGO_KM_NEW = r'''${pShow?`<div class="pay-col pango km-pay">
             <p class="eyebrow">Спеццена · PANGO</p>
-            <p class="eyebrow" style="margin-top:8px">17,4% без комиссий</p>
+            <p class="eyebrow" style="margin-top:8px">18,4% без комиссий</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
-            <p class="eyebrow" style="margin-top:8px">14,4% · НСС в теле</p>
+            <p class="eyebrow" style="margin-top:8px">15,4% · НСС в теле</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
             <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
             <details class="calc-more">
@@ -54,10 +54,10 @@ PANGO_FLEET = r'''pangoCol=`<div class="pay-col pango km-pay">
             <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
             <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDownP)}</span></div>
             <div class="bank-row"><span>Каско + GAP + ДМС</span><span class="pay">${rub(pBundle)}</span></div>
-            <p class="eyebrow" style="margin-top:10px">17,4% без комиссий</p>
+            <p class="eyebrow" style="margin-top:10px">18,4% без комиссий</p>
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
             <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
-            <p class="eyebrow" style="margin-top:10px">14,4% · НСС в теле</p>
+            <p class="eyebrow" style="margin-top:10px">15,4% · НСС в теле</p>
             <div class="bank-row"><span>НСС 0,89% × ${pYearsLabel} ${pYearsWord}</span><span class="pay">${rub(pNss)}</span></div>
             <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
             <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pPayB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
@@ -65,10 +65,10 @@ PANGO_FLEET = r'''pangoCol=`<div class="pay-col pango km-pay">
 
 PANGO_FLEET_NEW = r'''pangoCol=`<div class="pay-col pango km-pay">
             <p class="eyebrow">Спеццена · PANGO</p>
-            <p class="eyebrow" style="margin-top:8px">17,4% без комиссий</p>
+            <p class="eyebrow" style="margin-top:8px">18,4% без комиссий</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
             <div class="bank-row"><span>Тело кредита</span><span class="pay">${rub(pBase)}</span></div>
-            <p class="eyebrow" style="margin-top:8px">14,4% · НСС в теле</p>
+            <p class="eyebrow" style="margin-top:8px">15,4% · НСС в теле</p>
             <div class="bank-row pay-top"><span><b>Платёж</b><br/><small>${pRateB}% · ${months} мес. · переплата ~${rub(Math.round(pOverB))}</small></span><span class="pay">${rub(Math.round(pPayB))} ₽</span></div>
             <div class="bank-row"><span>Тело с НСС</span><span class="pay">${rub(pCreditB)}</span></div>
             <details class="calc-more">

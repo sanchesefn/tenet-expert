@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Special-price cars: fixed cash/TI price and PANGO credit at 17.4% and 14.4%+NSS."""
+"""Special-price cars: fixed cash/TI price and PANGO credit at 18.4% and 15.4%+NSS."""
 from pathlib import Path
 
 DATA = '''    const PANGO_FIX = {
@@ -11,8 +11,8 @@ DATA = '''    const PANGO_FIX = {
       t8u4:{cash:3300000,ti:3200000}
     };
     const PANGO_BUNDLE = 150000;
-    const PANGO_RATE_A = 17.4;
-    const PANGO_RATE_B = 14.4;
+    const PANGO_RATE_A = 18.4;
+    const PANGO_RATE_B = 15.4;
     const PANGO_NSS = 0.0089;
     function pangoOf(id){ return (typeof PANGO_FIX!=="undefined" && PANGO_FIX[id]) || null; }
 '''
@@ -33,8 +33,8 @@ PANGO_JS = r'''      const _pg=(selected && selected.invoice && typeof pangoOf==
         const pPct=pFix>0?Math.round(pDown*1000/pFix)/10:0;
         const pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
         const pCredit=Math.max(0, pFix-pDown)+pBundle;
-        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
-        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:18.4;
+        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:15.4;
         const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
         const pPayA=calcPay(pFix+pBundle, pDown, months, pRateA);
         const pPayB=calcPay(pFix+pBundle, pDown, months, pRateB);
@@ -77,7 +77,7 @@ PANGO_JS = r'''      const _pg=(selected && selected.invoice && typeof pangoOf==
             <label class="field" style="max-width:none"><span>Срок, мес.</span><input id="cMonths" inputmode="numeric" value="${months}" /></label>
           </div>
           <div class="pay-col pango km-pay">
-            <p class="eyebrow">PANGO · 17,4%</p>
+            <p class="eyebrow">PANGO · 18,4%</p>
             <p class="calc-note">Без дополнительных комиссий.</p>
             <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
             <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDown)}</span></div>
@@ -86,7 +86,7 @@ PANGO_JS = r'''      const _pg=(selected && selected.invoice && typeof pangoOf==
             <div class="bank-row"><span><b>Платёж</b><br/><small>${pRateA}% · ${months} мес. · переплата ~${rub(Math.round(pOverA))}</small></span><span class="pay">${rub(Math.round(pPayA))} ₽</span></div>
           </div>
           <div class="pay-col pango-nss km-pay">
-            <p class="eyebrow">PANGO · 14,4% · НСС</p>
+            <p class="eyebrow">PANGO · 15,4% · НСС</p>
             <p class="calc-note">Назначь свою ставку. НСС ${rub(pNss)} — 0,89% от тела кредита, разово, в платёж не входит.</p>
             <div class="bank-row"><span>Цена авто</span><span class="pay">${rub(pFix)}</span></div>
             <div class="bank-row"><span>Первый взнос</span><span class="pay">${rub(pDown)}</span></div>
@@ -126,7 +126,7 @@ def patch_text(text, path):
         if "const PANGO_FIX" not in text and "const TERMS_PRIO" in text:
             text = text.replace("    const TERMS_PRIO = [", DATA + "    const TERMS_PRIO = [", 1)
             n += 1
-        if "PANGO · 17,4%" not in text and "pShow=" not in text and "Спеццена · PANGO" not in text and RET in text:
+        if "PANGO · 18,4%" not in text and "pShow=" not in text and "Спеццена · PANGO" not in text and RET in text:
             text = text.replace(RET, PANGO_JS + RET, 1)
             n += 1
     if name.endswith(".html") or name.endswith(".css"):

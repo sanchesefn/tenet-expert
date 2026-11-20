@@ -254,8 +254,8 @@
         const pFix=useTi?_pgF.ti:_pgF.cash;
         const pDownP=Math.max(0, Math.min(pFix, down));
         const pBundle=typeof PANGO_BUNDLE==="number"?PANGO_BUNDLE:150000;
-        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:17.4;
-        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:14.4;
+        const pRateA=typeof PANGO_RATE_A==="number"?PANGO_RATE_A:18.4;
+        const pRateB=typeof PANGO_RATE_B==="number"?PANGO_RATE_B:15.4;
         const pNssRate=typeof PANGO_NSS==="number"?PANGO_NSS:0.0089;
         const pYears=months/12;
         const pYearsLabel=Math.abs(pYears-Math.round(pYears))<0.05?String(Math.round(pYears)):pYears.toFixed(1);
