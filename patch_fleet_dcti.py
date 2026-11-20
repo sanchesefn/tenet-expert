@@ -324,6 +324,8 @@ PLUS_VIN_PREFIXES = ("EFEDB21", "EDEMB31")
 PLUS_CARS = [
     {"vin": "EDEMB31B1TE137072", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "Акулово / не отгружен", "rrc": 2890000},
     {"vin": "EDEMB31B1TE137153", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "Акулово / не отгружен", "rrc": 2890000},
+    {"vin": "EDEMD31B4TE147914", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Оранжевый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3290000},
+    {"vin": "EDEMD31B4TE147833", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3290000},
     {"vin": "EDEMB31B0TE150251", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
     {"vin": "EFEDB21B0T3002547", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2690000},
     {"vin": "EFEDB21B1T3002735", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2540000},
