@@ -147,6 +147,19 @@
     }
     /* TENET_BG_END */
 
+    /* TPLUS_CHOICE_START 20.11.2026: аналог «Без границ» для TENET PLUS. Цена = спец T+ + 70 000 ₽, нал и ТИ. Срока окончания нет. */
+    const TPLUS_CHOICE = {
+      label:"TENET Plus Выбор",
+      extra:70000,
+      prices:{
+        l4s:{cash:2270000,ti:2070000},
+        l4e:{cash:2420000,ti:2270000},
+        l6e:{cash:2570000,ti:2420000},
+        l6u:{cash:2670000,ti:2520000}
+      }
+    };
+    /* TPLUS_CHOICE_END */
+
     const TERMS_PRIO = [
       {model:"T4",vin:"EDEEB31B8TE003261",trim:"Прайм",year:"2026",color:"Светло-серый",extra:"",pay:1000,kmTi:-50,kmCash:0},
       {model:"T8",vin:"EDXGD34B5TE095631",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"",pay:1000,kmTi:-50,kmCash:0},
