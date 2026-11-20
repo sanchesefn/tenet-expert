@@ -324,14 +324,7 @@ PLUS_VIN_PREFIXES = ("EFEDB21", "EDEMB31")
 PLUS_CARS = [
     {"vin": "EDEMB31B1TE137072", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "Акулово / не отгружен", "rrc": 2890000},
     {"vin": "EDEMB31B1TE137153", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "way", "note": "Акулово / не отгружен", "rrc": 2890000},
-    {"vin": "EDEMB31B0TE145552", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "way", "note": "Акулово / не отгружен", "rrc": 3040000},
-    {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000, "spec": True},
-    {"vin": "EDEMB31B2TE145519", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000, "spec": True},
-    {"vin": "EDEMB31B0TE149732", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE149729", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE150315", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE150346", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
-    {"vin": "EDEMB31B1TE149707", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000, "spec": True},
+    {"vin": "EDEMB31B0TE150251", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3040000},
     {"vin": "EFEDB21B0T3002547", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2690000},
     {"vin": "EDEMB31B1TE140229", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 3040000},
     {"vin": "EDEMB31B9TE139636", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2890000},
@@ -342,6 +335,13 @@ PLUS_CARS = [
     {"vin": "EFEDB21B1T3003786", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003416", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000, "spec": True},
     {"vin": "EFEDB21B0T3004119", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Красный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2690000},
+    {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
+    {"vin": "EDEMB31B2TE145519", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
+    {"vin": "EDEMB31B0TE149732", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B0TE149729", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B0TE150315", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B0TE150346", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B1TE149707", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
     {"vin": "EFEDB21B1T3002041", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "in", "note": "В салоне · с 01.10.2026", "rrc": 2690000},
     {"vin": "EFEDB21B3T3002798", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "in", "note": "В салоне · с 27.10.2026", "rrc": 2540000},
     {"vin": "EDEMB31B1TE136973", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 2890000},
@@ -352,7 +352,6 @@ PLUS_CARS = [
     {"vin": "EDEMB31B3TE144489", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000, "spec": True},
     {"vin": "EDEMB31B0TE146409", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000},
     {"vin": "EDEMB31B0TE146572", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B1TE102015", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000, "spec": True},
     {"vin": "EFEDB21BXT3003706", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 2540000, "spec": True},
     {"vin": "EDEMB31B2TE139641", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 2890000, "spec": True},
     {"vin": "EFEDB21B2T3000637", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 30.09.2026", "rrc": 2540000},
@@ -431,23 +430,16 @@ PLUS_UI_SUBS = [
     ('      if(id==="t7l") return true;\n      return true;',
      '      if(id==="l4s") return t.includes("стайл")||t.includes("style");\n'
      '      if(id==="l4e"||id==="l6e") return t.includes("элегант")||t.includes("elegant");\n'
-     '      if(id==="l6u4") return (t.includes("ультра")||t.includes("ultra")) && t.includes("4wd");\n'
-     '      if(id==="l6u") return (t.includes("ультра")||t.includes("ultra")) && !t.includes("4wd");\n'
+     '      if(id==="l6u") return t.includes("ультра")||t.includes("ultra");\n'
      '      if(id==="t7l") return true;\n      return true;'),
     ('      if(car.model==="t7l") return "t7l";\n      return "";',
      '      if(car.model==="t7l") return "t7l";\n'
      '      if(car.model==="pl4") return (t.includes("стайл")||t.includes("style"))?"l4s":"l4e";\n'
-     '      if(car.model==="pl6"){\n'
-     '        if((t.includes("ультра")||t.includes("ultra")) && t.includes("4wd")) return "l6u4";\n'
-     '        if(t.includes("ультра")||t.includes("ultra")) return "l6u";\n'
-     '        return "l6e";\n'
-     '      }\n      return "";'),
+     '      if(car.model==="pl6") return (t.includes("ультра")||t.includes("ultra"))?"l6u":"l6e";\n      return "";'),
     ('const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];',
      'const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8","pl4","pl6"];'),
     ('ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};',
      'ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"],pl4:["TENET PLUS","L4"],pl6:["TENET PLUS","L6"]};'),
-    ('if(id==="l6e"||id==="l6u") return "L6";',
-     'if(id==="l6e"||id==="l6u"||id==="l6u4") return "L6";'),
 ]
 
 
