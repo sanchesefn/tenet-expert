@@ -12,8 +12,7 @@
       {model:"T8",trim:"Остальные",km:"0 / 30",note:""},
       {model:"T9",trim:"Все",km:"0 / 30",note:""},
       {model:"A8",trim:"Все",km:"0 / 30",note:""},
-      {model:"L6",trim:"Все",km:"100 / 200",note:"фикс: с ТИ 100, без ТИ 200; кроме Ultra 4WD"},
-      {model:"L6",trim:"Ultra 4WD",km:"без КМ",note:"не показываем; только скидки импортёра"},
+      {model:"L6",trim:"Кроме Ultra 4WD",km:"100 / 200",note:"фикс: с ТИ 100, без ТИ 200"},
       {model:"L4",trim:"Все",km:"−30 / 50",note:""}
     ];
     const TERMS_BONUS = [
