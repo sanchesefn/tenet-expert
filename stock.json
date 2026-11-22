@@ -1307,6 +1307,66 @@
       "status": "way",
       "note": "Калуга / не отгружен",
       "rrc": 3005000
+    },
+    {
+      "vin": "EDELB31B7TE153577",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B4TE153603",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B7TE153661",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B4TE153682",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Белый",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B7TE153904",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
+    },
+    {
+      "vin": "EDELB31B7TE153935",
+      "model": "t4l",
+      "name": "T4L",
+      "trim": "Актив",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 2344000
     }
   ]
 }
