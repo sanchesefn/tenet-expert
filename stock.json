@@ -1286,6 +1286,27 @@
       "rrc": 3499000,
       "corp": true,
       "mpt": true
+    },
+    {
+      "vin": "EDEFB32BXTE150023",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Чёрный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3005000,
+      "taxi": true
+    },
+    {
+      "vin": "EDEFB32B1TE153246",
+      "model": "t7",
+      "name": "T7",
+      "trim": "Прайм",
+      "color": "Сине-зелёный",
+      "status": "way",
+      "note": "Калуга / не отгружен",
+      "rrc": 3005000
     }
   ]
 }
