@@ -146,6 +146,7 @@ def patch(text):
     out = plus_patch(out)
     out = plus_stock(out)
     out = apply_each(out, PLUS_UI_SUBS)
+    out = ensure_l6u4_match(out)
     out = BLANKS.sub(r"\n\n\1", out)
     return out
 
@@ -320,35 +321,31 @@ def plus_patch(text):
 # block cannot survive the Pages workflow. stock-part1/part2/stock.json are not
 # the source of these cars and are left untouched.
 PLUS_MODELS = {"pl4", "pl6"}
-PLUS_VIN_PREFIXES = ("EFEDB21", "EDEMB31")
+PLUS_VIN_PREFIXES = ("EFEDB21", "EDEMB31", "EDEMD")
 PLUS_CARS = [
-    {"vin": "EDEMD31B4TE147914", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Оранжевый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3290000},
-    {"vin": "EDEMD31B4TE147833", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Белый", "status": "way", "note": "Калуга / не отгружен", "rrc": 3290000},
     {"vin": "EFEDB21B0T3002547", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2690000},
-    {"vin": "EFEDB21B1T3002735", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "Домодедово / не отгружен", "rrc": 2540000},
-    {"vin": "EFEDB21B3T3002803", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000, "spec": True},
     {"vin": "EFEDB21B0T3003665", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003786", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000},
-    {"vin": "EFEDB21B1T3003416", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2540000, "spec": True},
     {"vin": "EFEDB21B0T3004119", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Красный", "status": "way", "note": "СПб Сестрорецк / не отгружен", "rrc": 2690000},
-    {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
-    {"vin": "EDEMB31B2TE145519", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
-    {"vin": "EDEMB31B0TE149732", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE149729", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE150315", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE150346", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B1TE149707", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 19.11.2026", "rrc": 3040000, "spec": True},
+    {"vin": "EFEDB21B3T3002803", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгружен дилеру 23.11.2026", "rrc": 2540000, "spec": True},
+    {"vin": "EFEDB21B1T3002735", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "way", "note": "На заводе (Домодедово) · отгружен дилеру 23.11.2026", "rrc": 2540000},
+    {"vin": "EFEDB21B1T3003416", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "way", "note": "На заводе (СПб Сестрорецк) · отгружен дилеру 23.11.2026", "rrc": 2540000, "spec": True},
+    {"vin": "EDEMD31B4TE147914", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Оранжевый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 23.11.2026", "rrc": 3290000},
+    {"vin": "EDEMD31B4TE147833", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Белый", "status": "way", "note": "На заводе (Калуга) · отгружен дилеру 23.11.2026", "rrc": 3290000},
     {"vin": "EFEDB21B1T3002041", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "in", "note": "В салоне · с 01.10.2026", "rrc": 2690000},
     {"vin": "EFEDB21B3T3002798", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "in", "note": "В салоне · с 27.10.2026", "rrc": 2540000},
     {"vin": "EDEMB31B1TE136973", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Чёрный", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 2890000},
     {"vin": "EDEMB31B9TE126658", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Оранжевый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 2890000},
-    {"vin": "EDEMB31B0TE139542", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B0TE139542", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 3060000},
     {"vin": "EDEMB31B1TE139629", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 2890000},
-    {"vin": "EDEMB31B2TE140191", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE146409", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000},
-    {"vin": "EDEMB31B0TE146572", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3040000},
+    {"vin": "EDEMB31B0TE146409", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 3060000},
     {"vin": "EFEDB21BXT3003706", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 2540000, "spec": True},
     {"vin": "EDEMB31B2TE139641", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 2890000, "spec": True},
+    {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000, "spec": True},
+    {"vin": "EDEMB31B2TE145519", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000, "spec": True},
+    {"vin": "EDEMB31B0TE149732", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
+    {"vin": "EDEMB31B0TE150315", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
+    {"vin": "EDEMB31B0TE150346", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
     {"vin": "EFEDB21B2T3000637", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 30.09.2026", "rrc": 2540000},
     {"vin": "EFEDB21B1T3000922", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "in", "note": "В салоне · с 10.11.2026", "rrc": 2540000},
     {"vin": "EFEDB21B0T3001236", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Белый", "status": "in", "note": "В салоне · с 09.11.2026", "rrc": 2690000},
@@ -363,7 +360,11 @@ PLUS_CARS = [
     {"vin": "EFEDB21B4T3003944", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "in", "note": "В салоне · с 10.11.2026", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003996", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 27.10.2026", "rrc": 2540000, "spec": True},
     {"vin": "EFEDB21B1T3004257", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Серый", "status": "in", "note": "В салоне · с 10.11.2026", "rrc": 2690000},
-    {"vin": "EDEMB31B3TE144489", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 20.11.2026", "rrc": 3040000, "spec": True},
+    {"vin": "EDEMB31B2TE140191", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
+    {"vin": "EDEMB31B3TE144489", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 20.11.2026", "rrc": 3060000, "spec": True},
+    {"vin": "EDEMB31B0TE146572", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
+    {"vin": "EDEMB31B0TE149729", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
+    {"vin": "EDEMB31B1TE149707", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000, "spec": True},
 ]
 STOCK_RE = re.compile(r'(const STOCK = \[)(.*?)(\];)', re.S)
 
@@ -375,6 +376,46 @@ def _is_plus_car(obj):
         return True
     vin = str(obj.get("vin") or "")
     return vin.startswith(PLUS_VIN_PREFIXES)
+
+
+L6U4_RRC = 3290000
+L6U4_TRIM = "Ультра 4WD"
+
+
+def is_l6_awd(car):
+    """L6 full-time AWD: VIN EDEMD… and/or a 4WD flag / trim in stock data."""
+    if not isinstance(car, dict):
+        return False
+    vin = str(car.get("vin") or "").upper()
+    if vin.startswith("EDEMD"):
+        return True
+    model = str(car.get("model") or "").lower()
+    name = str(car.get("name") or "").lower()
+    is_l6 = model in ("pl6", "l6") or name == "l6" or vin.startswith("EDEMB") or vin.startswith("EDEMD")
+    t = str(car.get("trim") or "").lower()
+    if is_l6 and ("4wd" in t or "полный привод" in t or re.search(r"(?:^|\s)awd(?:\s|$)", t)):
+        return True
+    if not is_l6:
+        return False
+    for key in ("awd", "wd", "drive", "4wd", "fourwd", "privod", "driveType", "drive_type", "привод"):
+        f = str(car.get(key) or "").lower()
+        if f in ("true", "1", "4wd", "awd") or "4wd" in f or "полный" in f:
+            return True
+    return False
+
+
+def normalize_l6_awd(car):
+    """Build-time only: classify a 4WD L6 onto l6u4 terms. Source stock files untouched."""
+    car = dict(car)
+    car["model"] = "pl6"
+    if not car.get("name"):
+        car["name"] = "L6"
+    if not car.get("rrc") or car.get("rrc") in (3040000, "3040000", 3060000, "3060000"):
+        car["rrc"] = L6U4_RRC
+    trim = str(car.get("trim") or "")
+    if "4wd" not in trim.lower() and ("ультра" in trim.lower() or "ultra" in trim.lower() or not trim.strip()):
+        car["trim"] = L6U4_TRIM
+    return car
 
 
 def plus_stock(text):
@@ -399,6 +440,8 @@ def plus_stock(text):
     i, n = 0, len(body)
     kept = []
     removed = 0
+    extras = []
+    plus_vins = {str(c.get("vin") or "").upper() for c in PLUS_CARS}
     try:
         while i < n:
             while i < n and body[i] in " \t\r\n,":
@@ -408,13 +451,22 @@ def plus_stock(text):
             obj, end = dec.raw_decode(body, i)
             if _is_plus_car(obj):
                 removed += 1
+                vin = str(obj.get("vin") or "").upper()
+                if is_l6_awd(obj) and vin and vin not in plus_vins:
+                    extras.append(normalize_l6_awd(obj))
+                    plus_vins.add(vin)
+                    print("plus stock: keep L6 4WD", vin)
             else:
                 kept.append(body[i:end])
             i = end
     except json.JSONDecodeError as e:
         print("plus stock parse fail", e)
         return text
-    add = [json.dumps(c, ensure_ascii=False) for c in PLUS_CARS]
+    cars = []
+    for c in PLUS_CARS:
+        cars.append(normalize_l6_awd(c) if is_l6_awd(c) else c)
+    cars.extend(extras)
+    add = [json.dumps(c, ensure_ascii=False) for c in cars]
     new_body = ", ".join(kept + add)
     if new_body == body:
         return text
@@ -422,16 +474,118 @@ def plus_stock(text):
     return text[:m.start(2)] + new_body + text[m.end(2):]
 
 
+
+ISL6AWD_FN = (
+    "    function isL6Awd(car){\n"
+    "      if(!car) return false;\n"
+    "      const vin=String(car.vin||\"\").toUpperCase();\n"
+    "      if(vin.indexOf(\"EDEMD\")===0) return true;\n"
+    "      const model=String(car.model||\"\").toLowerCase();\n"
+    "      const name=String(car.name||\"\").toLowerCase();\n"
+    "      const isL6=model===\"pl6\"||model===\"l6\"||name===\"l6\"||vin.indexOf(\"EDEMB\")===0;\n"
+    "      if(!isL6) return false;\n"
+    "      const t=String(car.trim||\"\").toLowerCase();\n"
+    "      if(t.includes(\"4wd\")||t.includes(\"полный привод\")||/(?:^|\\s)awd(?:\\s|$)/.test(t)) return true;\n"
+    "      const keys=[\"awd\",\"wd\",\"drive\",\"4wd\",\"fourwd\",\"privod\",\"driveType\",\"drive_type\"];\n"
+    "      for(const k of keys){\n"
+    "        const f=String(car[k]==null?\"\":car[k]).toLowerCase();\n"
+    "        if(f===\"true\"||f===\"1\"||f===\"4wd\"||f===\"awd\"||f.includes(\"4wd\")||f.includes(\"полный\")) return true;\n"
+    "      }\n"
+    "      const pr=String(car[\"привод\"]||\"\").toLowerCase();\n"
+    "      if(pr.includes(\"полный\")||pr.includes(\"4wd\")) return true;\n"
+    "      return false;\n"
+    "    }\n"
+)
+
+L6U4_FIT = (
+    "      if(id===\"l6u4\") return (t.includes(\"ультра\")||t.includes(\"ultra\")) && isL6Awd(car);\n"
+    "      if(id===\"l6u\") return (t.includes(\"ультра\")||t.includes(\"ultra\")) && !isL6Awd(car);\n"
+)
+L6U4_ID = (
+    "      if(car.model===\"pl6\"||String(car.vin||\"\").toUpperCase().indexOf(\"EDEMD\")===0)"
+    " return (t.includes(\"ультра\")||t.includes(\"ultra\"))?(isL6Awd(car)?\"l6u4\":\"l6u\"):\"l6e\";\n"
+)
+
+
+def ensure_l6u4_match(text):
+    """20.11.2026: map L6 AWD (VIN EDEMD / 4WD flag) to l6u4. Pin after every deploy."""
+    out = text
+    if "function isL6Awd(" not in out:
+        if "    function kmTrimFit(m, car){" in out:
+            out = out.replace("    function kmTrimFit(m, car){", ISL6AWD_FN + "    function kmTrimFit(m, car){", 1)
+            print("plus ui: add isL6Awd")
+        else:
+            print("plus ui: kmTrimFit missing, skip l6u4 pin")
+            return text
+
+    # kmTrimFit: replace any previous l6u / l6u4 pair with the pinned one
+    fit_re = re.compile(
+        r'(?:      if\(id==="l6u4"\) return .*?\n)?'
+        r'      if\(id==="l6u"\) return .*?\n'
+    )
+    m = fit_re.search(out)
+    if m and m.group(0) != L6U4_FIT:
+        out = fit_re.sub(L6U4_FIT, out, count=1)
+        print("plus ui: pin kmTrimFit l6u/l6u4")
+    elif not m and 'if(id==="l4e"||id==="l6e")' in out:
+        out = out.replace(
+            '      if(id==="l4e"||id==="l6e") return t.includes("элегант")||t.includes("elegant");\n',
+            '      if(id==="l4e"||id==="l6e") return t.includes("элегант")||t.includes("elegant");\n' + L6U4_FIT,
+            1,
+        )
+        print("plus ui: insert kmTrimFit l6u/l6u4")
+
+    id_re = re.compile(r'      if\(car\.model==="pl6".*?\n')
+    m = id_re.search(out)
+    if m and m.group(0) != L6U4_ID:
+        out = id_re.sub(L6U4_ID, out, count=1)
+        print("plus ui: pin kmIdFromCar pl6/l6u4")
+
+    out2, n = re.subn(
+        r'if\(id==="l6e"\|\|id==="l6u"\) return "L6";',
+        'if(id==="l6e"||id==="l6u"||id==="l6u4") return "L6";',
+        out,
+        count=1,
+    )
+    if n:
+        out = out2
+        print("plus ui: pin kmLineOf l6u4")
+
+    if 'l6e:"l6",l6u:"l6"' in out and 'l6u4:"l6"' not in out:
+        out = out.replace('l6e:"l6",l6u:"l6"', 'l6e:"l6",l6u:"l6",l6u4:"l6"', 1)
+        print("plus ui: pin offerPhotoKey l6u4")
+
+    if '["EDEMB31","pl6"]' in out and '["EDEMD"' not in out and '["EDEMD31","pl6"]' not in out:
+        out = out.replace(
+            '["EFEDB21","pl4"],["EDEMB31","pl6"]',
+            '["EFEDB21","pl4"],["EDEMB31","pl6"],["EDEMD","pl6"]',
+            1,
+        )
+        print("plus ui: pin EPTS prefix EDEMD")
+
+    rrc_old = "    function stockRrc(r){\n      if(r && r.rrc) return Number(r.rrc)||0;"
+    rrc_new = (
+        "    function stockRrc(r){\n"
+        "      if(typeof isL6Awd===\"function\" && isL6Awd(r) && (!r||!r.rrc||Number(r.rrc)===3040000||Number(r.rrc)===3060000)) return 3290000;\n"
+        "      if(r && r.rrc) return Number(r.rrc)||0;"
+    )
+    if rrc_old in out and "isL6Awd(r) && (!r||!r.rrc||Number(r.rrc)===3040000)" not in out:
+        out = out.replace(rrc_old, rrc_new, 1)
+        print("plus ui: pin stockRrc l6u4")
+    return out
+
+
 PLUS_UI_SUBS = [
     ('      if(id==="t7l") return true;\n      return true;',
      '      if(id==="l4s") return t.includes("стайл")||t.includes("style");\n'
      '      if(id==="l4e"||id==="l6e") return t.includes("элегант")||t.includes("elegant");\n'
-     '      if(id==="l6u") return t.includes("ультра")||t.includes("ultra");\n'
+     '      if(id==="l6u4") return (t.includes("ультра")||t.includes("ultra")) && isL6Awd(car);\n'
+     '      if(id==="l6u") return (t.includes("ультра")||t.includes("ultra")) && !isL6Awd(car);\n'
      '      if(id==="t7l") return true;\n      return true;'),
     ('      if(car.model==="t7l") return "t7l";\n      return "";',
      '      if(car.model==="t7l") return "t7l";\n'
      '      if(car.model==="pl4") return (t.includes("стайл")||t.includes("style"))?"l4s":"l4e";\n'
-     '      if(car.model==="pl6") return (t.includes("ультра")||t.includes("ultra"))?"l6u":"l6e";\n      return "";'),
+     '      if(car.model==="pl6"||String(car.vin||"").toUpperCase().indexOf("EDEMD")===0) return (t.includes("ультра")||t.includes("ultra"))?(isL6Awd(car)?"l6u4":"l6u"):"l6e";\n      return "";'),
     ('const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8"];',
      'const modelOrder=["t4","t4l","t7","t8","tt9","t9","t7l","ta8","a8","pl4","pl6"];'),
     ('ta8:["TENET","A8"],a8:["CHERY","Arrizo 8"]};',

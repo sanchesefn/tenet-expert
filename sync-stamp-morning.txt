@@ -1,3 +1,3 @@
-morning Logicstars sync 23.11.2026 (склад-logicstars, CSV-экспорт)
-TENET 121 авто (corp 5) + TENET PLUS 42; reserved 1; taxi 70
-23.11.2026 07:40 MSK
+morning Logicstars sync 24.11.2026 (склад-logicstars, CSV-экспорт)
+TENET 123 авто (corp 4) + TENET PLUS 42; reserved 1; taxi 78
+24.11.2026 07:25 MSK
