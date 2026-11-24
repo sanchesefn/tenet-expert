@@ -151,17 +151,17 @@
     }
     /* TENET_BG_END */
 
-    /* TPLUS_CHOICE_START 24.11.2026: «Выбор» совпадает со спецценой T+ (меньшее из двух). До 30.11.2026 включительно, Europe/Samara. С 01.12.2026 tplusChoiceOn()=false. */
+    /* TPLUS_CHOICE_START 20.11.2026: аналог «Без границ» для TENET PLUS. Цена = спец T+ + 70 000 ₽, нал и ТИ. До 30.11.2026 включительно, Europe/Samara. С 01.12.2026 tplusChoiceOn()=false. */
     const TPLUS_CHOICE_UNTIL = "2026-11-30";
     const TPLUS_CHOICE = {
       label:"TENET Plus Выбор",
       until:"2026-11-30",
-      extra:0,
+      extra:70000,
       prices:{
-        l4s:{cash:2200000,ti:2000000},
-        l4e:{cash:2350000,ti:2200000},
-        l6e:{cash:2500000,ti:2350000},
-        l6u:{cash:2600000,ti:2450000}
+        l4s:{cash:2270000,ti:2070000},
+        l4e:{cash:2420000,ti:2270000},
+        l6e:{cash:2570000,ti:2420000},
+        l6u:{cash:2670000,ti:2520000}
       }
     };
     /* TPLUS_CHOICE_END */
