@@ -95,6 +95,7 @@
     const TERMS_BG_UNTIL = "2026-11-30";
     const TERMS_BG = [
       {model:"T7",trim:"Прайм 2WD",price:"2 550 нал, 2 450 ТИ"},
+      {model:"T7",trim:"Актив 4WD",price:"2 600 нал, 2 500 ТИ"},
       {model:"T7",trim:"Прайм 4WD",price:"2 800 нал, 2 700 ТИ"},
       {model:"T8",trim:"Актив 2WD 5 мест",price:"2 800 нал, 2 700 ТИ"},
       {model:"T8",trim:"Прайм 2WD 5 мест",price:"2 900 нал, 2 800 ТИ"},
@@ -106,6 +107,7 @@
     ];
     const PANGO_BG = {
       t7p:{cash:2550000,ti:2450000},
+      t7a4:{cash:2600000,ti:2500000},
       t7p4:{cash:2800000,ti:2700000},
       t8a:{cash:2800000,ti:2700000},
       t8p:{cash:2900000,ti:2800000},
