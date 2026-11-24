@@ -30,7 +30,7 @@
       l4s:{name:"L4 Style",rrc:2540000,dealer:2438400,an:0,client:2235200,prem:0,km:0,tidy:2235200,sub:100000,do:70000,casco:80000},
       l4e:{name:"L4 Elegant",rrc:2690000,dealer:2582400,an:0,client:2313400,prem:0,km:0,tidy:2313400,sub:100000,do:70000,casco:80000},
       l6e:{name:"L6 Elegant",rrc:2890000,dealer:2745500,an:0,client:2456500,prem:0,km:0,tidy:2456500,sub:150000,do:70000,casco:80000},
-      l6u:{name:"L6 Ultra",rrc:3060000,dealer:2888000,an:0,client:2584000,prem:0,km:0,tidy:2584000,sub:150000,do:70000,casco:80000}
+      l6u:{name:"L6 Ultra",rrc:3060000,dealer:2907000,an:0,client:2584000,prem:0,km:0,tidy:2584000,sub:150000,do:70000,casco:80000}
     };
     const FLEET_TI = 100000;
     function fleetMonthsLeft(principal, payment, annual){
