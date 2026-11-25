@@ -358,7 +358,6 @@ PLUS_CARS = [
     {"vin": "EFEDB21B4T3003944", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "in", "note": "В салоне · с 10.11.2026", "rrc": 2540000},
     {"vin": "EFEDB21B1T3003996", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 27.10.2026", "rrc": 2540000, "spec": True},
     {"vin": "EFEDB21B1T3004257", "model": "pl4", "name": "L4", "trim": "Элегант", "color": "Серый", "status": "in", "note": "В салоне · с 10.11.2026", "rrc": 2690000},
-    {"vin": "EDEMB31B2TE140191", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Оранжевый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
     {"vin": "EDEMB31B3TE144489", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 20.11.2026", "rrc": 3060000, "spec": True},
     {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 24.11.2026", "rrc": 3060000, "spec": True},
 ]
