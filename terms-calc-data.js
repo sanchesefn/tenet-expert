@@ -211,7 +211,7 @@
       {id:"l4e",brand:"TENET PLUS",name:"L4 Elegant",stock:"pl4",rrc:2690000,dealer:2582400,ti:150000,tiBack:150000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:-30,kmMax:50,prioMin:-30,prioMax:50},
       {id:"l6e",brand:"TENET PLUS",name:"L6 Elegant",stock:"pl6",rrc:2890000,dealer:2745500,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:100,kmMax:200,prioMin:100,prioMax:200},
       {id:"l6u",brand:"TENET PLUS",name:"L6 Ultra",stock:"pl6",rrc:3060000,dealer:2907000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:100,kmMax:200,prioMin:100,prioMax:200},
-      {id:"l6u4",brand:"TENET PLUS",name:"L6 Ultra 4WD",stock:"pl6",rrc:3290000,dealer:3138000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:0,prioMin:0,prioMax:0,noKM:true,dcMax:0,cascoGapMin:200000}
+      {id:"l6u4",brand:"TENET PLUS",name:"L6 Ultra 4WD",stock:"pl6",rrc:3290000,dealer:3138000,ti:100000,tiBack:70000,cr:0,crBack:0,bonus:0.022,vat:1.22,fee:0.01,kmMin:0,kmMax:50,prioMin:0,prioMax:50,noKM:true,dcMax:0,cascoGapMin:200000}
     ];
 
 
