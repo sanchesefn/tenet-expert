@@ -1,4 +1,4 @@
-    const KM_BANK_FEE = 30000;
+    const KM_BANK_FEE = 100000;/*ДМС банка по умолчанию; по банкам — KM_BANKS.fee (Совкомбанк 0), с 26.11.2026*/
     function kmBankRate(bankId, group, months, downPct){
       const terms=KM_BANK_MONTHS[bankId]||KM_BANK_MONTHS.sber;
       const n=Math.max(1, Number(months)||60);

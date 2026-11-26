@@ -94,10 +94,10 @@
     const PRIO_VINS = new Set(["EDEED31B1SE053704", "EDXFB32B4TE041659", "EDXFB32B2TE041658", "EDXFB32B7TE062327", "EDXGD34B1TE022143", "EDXGD34B6TE031162", "EDXGD34B3TE031815", "EDEDD24B2SG003755", "EDEDD24B3SG003926", "EDEDD24B1SG002595", "LVVDC21B7SD594110", "LVVDC21B0SD594112", "LVVDC21B2SDJ34062", "LVTDD24B5RD409189"]);
     const KM_DC_DEF = 100000;
     const KM_BANKS = [
-      {id:"sber", name:"Сбер"},
-      {id:"sovcom", name:"Совкомбанк"},
-      {id:"alfa", name:"Альфа"},
-      {id:"tbank", name:"Т-Банк"}
+      {id:"sber", name:"Сбер", fee:100000},
+      {id:"sovcom", name:"Совкомбанк", fee:0},
+      {id:"alfa", name:"Альфа", fee:100000},
+      {id:"tbank", name:"Т-Банк", fee:100000}
     ];
     const KM_BANK_MONTHS = {
       sber:[12,24,36,48,60,72,84,96,108,120],
@@ -266,7 +266,7 @@
       if(p>=10) return 10;
       return 0;
     }
-    const KM_BANK_FEE = 30000;
+    const KM_BANK_FEE = 100000;/*ДМС банка по умолчанию; по банкам — KM_BANKS.fee (Совкомбанк 0), с 26.11.2026*/
     function kmBankRate(bankId, group, months, downPct){
       const terms=KM_BANK_MONTHS[bankId]||KM_BANK_MONTHS.sber;
       const n=Math.max(1, Number(months)||60);

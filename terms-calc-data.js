@@ -216,10 +216,10 @@
     const PRIO_VINS = new Set(["EDEEB31B8TE003261", "EDXGD34B5TE095631", "EDXGD34B8TE095347", "EDEFB32BXTE100707", "EDEFB32B8TE099203", "EDEFB32B8TE105355", "EDXFD32B2TE042710", "EDXGB32B8TE110275", "EDXGB32B1TE110196", "EDXGB32B0TE089261", "EDEFD32B1TE101190", "EDEFD32B5TE102522", "EDEFB32B2TE105500"]);
     const KM_DC_DEF = 100000;
     const KM_BANKS = [
-      {id:"sber", name:"Сбер"},
-      {id:"sovcom", name:"Совкомбанк"},
-      {id:"alfa", name:"Альфа"},
-      {id:"tbank", name:"Т-Банк"}
+      {id:"sber", name:"Сбер", fee:100000},
+      {id:"sovcom", name:"Совкомбанк", fee:0},
+      {id:"alfa", name:"Альфа", fee:100000},
+      {id:"tbank", name:"Т-Банк", fee:100000}
     ];
     const KM_BANK_MONTHS = {
       sber:[12,24,36,48,60,72,84,96,108,120],
