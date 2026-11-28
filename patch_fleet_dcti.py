@@ -335,8 +335,6 @@ PLUS_CARS = [
     {"vin": "EDEMB31B2TE139641", "model": "pl6", "name": "L6", "trim": "Элегант", "color": "Серебристый", "status": "in", "note": "В салоне · с 17.11.2026", "rrc": 2890000},
     {"vin": "EDEMB31B2TE145519", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Чёрный", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
     {"vin": "EDEMB31B0TE150315", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 23.11.2026", "rrc": 3060000},
-    {"vin": "EFEDB21B3T3002803", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "in", "note": "В салоне · с 25.11.2026", "rrc": 2540000, "spec": True},
-    {"vin": "EFEDB21B1T3003416", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "in", "note": "В салоне · с 25.11.2026", "rrc": 2540000, "spec": True},
     {"vin": "EDEMD31B4TE147914", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Оранжевый", "status": "in", "note": "В салоне · с 25.11.2026", "rrc": 3290000},
     {"vin": "EFEDB21B1T3002735", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Чёрный", "status": "in", "note": "В салоне · с 25.11.2026", "rrc": 2540000},
     {"vin": "EFEDB21B2T3000637", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Белый", "status": "in", "note": "В салоне · с 30.09.2026", "rrc": 2540000},
@@ -357,6 +355,8 @@ PLUS_CARS = [
     {"vin": "EDEMB31B5TE102177", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 24.11.2026", "rrc": 3060000, "spec": True},
     {"vin": "EDEMB31B0TE149732", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Серебристый", "status": "in", "note": "В салоне · с 27.11.2026", "rrc": 3060000},
     {"vin": "EDEMB31B0TE150346", "model": "pl6", "name": "L6", "trim": "Ультра", "color": "Белый", "status": "in", "note": "В салоне · с 27.11.2026", "rrc": 3060000},
+    {"vin": "EFEDB21B3T3002803", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Серый", "status": "in", "note": "В салоне · с 27.11.2026", "rrc": 2540000, "spec": True},
+    {"vin": "EFEDB21B1T3003416", "model": "pl4", "name": "L4", "trim": "Стайл", "color": "Красный", "status": "in", "note": "В салоне · с 27.11.2026", "rrc": 2540000, "spec": True},
     {"vin": "EDEMD31B4TE147833", "model": "pl6", "name": "L6", "trim": "Ультра 4WD", "color": "Белый", "status": "in", "note": "В салоне · с 26.11.2026", "rrc": 3290000, "reserved": True},
 ]
 STOCK_RE = re.compile(r'(const STOCK = \[)(.*?)(\];)', re.S)
