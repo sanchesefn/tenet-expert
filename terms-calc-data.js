@@ -169,9 +169,9 @@
     const TERMS_PRIO = [
       {model:"T4",vin:"EDEEB31B8TE003261",trim:"Прайм",year:"2026",color:"Светло-серый",extra:"",pay:1000,kmTi:-50,kmCash:0},
       {model:"T8",vin:"EDXGD34B5TE095631",trim:"Прайм 7 мест 4WD",year:"2026",color:"Чёрный",extra:"",pay:1000,kmTi:-50,kmCash:0},
-      {model:"T8",vin:"EDXGD34B8TE095347",trim:"Прайм 7 мест 4WD",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
-      {model:"T7",vin:"EDEFB32BXTE100707",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
-      {model:"T7",vin:"EDEFB32B8TE099203",trim:"Прайм",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T8",vin:"EDXGD34B8TE095347",trim:"Прайм 7 мест 4WD",year:"2026",color:"Белый",extra:"продана 27.11",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T7",vin:"EDEFB32BXTE100707",trim:"Актив",year:"2026",color:"Белый",extra:"продана 26.11",pay:1000,kmTi:-50,kmCash:0},
+      {model:"T7",vin:"EDEFB32B8TE099203",trim:"Прайм",year:"2026",color:"Белый",extra:"продана 28.11",pay:1000,kmTi:-50,kmCash:0},
       {model:"T7",vin:"EDEFB32B8TE105355",trim:"Актив",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
       {model:"T7",vin:"EDXFD32B2TE042710",trim:"Актив 4WD",year:"2026",color:"Белый",extra:"",pay:1000,kmTi:-50,kmCash:0},
       {model:"T8",vin:"EDXGB32B8TE110275",trim:"Прайм 5 мест 2WD",year:"2026",color:"Чёрный",extra:"",pay:1000,kmTi:0,kmCash:30},
